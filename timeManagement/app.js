@@ -242,7 +242,7 @@ app.post('/reset/:token', function(req, res) {
         service: 'gmail',
         auth: {
           user: 'ktwhc8605@gmail.com',
-          pass: 'cowcowyesterday1'
+          pass: 'PASSWORD'
         }
       });
       var mailOptions = {
