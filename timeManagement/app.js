@@ -241,7 +241,7 @@ app.post('/reset/:token', function(req, res) {
       var smtpTransport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: 'ktwhc8605@gmail.com',
+          user: 'email',
           pass: 'PASSWORD'
         }
       });
