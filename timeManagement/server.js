@@ -41,8 +41,19 @@ passport.deserializeUser(function(id, done) {
 
 var userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  employeeID: { type: String, required: true, unique: true},
+  firstName: { type: String, required: true},
+  lastName: { type: String, required: true},
+  phone: String,
+  department: { type: String, required: true },
+  jobTitle: { type: String, required: true },
+  level: { type: String, required: true },
+  teamLeader: { type: String, required: true },
+  duration: { type: String, required: true },
+  picture: String,
+  verifyUserToken: String,
+  verifyUserExpires: Date,
   resetPasswordToken: String,
   resetPasswordExpires: Date
 });
@@ -73,7 +84,7 @@ userSchema.methods.comparePassword = function(candidatePassword, cb) {
 
 var User = mongoose.model('User', userSchema);
 
-mongoose.connect('mongodb://localhost:27017/mydatabase');
+mongoose.connect('mongodb://localhost:27017/db');
 
 
 var app = express();
@@ -94,6 +105,83 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(flash());
 
 // Routes
+
+app.get('/user', function(req, res){
+  res.render('user');
+});
+
+app.post('/user', function(req, res) {
+  var user = new User({
+    username: req.body.username,
+    password: req.body.password,
+    employeeID:req.body.employeeID,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    department: req.body.department,
+    jobTitle: req.body.jobTitle,
+    level: req.body.level,
+    teamLeader: req.body.teamLeader,
+    duration: req.body.duration
+
+    });
+
+  user.save(function(err) {
+    
+  
+      async.waterfall([
+        function(done) {
+          crypto.randomBytes(20, function(err, buf) {
+            var token = buf.toString('hex');
+            done(err, token);
+          });
+        },
+        function(token, done) {
+
+          user.verifyUserToken = token;
+            user.verifyUserExpires = Date.now() + 3600000; // 1 hour
+    
+            user.save(function(err) {
+              done(err, token, user);
+            });
+
+        },
+        function(token, user, done) {
+          var smtpTransport = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: 'EMAIL',
+              pass: 'PW'
+            }
+          });
+          var mailOptions = {
+            to: user.username,
+            from: 'EMAIL',
+            subject: 'Login Instrusction for your Time Managment Account',
+            text: 'You are receiving this because your account has been created.\n\n' +
+              'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+              'http://' + req.headers.host + '/validate/' + token + '\n\n' +
+              'If you did not request this, please ignore this email.\n'
+          };
+          smtpTransport.sendMail(mailOptions, function(err) {
+            req.flash('info', 'An e-mail has been sent to ' + user.username + ' with further instructions.');
+            done(err, 'done');
+          });
+    
+      
+        }
+      ], function(err) {
+        if (err) return next(err);
+        res.redirect('/register');
+      });
+
+
+        res.redirect('/');
+    });
+
+});
+
+
+
 app.get('/', function(req, res){
   res.render('index', {
     user: req.user
@@ -107,42 +195,30 @@ app.get('/login', function(req, res) {
 });
 
 
+
+
 app.post('/login', function(req, res, next) {
   passport.authenticate('local', function(err, user, info) {
     if (err) return next(err)
     if (!user) {
       return res.redirect('/login')
+    } else if(user.verifyUserToken !== undefined) {
+      return res.redirect('/login')
     }
+
+
     req.logIn(user, function(err) {
       if (err) return next(err);
       return res.redirect('/');
     });
+
+    
   })(req, res, next);
 });
 
 app.get('/logout', function(req, res){
   req.logout();
   res.redirect('/');
-});
-
-app.get('/signup', function(req, res) {
-  res.render('signup', {
-    user: req.user
-  });
-});
-
-app.post('/signup', function(req, res) {
-  var user = new User({
-      username: req.body.username,
-      email: req.body.email,
-      password: req.body.password
-    });
-
-  user.save(function(err) {
-    req.logIn(user, function(err) {
-      res.redirect('/');
-    });
-  });
 });
 
 app.get('/forgot', function(req, res) {
@@ -178,8 +254,8 @@ app.post('/forgot', function(req, res, next) {
       var smtpTransport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: 'EMAIL',
-          pass: 'PW'
+          user: 'EMail',
+          pass: 'pw'
         }
       });
       var mailOptions = {
@@ -261,5 +337,67 @@ app.post('/reset/:token', function(req, res) {
     res.redirect('/');
   });
 });
+
+
+app.get('/validate/:token', function(req, res) {
+  User.findOne({ verifyUserToken: req.params.token, verifyUserExpires: { $gt: Date.now() } }, function(err, user) {
+    if (!user) {
+      req.flash('error', 'Password reset token is invalid or has expired.');
+      return res.redirect('/forgot');
+    }
+    res.render('validate', {
+      user: req.user
+    });
+  });
+});
+
+
+app.post('/validate/:token', function(req, res) {
+  async.waterfall([
+    function(done) {
+      User.findOne({ verifyUserToken: req.params.token, verifyUserExpires: { $gt: Date.now() } }, function(err, user) {
+        if (!user) {
+          req.flash('error', 'Password reset token is invalid or has expired.');
+          return res.redirect('back');
+        }
+
+        user.password = req.body.password;
+        user.verifyUserToken = undefined;
+        user.verifyUserExpires = undefined;
+
+        user.save(function(err) {
+          req.logIn(user, function(err) {
+            done(err, user);
+          });
+        });
+      });
+    },
+    function(user, done) {
+      var smtpTransport = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'EMAIL',
+          pass: 'PW'
+        }
+      });
+      var mailOptions = {
+        to: user.username,
+        from: 'EMAIL',
+        subject: 'Your account has been verified',
+        text: 'Hello,' + user.firstName + user.lastName + '\n\n' +
+          'This is a confirmation that your account ' + user.username + ' has just been verifiied.\n'
+      };
+      smtpTransport.sendMail(mailOptions, function(err) {
+        req.flash('success', 'Success! Your password has been changed.');
+        done(err);
+      });
+    }
+  ], function(err) {
+    res.redirect('/');
+  });
+});
+
+
+
 
 module.exports = app;
