@@ -493,6 +493,7 @@ app.post('/validate/:token', function(req, res) {
 
         user.save(function(err) {
           req.logIn(user, function(err) {
+            res.redirect('/dashboard/'+ user.employeeID);
             done(err, user);
           });
         });
@@ -518,11 +519,8 @@ app.post('/validate/:token', function(req, res) {
         done(err);
       });
     }
-  ], function(err) {
-    res.redirect('/dashboard/'+ user.employeeID);
-  });
+  ]);
 });
-
 
 
 
