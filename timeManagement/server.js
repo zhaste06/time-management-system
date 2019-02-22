@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var session = require('express-session')
 var mongoose = require('mongoose');
 var nodemailer = require('nodemailer');
+var MongoStore = require('connect-mongo')(session);
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcrypt-nodejs');
@@ -49,7 +50,6 @@ var userSchema = new mongoose.Schema({
   department: { type: String, required: true },
   jobTitle: { type: String, required: true },
   level: { type: String, required: true },
-  teamLeader: { type: String, required: true },
   duration: { type: String, required: true },
   picture: String,
   verifyUserToken: String,
@@ -104,7 +104,111 @@ app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(flash());
 
+app.use(session({
+  secret: 'stuff',
+  resave: false,
+  store: new MongoStore({url:"mongodb://localhost:27017/db"}),
+  saveUninitialized: true,
+    cookie: {
+        expires: 600000
+    }
+}));
+
+
 // Routes
+
+app.get('/error', function(req, res){
+  res.render('error');
+});
+
+app.get('/newpassword/:employeeID', function(req, res){
+  User.findOne({ employeeID: req.params.employeeID}, function(err, user) {
+    if (!user) {
+      
+      return res.redirect('/error');
+    } else if(user.employeeID != req.user.employeeID) {
+      return res.redirect('/error');
+    }
+
+    res.render('passwordchange', {
+      user: req.user
+    });
+  });
+  
+});
+
+
+
+app.get('/passwordchange/:employeeID', function(req, res){
+  User.findOne({ employeeID: req.params.employeeID}, function(err, user) {
+    if (!user) {
+      
+      return res.redirect('/error');
+    } else if(user.employeeID != req.user.employeeID) {
+      return res.redirect('/error');
+    }
+
+    res.render('passwordchange', {
+      user: req.user
+    });
+  });
+  
+});
+
+
+app.post('/passwordchange/:employeeID', function(req, res, next) {
+
+  passport.authenticate('local', function(err, user, info) {
+    if (err) return next(err)
+    if (!user) {
+      return res.redirect('/login')
+    } 
+
+
+
+
+  password = req.body.newPassword;
+      return res.redirect('/profile/'+ user.employeeID);
+ 
+
+    
+  })(req, res, next);
+
+
+
+
+
+
+
+});
+
+
+
+
+app.get('/profile/:employeeID', function(req, res){
+
+
+  User.findOne({ employeeID: req.params.employeeID}, function(err, user) {
+    if (!user) {
+      
+      return res.redirect('/login');
+    } else if(user.employeeID != req.user.employeeID) {
+      return res.redirect('/error');
+    }
+
+    res.render('profile', {
+      user: req.user
+    });
+
+
+   
+  });
+
+
+
+});
+
+
 
 app.get('/user', function(req, res){
   res.render('user');
@@ -113,14 +217,13 @@ app.get('/user', function(req, res){
 app.post('/user', function(req, res) {
   var user = new User({
     username: req.body.username,
-    password: req.body.password,
+    password: "1233",
     employeeID:req.body.employeeID,
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     department: req.body.department,
     jobTitle: req.body.jobTitle,
     level: req.body.level,
-    teamLeader: req.body.teamLeader,
     duration: req.body.duration
 
     });
@@ -149,13 +252,13 @@ app.post('/user', function(req, res) {
           var smtpTransport = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-              user: 'EMAIL',
-              pass: 'PW'
+              user: '5bitsoftwareteam@gmail.com',
+              pass: 'cppcispn1!!'
             }
           });
           var mailOptions = {
             to: user.username,
-            from: 'EMAIL',
+            from: '5bitsoftwareteam@gmail.com',
             subject: 'Login Instrusction for your Time Managment Account',
             text: 'You are receiving this because your account has been created.\n\n' +
               'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
@@ -175,6 +278,13 @@ app.post('/user', function(req, res) {
       });
 
 
+
+
+
+
+
+
+      
         res.redirect('/');
     });
 
@@ -188,16 +298,32 @@ app.get('/', function(req, res){
   });
 });
 
-app.get('/login', function(req, res) {
-  res.render('login', {
-    user: req.user
+app.get('/dashboard/:employeeID', function(req, res) {
+
+
+  User.findOne({ employeeID: req.params.employeeID}, function(err, user) {
+    if (!user) {
+      
+      return res.redirect('/error');
+    } else if(user.employeeID != req.user.employeeID) {
+      return res.redirect('/error');
+    }
+
+    res.render('dashboard', {
+      user: req.user
+    });
+
+
+   
   });
+
+
 });
 
 
 
 
-app.post('/login', function(req, res, next) {
+app.post('/', function(req, res, next) {
   passport.authenticate('local', function(err, user, info) {
     if (err) return next(err)
     if (!user) {
@@ -209,7 +335,8 @@ app.post('/login', function(req, res, next) {
 
     req.logIn(user, function(err) {
       if (err) return next(err);
-      return res.redirect('/');
+      req.session.username = user.employeeID;
+      return res.redirect('/dashboard/'+ user.employeeID);
     });
 
     
@@ -236,7 +363,7 @@ app.post('/forgot', function(req, res, next) {
       });
     },
     function(token, done) {
-      User.findOne({ email: req.body.email }, function(err, user) {
+      User.findOne({ username: req.body.email }, function(err, user) {
         if (!user) {
           req.flash('error', 'No account with that email address exists.');
           return res.redirect('/forgot');
@@ -254,21 +381,21 @@ app.post('/forgot', function(req, res, next) {
       var smtpTransport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: 'EMail',
-          pass: 'pw'
+          user: '5bitsoftwareteam@gmail.com',
+          pass: 'cppcispn1!!'
         }
       });
       var mailOptions = {
-        to: user.email,
-        from: 'EMAIL',
-        subject: 'Node.js Password Reset',
+        to: user.username,
+        from: '5bitsoftwareteam@gmail.com',
+        subject: 'Password Reset',
         text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
           'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
           'http://' + req.headers.host + '/reset/' + token + '\n\n' +
           'If you did not request this, please ignore this email and your password will remain unchanged.\n'
       };
       smtpTransport.sendMail(mailOptions, function(err) {
-        req.flash('info', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
+        req.flash('info', 'An e-mail has been sent to ' + user.username + ' with further instructions.');
         done(err, 'done');
       });
 
@@ -308,6 +435,7 @@ app.post('/reset/:token', function(req, res) {
 
         user.save(function(err) {
           req.logIn(user, function(err) {
+            res.redirect('/dashboard/'+ user.employeeID);
             done(err, user);
           });
         });
@@ -317,13 +445,13 @@ app.post('/reset/:token', function(req, res) {
       var smtpTransport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: 'EMAIL',
-          pass: 'PW'
+          user: '5bitsoftwareteam@gmail.com',
+          pass: 'cppcispn1!!'
         }
       });
       var mailOptions = {
         to: user.email,
-        from: 'EMAIL',
+        from: '5bitsoftwareteam@gmail.com',
         subject: 'Your password has been changed',
         text: 'Hello,\n\n' +
           'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
@@ -333,9 +461,7 @@ app.post('/reset/:token', function(req, res) {
         done(err);
       });
     }
-  ], function(err) {
-    res.redirect('/');
-  });
+  ]);
 });
 
 
@@ -376,13 +502,13 @@ app.post('/validate/:token', function(req, res) {
       var smtpTransport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: 'EMAIL',
-          pass: 'PW'
+          user: '5bitsoftwareteam@gmail.com',
+          pass: 'cppcispn1!!'
         }
       });
       var mailOptions = {
         to: user.username,
-        from: 'EMAIL',
+        from: '5bitsoftwareteam@gmail.com',
         subject: 'Your account has been verified',
         text: 'Hello,' + user.firstName + user.lastName + '\n\n' +
           'This is a confirmation that your account ' + user.username + ' has just been verifiied.\n'
@@ -393,7 +519,7 @@ app.post('/validate/:token', function(req, res) {
       });
     }
   ], function(err) {
-    res.redirect('/');
+    res.redirect('/dashboard/'+ user.employeeID);
   });
 });
 
