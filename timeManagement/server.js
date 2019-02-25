@@ -137,6 +137,32 @@ app.get('/newpassword/:employeeID', function(req, res){
   
 });
 
+app.get('/employee/:employeeID', function(req, res){
+  User.findOne({ employeeID: req.params.employeeID}, function(err, user) {
+    if (!user) {
+      
+      return res.redirect('/error');
+    } else if(user.level == 3) {
+      return res.redirect('/error');
+    }
+
+    User.find({}, function(err, allUser){
+      if(allUser != null) {
+        res.render('employee', {
+          user: req.user,
+          allUser
+          
+        });
+      }
+    });
+    
+
+  });
+  
+});
+
+
+
 
 
 app.get('/passwordchange/:employeeID', function(req, res){
@@ -161,18 +187,41 @@ app.post('/passwordchange/:employeeID', function(req, res, next) {
   passport.authenticate('local', function(err, user, info) {
     if (err) return next(err)
     if (!user) {
-      return res.redirect('/login')
+      return res.redirect('/login');
     } 
 
 
 
-
-  password = req.body.newPassword;
-      return res.redirect('/profile/'+ user.employeeID);
- 
+    
 
     
-  })(req, res, next);
+
+
+    
+  });
+
+
+  User.findOne({ employeeID: req.params.employeeID}, function(err, user) {
+    if (!user) {
+      
+      return res.redirect('/error');
+    } else if(user.employeeID != req.user.employeeID) {
+      return res.redirect('/error');
+    }
+
+    user.password = req.body.newPassword;
+
+
+    
+
+   
+    user.save(function(err) {
+     
+      return res.redirect('/profile/' + user.employeeID);
+    });
+
+   
+  });
 
 
 
@@ -209,12 +258,45 @@ app.get('/profile/:employeeID', function(req, res){
 });
 
 
+app.post('/profile/:employeeID', function(req, res){
 
-app.get('/user', function(req, res){
-  res.render('user');
+
+  User.findOne({ employeeID: req.params.employeeID}, function(err, user) {
+    if (!user) {
+      
+      return res.redirect('/error');
+    } else if(user.employeeID != req.user.employeeID) {
+      return res.redirect('/error');
+    }
+
+    user.phone = req.body.phone;
+
+
+    
+
+   
+    user.save(function(err) {
+     
+      return res.redirect('/profile/' + user.employeeID);
+    });
+
+   
+  });
+
+
+
 });
 
-app.post('/user', function(req, res) {
+
+
+app.get('/user/:employeeID', function(req, res){
+  res.render('user', {
+    user: req.user
+  });
+
+});
+
+app.post('/user/:employeeID', function(req, res, next) {
   var user = new User({
     username: req.body.username,
     password: "1233",
@@ -274,7 +356,7 @@ app.post('/user', function(req, res) {
         }
       ], function(err) {
         if (err) return next(err);
-        res.redirect('/register');
+        res.redirect('/employee/'+ req.params.employeeID);
       });
 
 
@@ -285,7 +367,7 @@ app.post('/user', function(req, res) {
 
 
       
-        res.redirect('/');
+        res.redirect('/employee/'+ req.params.employeeID);
     });
 
 });
@@ -327,9 +409,9 @@ app.post('/', function(req, res, next) {
   passport.authenticate('local', function(err, user, info) {
     if (err) return next(err)
     if (!user) {
-      return res.redirect('/login')
+      return res.redirect('/error')
     } else if(user.verifyUserToken !== undefined) {
-      return res.redirect('/login')
+      return res.redirect('/error')
     }
 
 
@@ -521,6 +603,7 @@ app.post('/validate/:token', function(req, res) {
     }
   ]);
 });
+
 
 
 
