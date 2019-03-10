@@ -58,6 +58,17 @@ var userSchema = new mongoose.Schema({
   resetPasswordExpires: Date
 });
 
+var timesheetSchema = new mongoose.Schema({
+  employeeID: { type: String, required: true },
+  date: { type: String, required: true },
+  percentage: { type: String, required: true },
+  project: { type: String, required: true },
+  allocation: { type: String, required: true }
+});
+
+
+
+
 userSchema.pre('save', function(next) {
   var user = this;
   var SALT_FACTOR = 5;
@@ -75,6 +86,8 @@ userSchema.pre('save', function(next) {
   });
 });
 
+
+
 userSchema.methods.comparePassword = function(candidatePassword, cb) {
   bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
     if (err) return cb(err);
@@ -83,8 +96,9 @@ userSchema.methods.comparePassword = function(candidatePassword, cb) {
 };
 
 var User = mongoose.model('User', userSchema);
-
+var Timesheet = mongoose.model('Timesheet', timesheetSchema);
 mongoose.connect('mongodb://localhost:27017/db');
+
 
 
 var app = express();
@@ -372,6 +386,136 @@ app.post('/user/:employeeID', function(req, res, next) {
 
 });
 
+app.get('/timesheet/:employeeID', function(req, res){
+
+
+ 
+  res.render('timesheet', {
+    user: req.user
+  });
+
+});
+
+
+app.post('/timesheet/:employeeID', function(req, res, next) {
+  var timesheet = new Timesheet({
+    employeeID: req.body.employeeID,
+    date: req.body.date,
+    percentage: req.body.percentage,
+    project: req.body.project,
+    allocation: req.body.allocation
+  
+
+    });
+
+    timesheet.save(function(err) {
+    
+
+
+
+      
+        res.redirect('/timesheet/'+ req.params.employeeID);
+    });
+
+});
+
+app.get('/timesheetsummary/:employeeID', function(req, res){
+  Timesheet.findOne({ employeeID: req.params.employeeID}, function(err, user) {
+    if (!user) {
+      
+      return res.redirect('/error');
+    } 
+    Timesheet.find({}, function(err, allUser){
+      if(allUser != null) {
+        User.find({}, function(err, userInfo) {
+          
+          res.render('timesheetsummary', {
+            user: req.user,
+            allUser,
+            userInfo
+            
+          });
+        });
+       
+      }
+    });
+    
+
+  });
+  
+});
+
+
+/*
+
+app.get('/timesheetsummary/:employeeID', async function(req, res){
+  
+  Promise.all()    
+  .then(result =>{
+    if (result == 1){
+      res.render('timesheetsummary', {
+        user: req.user,
+        allUser: allUser
+        
+      });
+    }
+  })
+  .catch((err) => {
+    console.log(err.message)
+  });
+
+  
+ 
+
+
+  return new Promise(function(resolve, reject){
+    var allUser = [];
+    User.findOne({ employeeID: req.params.employeeID}, function(err, user) {
+      if (!user) {
+        
+        return res.redirect('/error');
+      } else if (user.level == 0 || user.level == 1){
+        User.find({}, function(err, Users) {
+         
+          for(var i = 0; i < Users.length; i++){
+            Timesheet.find({employeeID: Users[i].employeeID}, function(err, allUserTimesheet) {
+        
+  
+              allUser.push(allUserTimesheet);
+              console.log(allUserTimesheet +'dsfffff'+ i);
+              
+            
+               
+            
+              
+            });
+            
+          }
+  
+         resolve(1);
+          
+        
+        });
+        
+  
+      } else if (user.level == 2) {
+        
+      } else {
+  
+      }
+  
+      
+  
+    });
+  })
+ 
+
+
+  
+});
+
+
+*/
 
 
 app.get('/', function(req, res){
