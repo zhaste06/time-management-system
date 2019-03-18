@@ -47,15 +47,11 @@
                                         <div class="row">
                                             <div class="col-sm-12 col-md-6">
                                                 <strong class="text-muted d-block mb-2">Allocable Percentage</strong>
-                                                <div id="slider-example-1" class="slider-success my-4">
-                                                    <input type="hidden" class="custom-slider-input">
-                                                    <input type="hidden" class="custom-slider-input"> </div>
+                                                <input type="text" class="form-control" id="allocable_percentage" required> 
                                             </div>
                                             <div class="col-sm-12 col-md-6">
                                                 <strong class="text-muted d-block mb-2">Non-Allocable Percentage</strong>
-                                                <div id="slider-example-2" class="slider-info my-4">
-                                                    <input type="hidden" class="custom-slider-input">
-                                                    <input type="hidden" class="custom-slider-input"> </div>
+                                                <input type="text" class="form-control" id="non_allocable_percentage" required> 
                                             </div>
                                         </div>
                                     </li>
@@ -69,7 +65,7 @@
                                                         <thead class="bg-light">
                                                             <tr>
                                                                     <input type="hidden" class="form-control"
-                                                                    id="inputPerc" name="employeeID" value="<%= user.employeeID %>">
+                                                                    id="inputPercrnt" name="employeeID" value="<%= user.employeeID %>">
                                                                 <th scope="col" class="border-0">Allocation</th>
                                                                 <th scope="col" class="border-0">Projects</th>
                                                                 <th scope="col" class="border-0">Percentage</th>
@@ -90,7 +86,7 @@
                                                                 </td>
                                                                 <td>
                                                                     <div class="form-group">
-                                                                        <select id="inputAllocable"
+                                                                        <select id="inputAllocableProject"
                                                                             class="form-control" name="project">
                                                                             <option selected>Machine Learning</option>
                                                                             <option>Accounting</option>
@@ -117,20 +113,25 @@
                                                             
                                                         </tbody>
                                                     </table>
-                                                    <button class="btn btn-sm btn-accent ml-auto">
-                                                            <i class="material-icons">done</i> Submit</button>
+                                                   
+                                                    <li class="list-group-item d-flex px-3">
+                                                        <button class="btn btn-sm btn-outline-accent" id="add_project">
+                                                            <i class="material-icons">add</i> Add Project</button>
+                                                        <button class="btn btn-sm btn-outline-accent" id="add_custom_project">
+                                                            <i class="material-icons">add</i> Add Custom Project</button>
+                                                            <button class="btn btn-sm btn-accent ml-auto submit-btn">
+                                                                <i class="material-icons">done</i> Submit</button>
+                                                        
+                                                    </li>
+                                                   
+                                                    
+                                                    
                                           
                                             </div>
 
                                         </div>
                                     </li>
-                                    <li class="list-group-item d-flex px-3">
-                                        <button class="btn btn-sm btn-outline-accent" id="add_project">
-                                            <i class="material-icons">add</i> Add Project</button>
-                                        <button class="btn btn-sm btn-outline-accent" id="add_custom_project">
-                                            <i class="material-icons">add</i> Add Custom Project</button>
-                                        
-                                    </li>
+                                   
                                 </form>
                                 </ul>
                             </div>
@@ -159,7 +160,7 @@
         $(document).ready(function(){
         $('#add_project').click(function(){
             $('tbody').append('<tr> <td> <div class="form-group"> <select id="inputAllocable" name="allocation" class="form-control"> <option selected>Allocable</option> <option>Non-Allocable</option> </select> </div> </td>'+
-            '<td> <div class="form-group"> <select id="inputAllocable" class="form-control" name="project"> <option selected>Machine Learning</option> <option>Accounting</option> <option>Marketing</option> <option>Recruiting</option> <option>Blockchain</option> <option>Speech</option> </select> </div> </td> <td>' +
+            '<td> <div class="form-group"> <select id="inputAllocableProject" class="form-control" name="project"> <option selected>Machine Learning</option> <option>Accounting</option> <option>Marketing</option> <option>Recruiting</option> <option>Blockchain</option> <option>Speech</option> </select> </div> </td> <td>' +
                 '<input type="text" class="form-control" id="inputPerc" name="percentage" required> </div> </td> <td><button type="button" class="mb-2 btn btn-danger mr-1" id="delete_project"><i class="material-icons">delete</i></button> </td> </tr>');
         });
 
@@ -173,6 +174,45 @@
 
         $(document).on("click","#delete_project",function(){
             $(this).parent('td').parent('tr').remove();
+        });
+
+        $('.submit-btn').click(function(e){
+            var total = 100;
+            var total = parseInt(total);
+            var non_allocable_percentage = parseInt($('#non_allocable_percentage').val());
+            var allocable_percentage = parseInt($('#allocable_percentage').val());
+            if(total != ( non_allocable_percentage + allocable_percentage )) {
+                alert('Allocable Percentage and Non-Allocable Percentage both add up to 100%')
+                e.preventDefault();
+            } else {
+                $('#inputAllocable option').each(function(){
+                   if($(this).prop("selected") == true) {
+                       if($(this).val() == 'Allocable') {
+                        var a = $(this).parent('select').parent('div').parent('td').parent('tr').find('#inputPerc').val();
+                        
+                        allocable_percentage = allocable_percentage - a; 
+                       } else if ($(this).val() == 'Non-Allocable') {
+                        var na = $(this).parent('select').parent('div').parent('td').parent('tr').find('#inputPerc').val();
+                       
+                        non_allocable_percentage = non_allocable_percentage - na; 
+                        
+                       }
+                       
+                       
+                   }
+                });
+                var zero = parseInt(0);
+                if(non_allocable_percentage != zero) {
+                    alert('Your Non-Allocable Percentage does not add up to ' + parseInt($('#non_allocable_percentage').val()));
+                    e.preventDefault();
+                }
+                if(allocable_percentage != zero){
+                    alert('Your Allocable Percentage does not add up to ' + parseInt($('#allocable_percentage').val()));
+                    e.preventDefault();
+                }
+                
+               
+            }
         });
 
 
