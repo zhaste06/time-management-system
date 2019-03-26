@@ -57,6 +57,15 @@
                                         <strong class="text-muted d-block mb-2">Employment Duration</strong>
                                         <span><%= user.duration %></span>
                                         <br><br>
+                                        <strong class="text-muted d-block mb-2">Legal Working Status</strong>
+                                        <span><%=user.workingStatus %></span>
+                                        <br><br>
+                                        <strong class="text-muted d-block mb-2">Start Date</strong>
+                                        <span><%=user.startDate %></span>
+                                        <br><br>
+                                        <strong class="text-muted d-block mb-2">Full Time Or Part-Time/Contractor</strong>
+                                        <span><%=user.fullTimePartTime %></span>
+                                        <br><br>
                                         <a class="btn btn-accent" href='/passwordchange/<%= user.employeeID %>'>Change Password</a>
                                     </li>
                                 </ul>

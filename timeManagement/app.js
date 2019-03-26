@@ -55,8 +55,12 @@ var userSchema = new mongoose.Schema({
   verifyUserToken: String,
   verifyUserExpires: Date,
   resetPasswordToken: String,
-  resetPasswordExpires: Date
+  resetPasswordExpires: Date,
+  workingStatus: { type: String, required: true},
+  startDate: {type: String, required: true},
+  fullTimePartTime: {type: String, required: true},
 });
+
 
 var timesheetSchema = new mongoose.Schema({
   employeeID: { type: String, required: true },
@@ -320,7 +324,10 @@ app.post('/user/:employeeID', function(req, res, next) {
     department: req.body.department,
     jobTitle: req.body.jobTitle,
     level: req.body.level,
-    duration: req.body.duration
+    duration: req.body.duration,
+    workingStatus: req.body.workingStatus,
+    startDate: req.body.startDate,
+    fullTimePartTime: req.body.fullTimePartTime,
 
     });
 
