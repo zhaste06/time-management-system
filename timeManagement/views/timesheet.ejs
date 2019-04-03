@@ -1,0 +1,186 @@
+<%- include header.ejs %>
+<div class="container">
+    <%- include msg.ejs %>
+</div>
+
+
+<!-- <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <i class="fa fa-exclamation mx-2"></i>
+                    <strong>Error !</strong> Incomplete Allocation</div>-->
+
+<div class="main-content-container container-fluid px-4">
+    <!-- Page Header -->
+    <div class="page-header row no-gutters py-4">
+        <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+            <h3 class="page-title">Add New Timesheet</h3>
+        </div>
+    </div>
+    <!-- End Page Header -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card card-small mb-4">
+                <div class="card-header border-bottom">
+                    <h6 class="m-0">Timesheet Inputs</h6>
+                </div>
+                <form method="POST">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item p-3">
+
+                            <div class="row">
+                                <div class="col-sm-12 col-md-6">
+                                    <strong class="text-muted d-block mb-2">Pick a Date</strong>
+                                    <div id="date-picker"
+                                        class="input-daterange input-group input-group-sm my-auto ml-auto mr-auto ml-sm-auto mr-sm-0"
+                                        style="max-width: 350px;">
+                                        <span class="input-group-append">
+                                            <span class="input-group-text">
+                                                <i class="material-icons"></i>
+                                            </span>
+                                        </span>
+                                        <input type="text" class="input-sm form-control" name="date" placeholder="Date"
+                                            required readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item p-3">
+                            <div class="row">
+                                <div class="col-sm-12 col-md-6">
+                                    <strong class="text-muted d-block mb-2">Allocable Percentage</strong>
+                                    <div id="slider-example-1" class="slider-success my-4">
+                                        <input type="hidden" class="custom-slider-input">
+                                        <input type="hidden" class="custom-slider-input"> </div>
+                                </div>
+                                <div class="col-sm-12 col-md-6">
+                                    <strong class="text-muted d-block mb-2">Non-Allocable Percentage</strong>
+                                    <div id="slider-example-2" class="slider-info my-4">
+                                        <input type="hidden" class="custom-slider-input">
+                                        <input type="hidden" class="custom-slider-input"> </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item p-3">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <strong class="text-muted d-block mb-2">Projects</strong>
+
+
+                                    <table class="table mb-0">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <input type="hidden" class="form-control" id="inputPerc"
+                                                    name="employeeID" value="<%= user.employeeID %>">
+                                                <th scope="col" class="border-0">Allocation</th>
+                                                <th scope="col" class="border-0">Projects</th>
+                                                <th scope="col" class="border-0">Percentage</th>
+                                                <th scope="col" class="border-0"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            <tr>
+                                                <td>
+                                                    <div class="form-group">
+                                                        <select id="inputAllocable" class="form-control"
+                                                            name="allocation">
+                                                            <option selected>Allocable</option>
+                                                            <option>Non-Allocable</option>
+                                                        </select>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="form-group">
+                                                        <select id="inputAllocable" class="form-control" name="project">
+                                                            <option selected>Machine Learning</option>
+                                                            <option>Accounting</option>
+                                                            <option>Marketing</option>
+                                                            <option>Recruiting</option>
+                                                            <option>Blockchain</option>
+                                                            <option>Speech</option>
+                                                        </select>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control" id="inputPerc"
+                                                            name="percentage" required> </div>
+                                                </td>
+                                                <td>
+                                                </td>
+                                            </tr>
+
+
+
+
+
+
+                                        </tbody>
+                                    </table>
+                                    <button class="btn btn-sm btn-accent ml-auto">
+                                        <i class="material-icons">done</i> Submit</button>
+
+                                </div>
+
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex px-3">
+                            <button class="btn btn-sm btn-outline-accent" id="add_project">
+                                <i class="material-icons">add</i> Add Project</button>
+                            <button class="btn btn-sm btn-outline-accent" id="add_custom_project">
+                                <i class="material-icons">add</i> Add Custom Project</button>
+
+                        </li>
+                </form>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</main>
+</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+    integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+<script src="https://unpkg.com/shards-ui@latest/dist/js/shards.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sharrre/2.0.1/jquery.sharrre.min.js"></script>
+<script src="../scripts/extras.1.1.0.min.js"></script>
+<script src="../scripts/shards-dashboards.1.1.0.js"></script>
+<script src="../scripts/app/app-blog-overview.1.1.0.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#add_project').click(function () {
+            $('tbody').append('<tr> <td> <div class="form-group"> <select id="inputAllocable" name="allocation" class="form-control"> <option selected>Allocable</option> <option>Non-Allocable</option> </select> </div> </td>' +
+                '<td> <div class="form-group"> <select id="inputAllocable" class="form-control" name="project"> <option selected>Machine Learning</option> <option>Accounting</option> <option>Marketing</option> <option>Recruiting</option> <option>Blockchain</option> <option>Speech</option> </select> </div> </td> <td>' +
+                '<input type="text" class="form-control" id="inputPerc" name="percentage" required> </div> </td> <td><button type="button" class="mb-2 btn btn-danger mr-1" id="delete_project"><i class="material-icons">delete</i></button> </td> </tr>');
+        });
+
+        $('#add_custom_project').click(function () {
+            $('tbody').append('<tr> <td> <div class="form-group"> <select id="inputAllocable" name="allocation" class="form-control"> <option selected>Allocable</option> <option>Non-Allocable</option> </select> </div> </td>' +
+                ' <td> <div class="form-group"> <input type="text" class="form-control" id="inputProject" placeholder="Enter Project" name="project" required> </div> </td> <td>' +
+                '<input type="text" class="form-control" id="inputPerc" name="percentage"> </div> </td> <td><button type="button" class="mb-2 btn btn-danger mr-1" id="delete_project"><i class="material-icons">delete</i></button> </td> </tr>');
+        });
+
+
+
+        $(document).on("click", "#delete_project", function () {
+            $(this).parent('td').parent('tr').remove();
+        });
+
+
+    });
+
+</script>
+</body>
+
+</html>
