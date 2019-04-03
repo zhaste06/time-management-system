@@ -74,8 +74,31 @@ $(document).ready(function () {
   $('.toggle-sidebar').click(function (e) {
     $('.main-sidebar').toggleClass('open');
   });
+
+  $('#date-picker').datepicker({});
+
+  $('#slider-example-1').customSlider({
+    start: 85,
+    connect: [true, false],
+    tooltips: true,
+    range: {
+      'min':  0,
+      'max':  100
+    }
+  });
+
+  $('#slider-example-2').customSlider({
+    start: 15,
+    connect: [true, false],
+    tooltips: true,
+    range: {
+      'min':  0,
+      'max':  100
+    }
+  });
 });
 
 })));
+
 
 //# sourceMappingURL=shards-dashboards.1.1.0.js.map

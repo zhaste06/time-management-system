@@ -6,136 +6,133 @@
   </head>
   <body>
     <h1>Create user</h1>
-    <form method="post">
-       
+    <form method="post">       
             <input type="text" name="username" placeholder="Email">
             <input type="text" name="password" placeholder="password">
             <input type="text" name="employeeID" placeholder="employeeID">
             <input type="text" name="firstName" placeholder="firstName">
             <input type="text" name="lastName" placeholder="lastName">
-
             <input type="text" name="department" placeholder="department">
-
             <input type="text" name="jobTitle" placeholder="jobTitle">
-
-            <input type="text" name="level" placeholder="level">
-
-          
+            <input type="text" name="level" placeholder="level">          
             <input type="text" name="duration" placeholder="duration">
-            
-            
-            
-    
-   
         <input type="submit" value="submit" class="btn btn-success">
     </form>
   </body>
 </html>
-
 -->
-
 
 <%- include header.ejs %>
 
-              <div class="main-content-container container-fluid px-4">
-                  <!-- Page Header -->
-                  <div class="page-header row no-gutters py-4">
-                      <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
-                          <h3 class="page-title">Add User</h3>
-                      </div>
-                  </div>
-                  <!-- End Page Header -->
-                  <!-- Add User -->
-                  <div class="row">
-                      <div class="col-lg-8">
-                          <div class="card card-small mb-4">
-                              <div class="card-header border-bottom">
-                                  <h6 class="m-0">Enter New User Details</h6>
-                              </div>
-                              <ul class="list-group list-group-flush">
-                                  <li class="list-group-item p-3">
-                                      <div class="row">
-                                          <div class="col">
-                                              <form method="post">
-                                                  <div class="form-row">
-                                                      <div class="form-group col-md-6">
-                                                          <label for="feFirstName">Email</label>
-                                                          <input type="text" name="username" placeholder="Email" class="form-control" required> </div>
-                                                      <div class="form-group col-md-6">
-                                                          <label for="feEmailAddress">Employee ID</label>
-                                                          <input type="text" name="employeeID" placeholder="Employee ID" class="form-control" required>
-                                                          
-                                                       </div>
-                                                  </div>
-                                                  <div class="form-row">
-                                                      <div class="form-group col-md-6">
-                                                          <label for="feLastName">Last Name</label>
-                                                          <input type="text" name="lastName" placeholder="LastName" class="form-control" required></div>
-                                                      <div class="form-group col-md-6">
-                                                          <label for="fePhone">First Name</label>
-                                                          <input type="text" name="firstName" placeholder="First Name" class="form-control" required> </div>
-                                                          
-                                                        </div>
-                                                  
-                                                  <div class="form-row">
-                                                      <div class="form-group col-md-6">
-                                                          <label for="feEmpolyeeID">Department</label>
-                                                          <input type="text" name="department" placeholder="Department" class="form-control" required></div>
-                                                      <div class="form-group col-md-6">
-                                                          <label for="feJobTitle">Job Title</label>
-                                                          <input type="text" name="jobTitle" placeholder="Job Title" class="form-control" required> </div>
-                                                  </div>
-                                                  <div class="form-row">
-                                                      <div class="form-group col-md-6">
-                                                          <label for="feEmpolyeeID">Level</label>
-                                                          <input type="text" name="level" placeholder="Level" class="form-control" required> </div>
-                                                      <div class="form-group col-md-6">
-                                                          <label for="feJobTitle">Employment Duration</label>
-                                                          <input type="text" name="duration" placeholder="Employment Duration" class="form-control" required> </div>
-                                                  </div>
-                                                  <div class="form-row">
-                                                    <div class="form-group col-md-6">
-                                                        <label for="feLegalWorkingStatus">Legal Working Status</label>
-                                                        <input type="text" name="workingStatus" placeholder="Working Status" class="form-control" required> </div>
-                                                    <div class="form-group col-md-6">
-                                                        <label for="feStartDate">Start Date</label>
-                                                        <input type="text" name="startDate" placeholder="Start Date" class="form-control" required> </div>
-                                                </div>
-                                                <div class="form-row">
-                                                    <div class="form-group col-md-6">
-                                                        <label for="feFulltimePartTime">Full Time Or Part-Time/Contractor</label>
-                                                        <input type="text" name="fullTimePartTime" placeholder="Status" class="form-control" required> </div>
-                                                </div>
-                                                  <input type="submit" value="Add User" class="btn btn-success">
-                                              </form>
-                                          </div>
-                                      </div>
-                                  </li>
-                              </ul>
-                          </div>
-                      </div>
-                  </div>
-                  <!-- End Add User -->
-              </div>
-          </main>
-      </div>
-  </div>
+<div class="main-content-container container-fluid px-4">
+    <!-- Page Header -->
+    <div class="page-header row no-gutters py-4">
+        <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+            <h3 class="page-title">Add User</h3>
+        </div>
+    </div>
+    <!-- End Page Header -->
+    <!-- Add User -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card card-small mb-4">
+                <div class="card-header border-bottom">
+                    <h6 class="m-0">Enter New User Details</h6>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item p-3">
+                        <div class="row">
+                            <div class="col">
+                                <form method="post">
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="feFirstName">Email</label>
+                                            <input type="text" name="username" placeholder="Email" class="form-control"
+                                                required> </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="feEmailAddress">Employee ID</label>
+                                            <input type="text" name="employeeID" placeholder="Employee ID"
+                                                class="form-control" required>
 
-  <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
-      integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-      crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
-      integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
-      crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
-  <script src="https://unpkg.com/shards-ui@latest/dist/js/shards.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sharrre/2.0.1/jquery.sharrre.min.js"></script>
-  <script src="scripts/extras.1.1.0.min.js"></script>
-  <script src="scripts/shards-dashboards.1.1.0.min.js"></script>
-  <script src="scripts/app/app-blog-overview.1.1.0.js"></script>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="feLastName">Last Name</label>
+                                            <input type="text" name="lastName" placeholder="LastName"
+                                                class="form-control" required></div>
+                                        <div class="form-group col-md-6">
+                                            <label for="fePhone">First Name</label>
+                                            <input type="text" name="firstName" placeholder="First Name"
+                                                class="form-control" required> </div>
+
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="feEmpolyeeID">Department</label>
+                                            <input type="text" name="department" placeholder="Department"
+                                                class="form-control" required></div>
+                                        <div class="form-group col-md-6">
+                                            <label for="feJobTitle">Job Title</label>
+                                            <input type="text" name="jobTitle" placeholder="Job Title"
+                                                class="form-control" required> </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="feEmpolyeeID">Level</label>
+                                            <input type="text" name="level" placeholder="Level" class="form-control"
+                                                required> </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="feJobTitle">Employment Duration</label>
+                                            <input type="text" name="duration" placeholder="Employment Duration"
+                                                class="form-control" required> </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="feLegalWorkingStatus">Legal Working Status</label>
+                                            <input type="text" name="workingStatus" placeholder="Working Status"
+                                                class="form-control" required> </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="feStartDate">Start Date</label>
+                                            <input type="text" name="startDate" placeholder="Start Date"
+                                                class="form-control" required> </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="feFulltimePartTime">Full Time Or Part-Time/Contractor</label>
+                                            <input type="text" name="fullTimePartTime" placeholder="Status"
+                                                class="form-control" required> </div>
+                                    </div>
+                                    <input type="submit" value="Add User" class="btn btn-success">
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- End Add User -->
+</div>
+</main>
+</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+    integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+<script src="https://unpkg.com/shards-ui@latest/dist/js/shards.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sharrre/2.0.1/jquery.sharrre.min.js"></script>
+<script src="scripts/extras.1.1.0.min.js"></script>
+<script src="scripts/shards-dashboards.1.1.0.min.js"></script>
+<script src="scripts/app/app-blog-overview.1.1.0.js"></script>
 </body>
 
 </html>
-

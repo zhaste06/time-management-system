@@ -61,25 +61,25 @@
             </li>
             <li class="nav-item">
 
-                    <% if (user.level == 0) { %>
-                        <a class="nav-link " href='/profile/<%= user.employeeID %>'>
-                            <i class="material-icons">person</i>
-                            <span>Admin Profile</span>
-                          </a>
-                        <%} else { %>
-                            <a class="nav-link " href='/profile/<%= user.employeeID %>'>
-                                <i class="material-icons">person</i>
-                                <span>User Profile</span>
-                              </a>
-                            <%}%>
+              <% if (user.level == 0) { %>
+              <a class="nav-link " href='/profile/<%= user.employeeID %>'>
+                <i class="material-icons">person</i>
+                <span>Admin Profile</span>
+              </a>
+              <%} else { %>
+              <a class="nav-link " href='/profile/<%= user.employeeID %>'>
+                <i class="material-icons">person</i>
+                <span>User Profile</span>
+              </a>
+              <%}%>
 
 
               
             </li>
             <li class="nav-item">
               <a class="nav-link " href="/timesheetsummary/<%= user.employeeID %>">
-                <i class="material-icons">assignment</i>
-                <span>Timesheets</span>
+              <i class="material-icons">assignment</i>
+              <span>Timesheets</span>
               </a>
             </li>
             <li class="nav-item">
@@ -88,7 +88,7 @@
                 <span>Add New Timesheet</span>
               </a>
             </li>
-           
+
             <% if (user.level == 0) { %>
             <li class="nav-item">
               <a class="nav-link " href='/employee/<%= user.employeeID %>'>
@@ -97,23 +97,23 @@
               </a>
             </li>
             <%} else if (user.level == 1) { %>
-                <li class="nav-item">
-                  <a class="nav-link " href="/user">
-                    <i class="material-icons">assignment_ind</i>
-                    <span>All Employees</span>
-                  </a>
-                </li>
+            <li class="nav-item">
+              <a class="nav-link " href="/user">
+                <i class="material-icons">assignment_ind</i>
+                <span>All Employees</span>
+              </a>
+            </li>
 
-           
+
             <%} else if (user.level == 2) { %>
-                <li class="nav-item">
-                  <a class="nav-link " href="/user">
-                    <i class="material-icons">assignment_ind</i>
-                    <span>My team</span>
-                  </a>
-                </li>
+            <li class="nav-item">
+              <a class="nav-link " href="/user">
+                <i class="material-icons">assignment_ind</i>
+                <span>My team</span>
+              </a>
+            </li>
 
-                <%}%>
+            <%}%>
             <li class="nav-item">
               <a class="nav-link " href="">
                 <i class="material-icons">table_chart</i>
@@ -182,26 +182,26 @@
                   aria-haspopup="true" aria-expanded="false">
                   <img class="user-avatar rounded-circle mr-2" src="../images/avatars/0.jpg" alt="User Avatar">
                   <span class="d-none d-md-inline-block"><%= user.firstName %> <%= user.lastName %></span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-small">
+            </a>
+            <div class="dropdown-menu dropdown-menu-small">
 
-                        <% if (user.level == 0) { %>
-                            <a class="dropdown-item" href='/profile/<%= user.employeeID %>'>
-                                <i class="material-icons">&#xE7FD;</i> Admin Profile</a>
-                              <a class="dropdown-item" href="">
-                            <%} else { %>
-                                <a class="dropdown-item" href='/profile/<%= user.employeeID %>'>
-                                    <i class="material-icons">&#xE7FD;</i> User Profile</a>
-                                  <a class="dropdown-item" href="">
-                
-                                <%}%>
+              <% if (user.level == 0) { %>
+              <a class="dropdown-item" href='/profile/<%= user.employeeID %>'>
+                <i class="material-icons">&#xE7FD;</i> Admin Profile</a>
+              <a class="dropdown-item" href="">
+                <%} else { %>
+                <a class="dropdown-item" href='/profile/<%= user.employeeID %>'>
+                  <i class="material-icons">&#xE7FD;</i> User Profile</a>
+                <a class="dropdown-item" href="">
+
+                  <%}%>
 
 
 
                   
                     <i class="material-icons">note_add</i> Add New Timesheet</a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item text-danger" href="/logout">
+                  <a class="dropdown-item text-danger" onclick="msg()" href="/logout">
                     <i class="material-icons text-danger">&#xE879;</i> Logout </a>
                 </div>
               </li>
@@ -214,3 +214,9 @@
             </nav>
           </nav>
         </div>
+        <script>
+        function msg(){
+          /*var msg = document.getElementById("alert_succ");
+          msg.style.visibility = "visible";*/
+        }
+        </script>

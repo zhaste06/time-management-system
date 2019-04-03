@@ -22,11 +22,14 @@
 </head>
 
 <body class="bg-dark">
-
-
     <div class="sufee-login d-flex align-content-center flex-wrap">
         <div class="container">
+
             <div class="login-content">
+                <div class="container">
+                    <%- include msg.ejs %>
+                </div>
+
                 <div class="login-logo">
                     <a href="index.html">
                         <img class="align-content" src="images/logo.png" alt="">
@@ -43,25 +46,18 @@
                             <input type="password" class="form-control" placeholder="Password" name="password">
                         </div>
                         <div class="checkbox">
-                            
                             <label class="pull-right">
                                 <a href="/forgot">Forgot Password?</a>
                             </label>
-
                         </div>
-
                         <button type="submit" class="btn btn-success btn-flat m-b-30 m-t-30">Sign in</button>
-                        
-                        
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
     <script src="scripts/jquery-3.3.1.min.js"></script>
     <script src="scripts/bootstrap.bundle.min.js"></script>
-
 </body>
 
 </html>
