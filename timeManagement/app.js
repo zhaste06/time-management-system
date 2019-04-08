@@ -25,6 +25,8 @@ require('./models/Timesheet');
 var Timesheet = mongoose.model('Timesheet');
 require('./models/User');
 var User = mongoose.model('User');
+require('./models/Project');
+var Project = mongoose.model('Project');
 var request = require('./models/User');
 
 passport.use(new LocalStrategy(function (username, password, done) {
@@ -199,6 +201,133 @@ app.get('/newpassword/:employeeID', function (req, res) {
   });
 });
 
+
+
+    
+
+// *******************************************************************
+// TEAM LEADER APPROVES TIMESHEETS
+app.get('/approval/:employeeID', function(req, res){
+
+ 
+  User.findOne({ employeeID: req.params.employeeID}, function(err, user) {
+    if (!user) {
+      
+      return res.redirect('/error');
+    } else if(user.level != 2) {
+      return res.redirect('/error');
+    }
+
+   
+   
+    Timesheet.find({teamLead: req.params.employeeID, status: "Pending"}, function(err,  allTimesheets){
+      if(allTimesheets != null) {
+       
+  
+        res.render('approval', {
+          user: req.user,
+          allTimesheets
+        });
+       
+      }
+      
+    });
+    
+
+  });
+
+});
+
+app.post('/approval/:employeeID', function(req, res){
+ 
+
+  Timesheet.findOne({timesheetID: req.body.timesheetID }, function (err, timesheet) {
+
+    timesheet.status = "Approved";
+
+    timesheet.save(function (err) {
+      req.flash('success_msg', 'You have approved a Timesheet');
+      res.redirect('/approval/' + req.params.employeeID);
+    });
+ 
+   
+
+  });
+    
+
+
+});
+
+// *******************************************************************
+
+
+
+// *******************************************************************
+// ASSIGN PROJECTS TO TEAM MEMBERS
+app.get('/project/:employeeID', function(req, res){
+
+
+ 
+  User.findOne({ employeeID: req.params.employeeID}, function(err, user) {
+    if (!user) {
+      
+      return res.redirect('/error');
+    } else if(user.level != 2) {
+      return res.redirect('/error');
+    }
+
+   
+   
+    User.find({department: user.department, level: "3"}, function(err, allUser){
+      if(allUser != null) {
+        Project.find({}, function(err, projects) {
+          res.render('project', {
+            user: req.user,
+            allUser,
+            projects
+        });
+       
+          
+        });
+      }
+    });
+    
+
+  });
+
+});
+
+app.post('/project/:employeeID', function(req, res){
+  
+    function makeProjectID(length) {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  
+    for (var i = 0; i < length; i++)
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+  
+    return text;
+  }
+
+  var project = new Project({
+    projectID: makeProjectID(10),
+    employeeID: req.body.team_members,
+    status: req.body.status,
+    projectName: req.body.project_name,
+    teamLead: req.params.employeeID,
+    team: req.body.team
+  
+    });
+  
+  project.save(function(err) {
+    res.redirect('/project/'+ req.params.employeeID);
+  })
+
+});
+
+// *******************************************************************
+
+
 // *******************************************************************
 // PASSWORD CHANGE
 app.get('/passwordchange/:employeeID', function (req, res) {
@@ -303,7 +432,10 @@ app.post('/user/:employeeID', function (req, res, next) {
     department: req.body.department,
     jobTitle: req.body.jobTitle,
     level: req.body.level,
-    duration: req.body.duration
+    workingStatus: req.body.workingStatus,
+    startDate: req.body.startDate,
+    team: req.body.team,
+    fullTimePartTime: req.body.fullTimePartTime
   });
 
   user.save(function (err) {
@@ -360,19 +492,91 @@ app.post('/user/:employeeID', function (req, res, next) {
 // *******************************************************************
 // ADD NEW TIMESHEET
 app.get('/timesheet/:employeeID', function (req, res) {
-  res.render('timesheet', {
-    user: req.user
+  User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
+    if (!user) {
+      return res.redirect('/error');
+    } else if (user.employeeID != req.user.employeeID) {
+      return res.redirect('/error');
+    }
+  var allmyproject = [];
+  var allmyprojectID = [];
+  var teamLead;
+
+  Project.find({team: user.team, status: 'Open'}, function (err, allOpenedProject) {
+    if (allOpenedProject != null) {
+
+          for (var i = 0; i < allOpenedProject.length; i++) {
+              var myProject = allOpenedProject[i].employeeID;
+             //
+              var projectArray = myProject.split(","); 
+             for (j =0; j < projectArray.length; j++){
+              
+
+               if(projectArray[j] == user.employeeID) {
+                
+                 allmyproject.push(allOpenedProject[i].projectName);
+                
+                 allmyprojectID.push(allOpenedProject[i].projectID);
+                 teamLead = allOpenedProject[i].teamLead;
+               }
+             }
+
+          }
+
+          res.render('timesheet', {
+            user: req.user,
+            allmyproject,
+            allmyprojectID,
+            teamLead
+          });
+        
+  
+
+    } else {
+      allmyproject.push("No Assigned Project(s)");
+      res.render('timesheet', {
+        user: req.user,
+        allmyproject
+      });
+    
+     
+    }
   });
+
 });
+
+});
+
+function makeProjectID(length) {
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (var i = 0; i < length; i++)
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  return text;
+}
+
+
+ 
+
 
 app.post('/timesheet/:employeeID', function (req, res, next) {
   var timesheet = new Timesheet({
+    timesheetID: makeProjectID(11),
     employeeID: req.body.employeeID,
     date: req.body.date,
     percentage: req.body.percentage,
     project: req.body.project,
-    allocation: req.body.allocation
+    allocation: req.body.allocation,
+    status: "Pending",
+    teamLead: req.body.teamLead
   });
+
+  
+
+
+
   timesheet.save(function (err) {
     req.flash('success_msg', 'A new Timesheet has been entered');
     res.redirect('/timesheet/' + req.params.employeeID);
@@ -455,9 +659,44 @@ app.get('/dashboard/:employeeID', function (req, res) {
     } else if (user.employeeID != req.user.employeeID) {
       return res.redirect('/error');
     }
-    res.render('dashboard', {
-      user: req.user
+
+    var allmyproject = [];
+    var allmyprojectID = [];
+
+    Project.find({team: user.team, status: 'Open'}, function (err, allOpenedProject) {
+      if (allOpenedProject != null) {
+
+            console.log(allOpenedProject);
+            for (i = 0; i < allOpenedProject.length; i++) {
+                var myProject = allOpenedProject[i].employeeID;
+               //
+                var projectArray = myProject.split(","); 
+               for (j =0; j < projectArray.length; j++){
+                
+
+                 if(projectArray[j] == user.employeeID) {
+                  
+                   allmyproject.push(allOpenedProject[i].projectName);
+                   allmyprojectID.push(allOpenedProject[i].projectID);
+                   console.log(allmyproject[0]);
+                 }
+               }
+
+            }
+
+            res.render('dashboard', {
+              user: req.user,
+              allmyproject,
+              allmyprojectID
+            });
+    
+
+      }
     });
+
+   
+
+
   });
 });
 

@@ -3,6 +3,10 @@ var Schema = mongoose.Schema;
 
 // Create Schema
 var timesheetSchema = new Schema({
+  timesheetID: {
+    type: String,
+    required: true
+  },
   employeeID: {
     type: String,
     required: true
@@ -20,6 +24,14 @@ var timesheetSchema = new Schema({
     required: true 
   },
   allocation: { 
+    type: String, 
+    required: true 
+  },
+  status: { 
+    type: String, 
+    required: true 
+  },
+  teamLead: { 
     type: String, 
     required: true 
   }

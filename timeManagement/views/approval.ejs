@@ -1,4 +1,7 @@
 <%- include header.ejs %>
+<div class="container">
+        <%- include msg.ejs %>
+    </div>
 <div class="main-content-container container-fluid px-4">
   <!-- Page Header -->
   <div class="page-header row no-gutters py-4">
@@ -14,11 +17,11 @@
     <div class="col">
       <div class="card card-small mb-4">
         <div class="card-header border-bottom">
-          <h6 class="m-0">Total Timesheets: <%= allUser.length %></h6>
+          <h6 class="m-0">Total Timesheets: <%= allTimesheets.length %></h6>
         </div>
         <div class="card-body p-0 pb-3 text-center">
 
-
+                <form method="POST">
 
           <table class="table mb-0" id="myTable">
             <thead class="bg-light">
@@ -37,52 +40,58 @@
                 <th scope="col" class="border-0">Allocation</th>
                 <th scope="col" class="border-0">Percentage</th>
                 <th scope="col" class="border-0">Status</th>
-                <th scope="col" class="border-1">Excel</th>
+                <th scope="col" class="border-1"> </th>
               </tr>
             </thead>
             <tbody>
-              <% for (var i = 0; i < filter_row.length; i++) { %>
+              <% for (var i = 0; i < allTimesheets.length; i++) { %>
               <tr>
-                <td><%= filter_row[i].employeeID %></td>
-                <td><%= filter_row[i].date %></td>
-                <% var project = filter_row[i].project;
-                        var projectArray = project.split(","); 
-                        %>
-                <td>
-                  <% for (var j = 0; j < projectArray.length; j++) { %>
-                  <%= projectArray[j] %> <br>
-                  <% }  %>
-                </td>
+                <td><%= allTimesheets[i].employeeID %></td>
+                <td><%= allTimesheets[i].date %></td>
+                <% var project = allTimesheets[i].project;
+                var projectArray = project.split(","); 
+                %>
+        <td>
+          <% for (var j = 0; j < projectArray.length; j++) { %>
+          <%= projectArray[j] %> <br>
+          <% }  %>
+        </td>
 
-                <% var allocation = filter_row[i].allocation;
-                        var allocationArray = allocation.split(","); 
-                        %>
-                <td>
-                  <% for (var j = 0; j < allocationArray.length; j++) { %>
-                  <%= allocationArray[j] %> <br>
-                  <% }  %>
-                </td>
+                <% var allocation = allTimesheets[i].allocation;
+                var allocationArray = allocation.split(","); 
+                %>
+        <td>
+          <% for (var j = 0; j < allocationArray.length; j++) { %>
+          <%= allocationArray[j] %> <br>
+          <% }  %>
+        </td>
 
-                <% var percentage = filter_row[i].percentage;
-                        var percentageArray = percentage.split(","); 
-                        %>
-                <td>
-                  <% for (var j = 0; j < percentageArray.length; j++) { %>
-                  <%= percentageArray[j] %> <br>
-                  <% }  %>
-                </td>
+        <% var percentage = allTimesheets[i].percentage;
+        var percentageArray = percentage.split(","); 
+        %>
+    <td>
+    <% for (var j = 0; j < percentageArray.length; j++) { %>
+  <%= percentageArray[j] %> <br>
+  <% }  %>
+</td>
 
-               <!-- <td><%= allUser[i].username %></td>-->
-                <td><%= filter_row[i].status %></td>
-                <td>
-                  <a href="#" id="test" onClick="javascript:fnExcelReport();">Excel</a>
-                </td>
+
+                <td><%= allTimesheets[i].status %></td>
+          
+                <td> <button type="submit" name="timesheetID" class="btn btn-success approve-btn" value="<%= allTimesheets[i].timesheetID %>">Approve</button></td>
+      
+          
+          
+
+           
+          
+              
               </tr>
               <% } %>
             </tbody>
             </br></br>
           </table>
-
+        </form>
         </div>
       </div>
     </div>
@@ -93,10 +102,6 @@
 </main>
 </div>
 </div>
-<div id="dvjson"></div>
-<span id='variableJSON' hidden>
-  <%= JSON.stringify(filter_row); %>
-</span>
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>

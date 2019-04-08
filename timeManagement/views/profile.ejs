@@ -50,13 +50,13 @@
                 <span><%= user.department %></span>
                 <br><br>
                 <strong class="text-muted d-block mb-2">Employment Duration</strong>
-                <span><%= user.duration %></span>
+                <span class="duration"></span>
                 <br><br>
                 <strong class="text-muted d-block mb-2">Legal Working Status</strong>
                 <span><%=user.workingStatus %></span>
                 <br><br>
                 <strong class="text-muted d-block mb-2">Start Date</strong>
-                <span><%=user.startDate %></span>
+                <span class="startDate"><%=user.startDate %></span>
                 <br><br>
                 <strong class="text-muted d-block mb-2">Full Time Or Part-Time/Contractor</strong>
                 <span><%=user.fullTimePartTime %></span>
@@ -126,7 +126,19 @@
 <script src="../scripts/extras.1.1.0.min.js"></script>
 <script src="../scripts/shards-dashboards.1.1.0.min.js"></script>
 <script src="../scripts/app/app-blog-overview.1.1.0.js"></script>
+<script>
+    $(document).ready(function () {
+    var date_diff_indays = function(date1) {
+    dt1 = new Date(date1);
+    dt2 = new Date();
+    return Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate()) ) /(1000 * 60 * 60 * 24));
+    }
 
+
+$('.duration').text(date_diff_indays($('.startDate').text()) + ' days');
+
+    });
+</script>
 </body>
 
 </html>

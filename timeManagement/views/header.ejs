@@ -107,13 +107,22 @@
 
             <%} else if (user.level == 2) { %>
             <li class="nav-item">
-              <a class="nav-link " href="/user">
+              <a class="nav-link " href='/project/<%= user.employeeID %>'>
                 <i class="material-icons">assignment_ind</i>
                 <span>My team</span>
               </a>
             </li>
 
             <%}%>
+            <% if (user.level == 2) { %>
+              <li class="nav-item">
+                <a class="nav-link " href='/approval/<%= user.employeeID %>'>
+                  <i class="material-icons">assignment_ind</i>
+                  <span>My Team Timesheet</span>
+                </a>
+              </li>
+              <%} %>
+            
             <li class="nav-item">
               <a class="nav-link " href="">
                 <i class="material-icons">table_chart</i>
