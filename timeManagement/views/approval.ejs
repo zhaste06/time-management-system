@@ -1,0 +1,145 @@
+<%- include header.ejs %>
+<div class="container">
+        <%- include msg.ejs %>
+    </div>
+<div class="main-content-container container-fluid px-4">
+  <!-- Page Header -->
+  <div class="page-header row no-gutters py-4">
+    <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+      <span class="text-uppercase page-subtitle">Overview</span>
+      <h3 class="page-title">Timesheet Summary</h3>
+    </div>
+
+  </div>
+  <!-- End Page Header -->
+  <!-- Default Table -->
+  <div class="row">
+    <div class="col">
+      <div class="card card-small mb-4">
+        <div class="card-header border-bottom">
+          <h6 class="m-0">Total Timesheets: <%= allTimesheets.length %></h6>
+        </div>
+        <div class="card-body p-0 pb-3 text-center">
+
+                <form method="POST">
+
+          <table class="table mb-0" id="myTable">
+            <thead class="bg-light">
+              <tr>
+                </br><a href="#" id="test" style="font-size: 20px;" onClick="javascript:fnExcelReport();">Export to
+                  Excel</a></br>
+              </tr>
+
+              <tr>
+                <!-- <%  if (user.level == 0 || user.level == 1) { %>
+                                <th scope="col" class="border-0">Name</th>
+                                <%} %>-->
+                <th scope="col" class="border-0">Employee ID</th>
+                <th scope="col" class="border-0">Date</th>
+                <th scope="col" class="border-0">Project</th>
+                <th scope="col" class="border-0">Allocation</th>
+                <th scope="col" class="border-0">Percentage</th>
+                <th scope="col" class="border-0">Status</th>
+                <th scope="col" class="border-1"> </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% for (var i = 0; i < allTimesheets.length; i++) { %>
+              <tr>
+                <td><%= allTimesheets[i].employeeID %></td>
+                <td><%= allTimesheets[i].date %></td>
+                <% var project = allTimesheets[i].project;
+                var projectArray = project.split(","); 
+                %>
+        <td>
+          <% for (var j = 0; j < projectArray.length; j++) { %>
+          <%= projectArray[j] %> <br>
+          <% }  %>
+        </td>
+
+                <% var allocation = allTimesheets[i].allocation;
+                var allocationArray = allocation.split(","); 
+                %>
+        <td>
+          <% for (var j = 0; j < allocationArray.length; j++) { %>
+          <%= allocationArray[j] %> <br>
+          <% }  %>
+        </td>
+
+        <% var percentage = allTimesheets[i].percentage;
+        var percentageArray = percentage.split(","); 
+        %>
+    <td>
+    <% for (var j = 0; j < percentageArray.length; j++) { %>
+  <%= percentageArray[j] %> <br>
+  <% }  %>
+</td>
+
+
+                <td><%= allTimesheets[i].status %></td>
+          
+                <td> <button type="submit" name="timesheetID" class="btn btn-success approve-btn" value="<%= allTimesheets[i].timesheetID %>">Approve</button></td>
+      
+          
+          
+
+           
+          
+              
+              </tr>
+              <% } %>
+            </tbody>
+            </br></br>
+          </table>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Default Table -->
+
+</div>
+</main>
+</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+  integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+  integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+<script src="https://unpkg.com/shards-ui@latest/dist/js/shards.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sharrre/2.0.1/jquery.sharrre.min.js"></script>
+<script src="scripts/extras.1.1.0.min.js"></script>
+<script src="scripts/shards-dashboards.1.1.0.min.js"></script>
+<script src="scripts/app/app-blog-overview.1.1.0.js"></script>
+<script src="../scripts/excelexportjs.js"></script>
+
+
+
+<script>
+  function fnExcelReport() {
+    
+    var data = JSON.parse($('#variableJSON').text());  
+    console.log('fer', data);
+    
+    $("#dvjson").excelexportjs({
+      containerid: "dvjson", 
+      datatype: 'json', 
+      dataset: data, 
+      columns: getColumns(data)     
+    });
+  }
+</script>
+
+
+
+
+
+
+
+</body>
+
+</html>
