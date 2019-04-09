@@ -363,6 +363,33 @@ app.post('/passwordchange/:employeeID', function (req, res, next) {
     });
   });
 });
+// *********************************************************************
+// ADMIN CREATION
+app.get('/admincreate', function(req, res, next) {
+  res.render('admincreate');
+});
+app.post('/admincreate', function(req, res, next) {
+
+  var user = new User({
+    username: req.body.username,
+    password: req.body.adminPassword,
+    employeeID: 'ADMIN01',
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    department: 'ADMIN',
+    jobTitle: 'ADMIN',
+    level: '0',
+    workingStatus: 'ADMIN',
+    startDate: '----',
+    team: 'ADMIN',
+    fullTimePartTime: 'ADMIN'
+  });
+
+  user.save(function (err) {
+    return res.redirect('/');
+  })
+
+});
 
 // *******************************************************************
 app.get('/employee/:employeeID', function (req, res) {
