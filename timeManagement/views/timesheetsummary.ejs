@@ -14,7 +14,13 @@
     <div class="col">
       <div class="card card-small mb-4">
         <div class="card-header border-bottom">
-          <h6 class="m-0">Total Timesheets: <%= allUser.length %></h6>
+            <% if (user.level == 0) { %>
+              <h6 class="m-0">Total Timesheets: <%= allUser.length %></h6>
+           <%} else {%>
+            <h6 class="m-0">Total Timesheets: <%= filter_row.length %></h6>
+            <%} %>
+
+         
         </div>
         <div class="card-body p-0 pb-3 text-center">
 
@@ -31,9 +37,16 @@
                 <!-- <%  if (user.level == 0 || user.level == 1) { %>
                                 <th scope="col" class="border-0">Name</th>
                                 <%} %>-->
-                <th scope="col" class="border-0">Employee ID</th>
+
+                <% if (user.level == 0) { %>
+                  <th scope="col" class="border-0">Employee ID</th>
+                  <th scope="col" class="border-0">Name</th>     
+               <%}%>
+                    
+                    
+               
                 <th scope="col" class="border-0">Date</th>
-                <th scope="col" class="border-0">Project</th>
+                <th scope="col" class="border-0">Project Name (Project ID)</th>
                 <th scope="col" class="border-0">Allocation</th>
                 <th scope="col" class="border-0">Percentage</th>
                 <th scope="col" class="border-0">Status</th>
@@ -43,7 +56,12 @@
             <tbody>
               <% for (var i = 0; i < filter_row.length; i++) { %>
               <tr>
-                <td><%= filter_row[i].employeeID %></td>
+                  <% if (user.level == 0) { %>
+                    <td><%= filter_row[i].employeeID %></td>
+                    <td><%= filter_row[i].firstName %> <%= filter_row[i].lastName %></td>
+                 <%}%>
+
+                
                 <td><%= filter_row[i].date %></td>
                 <% var project = filter_row[i].project;
                         var projectArray = project.split(","); 

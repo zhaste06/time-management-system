@@ -69,6 +69,10 @@
                                             <tr>
                                                 <input type="hidden" class="form-control" id="inputPerc"
                                                     name="employeeID" value="<%= user.employeeID %>">
+                                                    <input type="hidden" class="form-control" id="inputPerc"
+                                                    name="firstName" value="<%= user.firstName %>">
+                                                    <input type="hidden" class="form-control" id="inputPerc"
+                                                    name="lastName" value="<%= user.lastName %>">
                                                     <input type="hidden" name="teamLead" value="<%= teamLead %>">
                                                 <th scope="col" class="border-0">Allocation</th>
                                                 <th scope="col" class="border-0">Projects</th>
@@ -92,8 +96,8 @@
                                                     <div class="form-group">
                                                         <select id="inputAllocable" class="form-control" name="project">
                                                         <% for (var i = 0; i < allmyproject.length; i++) { %>
-                                                            <option value="<%= allmyprojectID[i] %>"><%= allmyproject[i] %></option>
-                                                                 
+                                                            <option value="<%= allmyproject[i] %> (<%= allmyprojectID[i] %>)"><%= allmyproject[i] %></option>
+                                                            
                                                                     <% } %>
 
                                                           
@@ -104,6 +108,8 @@
                                                     <div class="form-group">
                                                         <input type="text" class="form-control" id="inputPerc"
                                                             name="percentage" required> </div>
+                                                            <div class="form-group">
+                                                               
                                                 </td>
                                                 <td>
                                                 </td>
@@ -160,7 +166,7 @@
     $(document).ready(function () {
         $('#add_project').click(function () {
             $('tbody').append('<tr> <td> <div class="form-group"> <select id="inputAllocable" name="allocation" class="form-control"> <option selected>Allocable</option> <option>Non-Allocable</option> </select> </div> </td>' +
-                '<td> <div class="form-group"> <select id="inputAllocable" class="form-control" name="project"> <% for (var i = 0; i < allmyproject.length; i++) { %> <option value="<%= allmyprojectID[i] %>"><%= allmyproject[i] %></option> <% } %> </select> </div> </td> <td>' +
+                '<td> <div class="form-group"> <select id="inputAllocable" class="form-control" name="project"> <% for (var i = 0; i < allmyproject.length; i++) { %> <option value="<%= allmyproject[i] %> (<%= allmyprojectID[i] %>)"><%= allmyproject[i] %></option> <% } %> </select> </div> </td> <td>' +
                 '<input type="text" class="form-control" id="inputPerc" name="percentage" required> </div> </td> <td><button type="button" class="mb-2 btn btn-danger mr-1" id="delete_project"><i class="material-icons">delete</i></button> </td> </tr>');
         });
 

@@ -34,19 +34,18 @@
                 <!-- <%  if (user.level == 0 || user.level == 1) { %>
                                 <th scope="col" class="border-0">Name</th>
                                 <%} %>-->
-                <th scope="col" class="border-0">Employee ID</th>
+                <th scope="col" class="border-0">Employee Name</th>
                 <th scope="col" class="border-0">Date</th>
-                <th scope="col" class="border-0">Project</th>
+                <th scope="col" class="border-0">Project Name (Project ID)</th>
                 <th scope="col" class="border-0">Allocation</th>
-                <th scope="col" class="border-0">Percentage</th>
-                <th scope="col" class="border-0">Status</th>
+                <th scope="col" class="border-0">Percentage (%)</th>
                 <th scope="col" class="border-1"> </th>
               </tr>
             </thead>
             <tbody>
               <% for (var i = 0; i < allTimesheets.length; i++) { %>
               <tr>
-                <td><%= allTimesheets[i].employeeID %></td>
+                <td><%= allTimesheets[i].firstName %> <%= allTimesheets[i].lastName %></td>
                 <td><%= allTimesheets[i].date %></td>
                 <% var project = allTimesheets[i].project;
                 var projectArray = project.split(","); 
@@ -76,7 +75,7 @@
 </td>
 
 
-                <td><%= allTimesheets[i].status %></td>
+       
           
                 <td> <button type="submit" name="timesheetID" class="btn btn-success approve-btn" value="<%= allTimesheets[i].timesheetID %>">Approve</button></td>
       

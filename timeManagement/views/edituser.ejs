@@ -1,34 +1,10 @@
-<!-- <!DOCTYPE html>
-<html>
-  <head>
-    <title>hii</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1>Create user</h1>
-    <form method="post">       
-            <input type="text" name="username" placeholder="Email">
-            <input type="text" name="password" placeholder="password">
-            <input type="text" name="employeeID" placeholder="employeeID">
-            <input type="text" name="firstName" placeholder="firstName">
-            <input type="text" name="lastName" placeholder="lastName">
-            <input type="text" name="department" placeholder="department">
-            <input type="text" name="jobTitle" placeholder="jobTitle">
-            <input type="text" name="level" placeholder="level">          
-            <input type="text" name="duration" placeholder="duration">
-        <input type="submit" value="submit" class="btn btn-success">
-    </form>
-  </body>
-</html>
--->
-
 <%- include header.ejs %>
 
 <div class="main-content-container container-fluid px-4">
     <!-- Page Header -->
     <div class="page-header row no-gutters py-4">
         <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
-            <h3 class="page-title">Add User</h3>
+            <h3 class="page-title">Edit User</h3>
         </div>
     </div>
     <!-- End Page Header -->
@@ -37,7 +13,7 @@
         <div class="col-lg-8">
             <div class="card card-small mb-4">
                 <div class="card-header border-bottom">
-                    <h6 class="m-0">Enter New User Details</h6>
+                    <h6 class="m-0">Edit User Details</h6>
                 </div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item p-3">
@@ -47,34 +23,34 @@
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="feFirstName">Email</label>
-                                            <input type="text" name="username" placeholder="Email" class="form-control"
-                                                required> </div>
+                                            <input type="text" name="username" value="<%= editUser.username %>" class="form-control"
+                                                readonly> </div>
                                         <div class="form-group col-md-6">
                                             <label for="feEmailAddress">Employee ID</label>
-                                            <input type="text" name="employeeID" placeholder="Employee ID"
-                                                class="form-control" required>
+                                            <input type="text" name="employeeID" value="<%= editUser.employeeID %>"
+                                                class="form-control" readonly>
 
                                         </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="feLastName">Last Name</label>
-                                            <input type="text" name="lastName" placeholder="LastName"
+                                            <input type="text" name="lastName" value="<%= editUser.lastName %>"
                                                 class="form-control" required></div>
                                         <div class="form-group col-md-6">
                                             <label for="fePhone">First Name</label>
-                                            <input type="text" name="firstName" placeholder="First Name"
+                                            <input type="text" name="firstName" value="<%= editUser.firstName %>"
                                                 class="form-control" required> </div>
 
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="feEmpolyeeID">Department</label>
-                                            <input type="text" name="department" placeholder="Department"
+                                            <input type="text" name="department" value="<%= editUser.department %>"
                                                 class="form-control" required></div>
                                          <div class="form-group col-md-6">
                                                 <label for="feEmpolyeeID">Team</label>
-                                                 <input type="text" name="team" placeholder="Team"
+                                                 <input type="text" name="team" value="<%= editUser.team %>"
                                                     class="form-control" required></div>
                                     </div>
                                     <div class="form-row">
@@ -82,16 +58,27 @@
                                             <label for="feEmpolyeeID">Level</label>
                                             <div class="form-group">
                                                     <select class="form-control" name="level">
-                                                        <option value="3" selected>Team Member</option>
-                                                        <option value="2">Team Lead/Top Managment</option>
-                                                        <option value="0">Admin</option>
+                                                        <% if (editUser.level == 3) { %>
+                                                            <option value="3" selected>Team Member</option>
+                                                            <option value="2">Team Lead/Top Managment</option>
+                                                            <option value="0">Admin</option>
+                                                        <%} else if (editUser.level == 2) {%>
+                                                            <option value="3">Team Member</option>
+                                                            <option value="2" selected>Team Lead/Top Managment</option>
+                                                            <option value="0">Admin</option>
+                                                        <%} else {%>
+                                                            <option value="3">Team Member</option>
+                                                            <option value="2">Team Lead/Top Managment</option>
+                                                            <option value="0" selected>Admin</option>
+                                                        <% }%>
+                                                       
                                                     </select>
                                                 </div>
                                             <!--<input type="text" name="level" placeholder="Level" class="form-control"
                                                 required>--> </div>
                                                 <div class="form-group col-md-6">
                                                     <label for="feJobTitle">Job Title</label>
-                                                    <input type="text" name="jobTitle" placeholder="Job Title"
+                                                    <input type="text" name="jobTitle" value="<%= editUser.jobTitle %>"
                                                         class="form-control" required> </div>
 
                                      
@@ -99,17 +86,17 @@
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="feLegalWorkingStatus">Legal Working Status</label>
-                                            <input type="text" name="workingStatus" placeholder="Working Status"
+                                            <input type="text" name="workingStatus" value="<%= editUser.workingStatus %>"
                                                 class="form-control" required> </div>
                                         <div class="form-group col-md-6">
                                             <label for="feStartDate">Start Date</label>
-                                            <input type="text" name="startDate" placeholder="Start Date"
+                                            <input type="text" name="startDate" value="<%= editUser.startDate %>"
                                                 class="form-control" required> </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="feFulltimePartTime">Full Time Or Part-Time/Contractor</label>
-                                            <input type="text" name="fullTimePartTime" placeholder="Status"
+                                            <input type="text" name="fullTimePartTime" value="<%= editUser.fullTimePartTime %>"
                                                 class="form-control" required> </div>
                                     </div>
                                     <input type="submit" value="Add User" class="btn btn-success">

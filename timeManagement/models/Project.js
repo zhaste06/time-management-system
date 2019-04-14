@@ -5,6 +5,7 @@ var Schema = mongoose.Schema;
 var projectSchema = new Schema({
   projectID: { type: String, required: true },
   employeeID: { type: String, required: true },
+
   status: { type: String, required: true },
   projectName: { type: String, required: true },
   teamLead : { type: String, required: true },
