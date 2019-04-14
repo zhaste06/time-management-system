@@ -34,7 +34,7 @@ passport.use(new LocalStrategy(function (username, password, done) {
     // Null as the error, false is no user, and message
     if (!user) return done(null, false, { message: 'Incorrect username.' });
     // Match password
-    user.comparePassword(user.password, function (err, isMatch) {
+    bcrypt.compare(password, user.password, (err, isMatch) => {
       if (isMatch) {
         return done(null, user);
       } else {
