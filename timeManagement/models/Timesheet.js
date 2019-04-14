@@ -34,7 +34,10 @@ var timesheetSchema = new Schema({
   teamLead: { 
     type: String, 
     required: true 
-  }
+  },
+  firstName: { type: String, required: true },
+  
+  lastName: { type: String, required: true }
 });
 
 // Create a model, call 'timesheet' and connect it to timesheetSchema. Export to router and use it in other files

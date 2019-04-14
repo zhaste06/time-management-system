@@ -141,6 +141,9 @@ app.use(function (req, res, next) {
   next();
 });
 
+
+
+
 // ROUTES
 // Index Route. Get request, the home URL.
 app.get('/', (req, res) => {
@@ -219,8 +222,10 @@ app.get('/approval/:employeeID', function(req, res){
     }
 
    
+
+
    
-    Timesheet.find({teamLead: req.params.employeeID, status: "Pending"}, function(err,  allTimesheets){
+    Timesheet.find({teamLead: req.params.employeeID, status: "Pending", employeeID: { $not:{ $eq: req.params.employeeID} }}, function(err,  allTimesheets){
       if(allTimesheets != null) {
        
   
@@ -261,8 +266,52 @@ app.post('/approval/:employeeID', function(req, res){
 // *******************************************************************
 
 
+// *******************************************************************
+
+// ASSIGN PROJECTS TO TEAM MEMBERS
+app.get('/closedproject/:employeeID', function(req, res){
+
+
+ 
+  User.findOne({ employeeID: req.params.employeeID}, function(err, user) {
+    if (!user) {
+      
+      return res.redirect('/error');
+    } else if(user.level != 2) {
+      return res.redirect('/error');
+    }
+
+
+        
+        Project.find({status: "Closed"}, function(err, projects) {
+
+       
+          res.render('closedproject', {
+            user: req.user,
+            projects
+        });
+       
+          
+        });
+
+    
+
+  });
+
+});
+
+app.post('/closedproject/:employeeID', function(req, res){
+  
+
+});
 
 // *******************************************************************
+
+
+
+
+// *******************************************************************
+
 // ASSIGN PROJECTS TO TEAM MEMBERS
 app.get('/project/:employeeID', function(req, res){
 
@@ -280,7 +329,10 @@ app.get('/project/:employeeID', function(req, res){
    
     User.find({department: user.department, level: "3"}, function(err, allUser){
       if(allUser != null) {
-        Project.find({}, function(err, projects) {
+        
+        Project.find({status: 'Open'}, function(err, projects) {
+
+       
           res.render('project', {
             user: req.user,
             allUser,
@@ -289,6 +341,35 @@ app.get('/project/:employeeID', function(req, res){
        
           
         });
+
+      
+/*
+       Project.aggregate([
+        { $lookup:
+          {
+            from: 'users',
+            localField: 'employeeID',
+            foreignField: 'employeeID',
+            as: 'orderdetails'
+          }
+        }
+       ], function(err, projects) {
+
+       console.log(JSON.stringify(projects) + "WHATTT");
+        res.render('project', {
+          user: req.user,
+          allUser,
+          projects
+      });
+     
+        
+      });
+
+      */
+
+
+
+
       }
     });
     
@@ -413,6 +494,31 @@ app.get('/employee/:employeeID', function (req, res) {
 });
 
 // *******************************************************************
+
+// *******************************************************************
+app.get('/team/:employeeID', function (req, res) {
+  User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
+    if (!user) {
+
+      return res.redirect('/error');
+    } else if (user.level == 3) {
+      return res.redirect('/error');
+    }
+
+    User.find({}, function (err, allUser) {
+      if (allUser != null) {
+        res.render('team', {
+          user: req.user,
+          allUser
+        });
+      }
+    });
+  });
+});
+
+// *******************************************************************
+
+
 app.get('/profile/:employeeID', function (req, res) {
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
@@ -440,6 +546,107 @@ app.post('/profile/:employeeID', function (req, res) {
     });
   });
 });
+
+
+
+// *******************************************************************
+// DELETE THE USER
+app.get('/deleteuser/:employeeID', function (req, res) {
+  
+  User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
+    if (!user) {
+      return res.redirect('/error');
+    } else if (user.level != 0) {
+      return res.redirect('/error');
+    }
+    
+    User.deleteOne({ employeeID:req.query.userID }, function (err, editUser) {
+      if (!user) {
+        return res.redirect('/error');
+      } else if (user.level != 0) {
+        return res.redirect('/error');
+      }
+      req.flash('success_msg', 'User: '+ user.firstName + ' ' +user.lastName +  ' has been deleted');
+      return res.redirect('/employee/' + req.params.employeeID);
+
+    });
+
+    
+
+  });
+
+
+ 
+});
+
+
+// *******************************************************************
+
+
+
+// *******************************************************************
+// EDIT THE USER
+app.get('/edituser/:employeeID', function (req, res) {
+  
+  User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
+    if (!user) {
+      return res.redirect('/error');
+    } else if (user.level != 0) {
+      return res.redirect('/error');
+    }
+    
+    User.findOne({ employeeID:req.query.userID }, function (err, editUser) {
+      if (!user) {
+        return res.redirect('/error');
+      } else if (user.level != 0) {
+        return res.redirect('/error');
+      }
+      res.render('edituser', {
+        user: req.user,
+        editUser
+      });
+
+    });
+
+    
+
+  });
+
+
+ 
+});
+
+app.post('/edituser/:employeeID', function (req, res, next) {
+
+  User.findOne({ employeeID: req.query.userID }, function (err, user) {
+    if (!user) {
+      return res.redirect('/error');
+    } 
+    user.username = req.body.username,
+    user.employeeID = req.body.employeeID,
+    user.firstName = req.body.firstName,
+    user.lastName = req.body.lastName,
+    user.department = req.body.department,
+    user.jobTitle = req.body.jobTitle,
+    user.level = req.body.level,
+    user.workingStatus = req.body.workingStatus,
+    user.startDate = req.body.startDate,
+    user.team = req.body.team,
+    user.fullTimePartTime = req.body.fullTimePartTime
+
+    user.save(function (err) {
+      req.flash('success_msg', 'User: '+ user.firstName + ' ' +user.lastName +  'has been updated');
+      return res.redirect('/employee/' + req.params.employeeID);
+    });
+  });
+
+
+
+});
+
+
+
+
 
 // *******************************************************************
 // ADD NEW USER
@@ -536,17 +743,30 @@ app.get('/timesheet/:employeeID', function (req, res) {
               var myProject = allOpenedProject[i].employeeID;
              //
               var projectArray = myProject.split(","); 
-             for (j =0; j < projectArray.length; j++){
-              
 
-               if(projectArray[j] == user.employeeID) {
+
+
+             for (j =0; j < projectArray.length; j++){
+              var projectArraywithID = projectArray[j].split(":"); 
+
+              for (k =0; k < projectArraywithID.length; k+=3){
+                console.log( projectArraywithID[k]);
+                if( projectArraywithID[k] == user.employeeID) {
                 
-                 allmyproject.push(allOpenedProject[i].projectName);
-                
-                 allmyprojectID.push(allOpenedProject[i].projectID);
-                 teamLead = allOpenedProject[i].teamLead;
-               }
+                  allmyproject.push(allOpenedProject[i].projectName);
+                 
+                  allmyprojectID.push(allOpenedProject[i].projectID);
+                  teamLead = allOpenedProject[i].teamLead;
+                }
+              }
+
+
+               
              }
+
+
+
+
 
           }
 
@@ -596,8 +816,11 @@ app.post('/timesheet/:employeeID', function (req, res, next) {
     percentage: req.body.percentage,
     project: req.body.project,
     allocation: req.body.allocation,
+    
     status: "Pending",
-    teamLead: req.body.teamLead
+    teamLead: req.body.teamLead,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName
   });
 
   
@@ -614,11 +837,13 @@ app.post('/timesheet/:employeeID', function (req, res, next) {
 // *******************************************************************
 // TIMESHEET SUMARY
 app.get('/timesheetsummary/:employeeID', function (req, res) {
+  /*
   Timesheet.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
       // req.flash('error_msg', 'No Timesheet found');
       return res.redirect('/dashboard/' + req.params.employeeID);
     }
+    */
     Timesheet.find({}, function (err, allUser) {
       if (allUser != null) {
         User.find({employeeID: req.params.employeeID}, function (err, userInfo) {
@@ -626,6 +851,7 @@ app.get('/timesheetsummary/:employeeID', function (req, res) {
             filter_row = allUser.filter( x => x.employeeID == req.params.employeeID);
           }else{
             filter_row = allUser;
+            
           }
           
           res.render('timesheetsummary', {
@@ -637,7 +863,7 @@ app.get('/timesheetsummary/:employeeID', function (req, res) {
         });
       }
     });
-  });
+ 
 });
 
 /*
@@ -687,39 +913,66 @@ app.get('/dashboard/:employeeID', function (req, res) {
       return res.redirect('/error');
     }
 
-    var allmyproject = [];
-    var allmyprojectID = [];
+    if(user.level == 0) {
 
-    Project.find({team: user.team, status: 'Open'}, function (err, allOpenedProject) {
-      if (allOpenedProject != null) {
+      User.find({}, function (err, allUser) {
+        res.render('dashboard', {
+          user: req.user,
+          allUser
+        });
+      });
 
-            console.log(allOpenedProject);
-            for (i = 0; i < allOpenedProject.length; i++) {
-                var myProject = allOpenedProject[i].employeeID;
-               //
-                var projectArray = myProject.split(","); 
-               for (j =0; j < projectArray.length; j++){
-                
-
-                 if(projectArray[j] == user.employeeID) {
+    } else {
+      var allmyproject = [];
+      var allmyprojectID = [];
+  
+      Project.find({team: user.team, status: 'Open'}, function (err, allOpenedProject) {
+        if (allOpenedProject != null) {
+  
+             
+              for (i = 0; i < allOpenedProject.length; i++) {
+                  var myProject = allOpenedProject[i].employeeID;
+                 //
+                  var projectArray = myProject.split(","); 
+                 for (j =0; j < projectArray.length; j++){
+  
                   
-                   allmyproject.push(allOpenedProject[i].projectName);
-                   allmyprojectID.push(allOpenedProject[i].projectID);
-                   console.log(allmyproject[0]);
+                  
+  
+                  var projectArraywithID = projectArray[j].split(":"); 
+  
+                  for (k =0; k < projectArraywithID.length; k+=3){
+                    console.log( projectArraywithID[k]);
+                    if( projectArraywithID[k] == user.employeeID) {
+                    
+                      allmyproject.push(allOpenedProject[i].projectName);
+                     
+                      allmyprojectID.push(allOpenedProject[i].projectID);
+                      teamLead = allOpenedProject[i].teamLead;
+                    }
+                  }
+  
                  }
-               }
+  
+              }
+  
+              User.find({}, function (err, allUser) {
+                res.render('dashboard', {
+                  user: req.user,
+                  allUser,
+                  allmyproject,
+                  allmyprojectID
+                });
+              });
+  
+             
+      
+  
+        }
+      });
+    }
 
-            }
-
-            res.render('dashboard', {
-              user: req.user,
-              allmyproject,
-              allmyprojectID
-            });
-    
-
-      }
-    });
+ 
 
    
 
