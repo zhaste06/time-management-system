@@ -57,7 +57,8 @@ passport.deserializeUser(function (id, done) {
 // Connect to mongoose. Pass the database (local, MLAB, etc)
 // mongoose.connect('mongodb://localhost:27017/db');
 mongoose.connect('mongodb://localhost/ObenDB', {
-  useMongoClient: true  // if not, error msg
+  //useMongoClient: true  // if not, error msg
+  useNewUrlParser: true
 })
   .then(() => console.log('\n\nMongoDB Connected!!!...'))  // catch
   .catch(err => console.log(err));  // if can't connect, display error
@@ -74,10 +75,10 @@ app.use(logger('dev'));
 // Body parser middleware -> 3rd party module
 // So we can access whatever is submitted and get the form values
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
-app.use(session({ secret: 'session secret key' }));
+app.use(session({ secret: 'session secret key', resave: true, saveUninitialized: true }));
 
 // Passport middleware
 app.use(passport.initialize());
