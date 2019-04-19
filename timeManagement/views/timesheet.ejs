@@ -93,7 +93,6 @@
                                                             name="allocation">
                                                             <option selected>Allocable</option>
                                                             <option>Non-Allocable</option>
-                                                            <option>Personal</option>
                                                         </select>
                                                     </div>
                                                 </td>
@@ -114,7 +113,7 @@
                                                 <td>
                                                     <div class="form-group">
                                                         <input type="text" class="form-control" id="inputPerc"
-                                                            name="percentage" required> </div>
+                                                            name="percentage" value=0 required> </div>
                                                     <div class="form-group">
 
                                                 </td>
@@ -183,6 +182,20 @@
             var non_allocable_percentage = parseInt($('#non_allocable_percentage').val());
             var allocable_percentage = parseInt($('#allocable_percentage').val());
             var personal_time_percentage = parseInt($('#personal_time_percentage').val());
+            var non_allocable_total;
+            var allocable_total;
+
+            if(non_allocable_percentage == parseInt(0)){
+                non_allocable_total = 0;
+            } else {
+                non_allocable_total = 100;
+            }
+            if(allocable_percentage == parseInt(0)){
+                allocable_total = 0;
+            } else {
+                allocable_total = 100;
+            }
+            
             if (total != (non_allocable_percentage + allocable_percentage + personal_time_percentage)) {
                 alert('Allocable Percentage, Non-Allocable Percentage, and Personal Time Percentage must add up to 100%')
                 e.preventDefault();
@@ -192,36 +205,33 @@
                         if ($(this).val() == 'Allocable') {
                             var a = $(this).parent('select').parent('div').parent('td').parent('tr').find('#inputPerc').val();
 
-                            allocable_percentage = allocable_percentage - a;
+                            allocable_total = allocable_total - a;
                         } else if ($(this).val() == 'Non-Allocable') {
                             var na = $(this).parent('select').parent('div').parent('td').parent('tr').find('#inputPerc').val();
 
-                            non_allocable_percentage = non_allocable_percentage - na;
+                            non_allocable_total = non_allocable_total - na;
 
-                        } else if ($(this).val() == 'Personal'){
-                            var p = $(this).parent('select').parent('div').parent('td').parent('tr').find('#inputPerc').val();
-
-                            personal_time_percentage = personal_time_percentage - p;
                         }
                     }
                 });
                 var zero = parseInt(0);
-                if (non_allocable_percentage != zero) {
-                    alert('Your Non-Allocable Percentage does not add up to ' + parseInt($('#non_allocable_percentage').val()) + '%');
+                if(non_allocable_percentage == zero && non_allocable_total != zero) {
+                    alert('Cannot create a Non-Allocable Project. Your Non-Allocable Percentage is 0%');
+                    e.preventDefault();
+                } else if (non_allocable_total != zero) {
+                    alert('Your Non-Allocable Percentage does not add up to 100%');
                     e.preventDefault();
                 }
-                if (allocable_percentage != zero) {
-                    alert('Your Allocable Percentage does not add up to ' + parseInt($('#allocable_percentage').val()) + '%');
+                
+                if(allocable_percentage == zero && allocable_total != zero) {
+                    alert('Cannot create an Allocable Project. Your Allocable Percentage is 0%');
+                    e.preventDefault();
+                } else if (allocable_total != zero) {
+                    alert('Your Allocable Percentage does not add up to 100%');
                     e.preventDefault();
                 }
-                if (personal_time_percentage != zero) {
-                    alert('Your Personal Time Percentage does not add up to ' + parseInt($('#allocable_percentage').val()) + '%');
-                    e.preventDefault();
-                }
-
             }
         });
-
     });
 
 </script>
