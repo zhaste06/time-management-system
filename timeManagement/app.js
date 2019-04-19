@@ -5,8 +5,11 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 // To catch whatever is typed in the form
 var bodyParser = require('body-parser');
-var session = require('express-session')
+var session = require('express-session');
 var mongoose = require('mongoose');
+var multer = require('multer');
+var GridFsStorage = require('multer-gridfs-storage');
+var Grid = require('gridfs-stream');
 var nodemailer = require('nodemailer');
 var MongoStore = require('connect-mongo')(session);
 var passport = require('passport');
@@ -34,7 +37,7 @@ passport.use(new LocalStrategy(function (username, password, done) {
     // Null as the error, false is no user, and message
     if (!user) return done(null, false, { message: 'Incorrect username.' });
     // Match password
-    user.comparePassword(password, function(err, isMatch) {
+    user.comparePassword(password, function (err, isMatch) {
       if (isMatch) {
         return done(null, user);
       } else {
@@ -75,7 +78,7 @@ app.use(logger('dev'));
 // Body parser middleware -> 3rd party module
 // So we can access whatever is submitted and get the form values
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use(session({ secret: 'session secret key', resave: true, saveUninitialized: true }));
@@ -118,7 +121,35 @@ app.use(function (req, res, next) {
   next();
 });
 
+// Store files on Mongodb
+// Init gfs
+const conn = mongoose.createConnection('mongodb://localhost/ObenDB');
+let gfs;
+conn.once('open', () => {
+  gfs = Grid(conn.db, mongoose.mongo);
+  gfs.collection('uploads');
+})
 
+var filename = '';
+const storage = new GridFsStorage({
+  url: 'mongodb://localhost/ObenDB',
+  file: (req, file) => {
+    return new Promise((resolve, reject) => {
+      crypto.randomBytes(16, (err, buf) => {
+        if (err) {
+          return reject(err);
+        }
+        filename = buf.toString('hex') + path.extname(file.originalname);
+        const fileInfo = {
+          filename: filename,
+          bucketName: 'uploads'
+        };
+        resolve(fileInfo);
+      });
+    });
+  }
+});
+const upload = multer({ storage });
 
 
 // ROUTES
@@ -505,7 +536,7 @@ app.get('/profile/:employeeID', function (req, res) {
       return res.redirect('/error');
     } else if (user.employeeID != req.user.employeeID) {
       return res.redirect('/error');
-    }
+    } 
     res.render('profile', {
       user: req.user
     });
@@ -1141,5 +1172,57 @@ app.post('/validate/:token', function (req, res) {
   ]);
 });
 // *******************************************************************
+
+//****** Profile Picture Upload ****************************************** */
+// @route POST /upload
+// @desc Uploads file to DB
+app.post('/upload/:employeeID', upload.single('file'), (req, res) => {
+  //res.json({ file: req.file });
+  User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
+    if (!user) {
+      return res.redirect('/error')
+    }
+    user.picture = filename;
+    user.save(function(err){
+      res.redirect('/profile/' + user.employeeID);
+    });
+  });
+});
+
+// @route GET /files/:filename
+// @desc Display file in json
+app.get('/files/:filename', (req, res) => {
+  gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
+    // Check if file
+    if (!file || file.length === 0) {
+      return res.status(404).json({
+        err: 'No file exists'
+      });
+    }
+    return res.json(file);
+  });
+});
+
+// @route GET /image/:filename
+// @desc Display files in json
+app.get('/image/:filename', (req, res) => {
+  gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
+    // Check if file
+    if (!file || file.length === 0) {
+      return res.status(404).json({
+        err: 'No file exists'
+      });
+    }
+    // Check if image
+    if (file.contentType === 'image/jpeg' || file.contentType === 'img/png') {
+      const readstream = gfs.createReadStream(file.filename);
+      readstream.pipe(res);
+    } else {
+      res.status(404).json({
+        err: 'Not an image'
+      });
+    }
+  });
+});
 
 module.exports = app;
