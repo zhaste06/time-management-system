@@ -42,13 +42,16 @@
                   <th scope="col" class="border-0">Employee ID</th>
                   <th scope="col" class="border-0">Name</th>     
                <%}%>
-                    
-                    
-               
+                  
                 <th scope="col" class="border-0">Date</th>
                 <th scope="col" class="border-0">Project Name (Project ID)</th>
                 <th scope="col" class="border-0">Allocation</th>
+                <% if (user.fullTimePartTime == 'Full Time') { %>
                 <th scope="col" class="border-0">Percentage</th>
+                <% } %>
+                <% if (user.fullTimePartTime != 'Full Time') { %>
+                  <th scope="col" class="border-0">Hours</th>
+                <% } %>
                 <th scope="col" class="border-0">Status</th>
                 <th scope="col" class="border-1">Excel</th>
               </tr>

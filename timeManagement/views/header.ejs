@@ -82,12 +82,22 @@
               <span>Timesheets</span>
               </a>
             </li>
+
+            <% if (user.fullTimePartTime == 'Full Time') { %>
             <li class="nav-item">
               <a class="nav-link " href="/timesheet/<%= user.employeeID %>">
                 <i class="material-icons">note_add</i>
                 <span>Add New Timesheet</span>
               </a>
             </li>
+            <% } else { %>
+              <li class="nav-item">
+                <a class="nav-link " href="/timesheetTemp/<%= user.employeeID %>">
+                  <i class="material-icons">note_add</i>
+                  <span>Add New Timesheet</span>
+                </a>
+              </li>
+            <% } %>
 
             <% if (user.level == 0) { %>
             <li class="nav-item">
