@@ -6,44 +6,60 @@
       <span class="text-uppercase page-subtitle">Overview</span>
       <h3 class="page-title">Timesheet Summary</h3>
     </div>
-
   </div>
   <!-- End Page Header -->
+
   <!-- Default Table -->
   <div class="row">
     <div class="col">
       <div class="card card-small mb-4">
         <div class="card-header border-bottom">
+          <% if (user.level == 0) { %>
           <h6 class="m-0">Total Timesheets: <%= allUser.length %></h6>
+          <%} else {%>
+          <h6 class="m-0">Total Timesheets: <%= filter_row.length %></h6>
+          <%} %>
         </div>
         <div class="card-body p-0 pb-3 text-center">
-
-
-
           <table class="table mb-0" id="myTable">
             <thead class="bg-light">
               <tr>
                 </br><a href="#" id="test" style="font-size: 20px;" onClick="javascript:fnExcelReport();">Export to
                   Excel</a></br>
               </tr>
-
               <tr>
                 <!-- <%  if (user.level == 0 || user.level == 1) { %>
                                 <th scope="col" class="border-0">Name</th>
                                 <%} %>-->
+                <% if (user.level == 0) { %>
                 <th scope="col" class="border-0">Employee ID</th>
+                <th scope="col" class="border-0">Name</th>
+                <%}%>                  
                 <th scope="col" class="border-0">Date</th>
-                <th scope="col" class="border-0">Project</th>
+
+                <th scope="col" class="border-0">Project Name (Project ID)</th>
                 <th scope="col" class="border-0">Allocation</th>
+                <% if (user.fullTimePartTime == 'Full Time') { %>
                 <th scope="col" class="border-0">Percentage</th>
+                <% } %>
+                <% if (user.fullTimePartTime != 'Full Time') { %>
+                <th scope="col" class="border-0">Hours</th>
+                <% } %>
+                <th scope="col" class="border-0">Status</th>
                 <th scope="col" class="border-1">Excel</th>
               </tr>
             </thead>
             <tbody>
               <% for (var i = 0; i < filter_row.length; i++) { %>
               <tr>
+                <% if (user.level == 0) { %>
                 <td><%= filter_row[i].employeeID %></td>
+                <td><%= filter_row[i].firstName %> <%= filter_row[i].lastName %></td>
+                <%}%>
+                
                 <td><%= filter_row[i].date %></td>
+
+
                 <% var project = filter_row[i].project;
                         var projectArray = project.split(","); 
                         %>
@@ -71,17 +87,17 @@
                   <% }  %>
                 </td>
 
-                <td><%= allUser[i].username %></td>
-
+                <!-- <td><%= allUser[i].username %></td>-->
+                <td><%= filter_row[i].status %></td>
                 <td>
-                  <a href="#" id="test" onClick="javascript:fnExcelReport();">Excel</a>
+                  <a href="#" id="test"
+                    onClick="fnExcelReportTimeSheet('<%= JSON.stringify(filter_row[i]) %>');">Excel</a>
                 </td>
               </tr>
               <% } %>
             </tbody>
             </br></br>
           </table>
-
         </div>
       </div>
     </div>
@@ -111,29 +127,57 @@
 <script src="scripts/app/app-blog-overview.1.1.0.js"></script>
 <script src="../scripts/excelexportjs.js"></script>
 
-
-
 <script>
-  function fnExcelReport() {
-    
-    var data = JSON.parse($('#variableJSON').text());  
-    console.log('fer', data);
-    
+  function fnExcelReportTimeSheet(data) {
+    info = JSON.parse(data);
+    projects = info.project.split(',');
+    percentage = info.percentage.split(',');
+    allocation = info.allocation.split(',');
+
+    console.log('odlir', info);
+
+    arr = [];
+
+
+    //projects.forEach((p, index) => {
+    //  row = { '': '', 'FName': info.firstName, 'LName': info.lastName, 'Date': info.date, 'Project': p.split('(')[0], 'Percentage': percentage[index], 'Allocation': allocation[index] };
+    //  arr.push(row);
+    //});
+    // arr.push({ '': '', 'FName': '', 'LName': '', 'Date': '', 'Project': '', 'Percentage': '', 'Allocation': '' });
+    //arr.push({ '': '', 'FName': info.firstName, 'LName': info.lastName, 'Date': '', 'Project': '', 'Percentage': '', 'Allocation': '' });
+
+
+    projects.forEach((p, index) => {
+      row = { 'First Name': '', 'Last Name': '', '': '', 'Date': '', '': '', 'Project': p.split('(')[0], 'Percentage': percentage[index], 'Allocation': allocation[index] };
+      arr.push(row);
+    });
+    arr.push({ 'Name': '', 'Last Name': '', '': '', 'Date': '', '': '', 'Project': '', 'Percentage': '', 'Allocation': '' });
+    arr.push({ 'Name': info.firstName, 'Last Name': info.lastName, '': '', 'Date': info.date, '': '', 'Project': '', 'Percentage': '', 'Allocation': '' });
+
+
+
+
+
     $("#dvjson").excelexportjs({
-      containerid: "dvjson", 
-      datatype: 'json', 
-      dataset: data, 
-      columns: getColumns(data)     
+      containerid: "dvjson",
+      datatype: 'json',
+      dataset: arr,
+      columns: getColumns(arr)
+    });
+  }
+
+  function fnExcelReport() {
+    var data = JSON.parse($('#variableJSON').text());
+    console.log('fer', data);
+
+    $("#dvjson").excelexportjs({
+      containerid: "dvjson",
+      datatype: 'json',
+      dataset: data,
+      columns: getColumns(data)
     });
   }
 </script>
-
-
-
-
-
-
-
 </body>
 
 </html>

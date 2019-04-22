@@ -3,6 +3,10 @@ var Schema = mongoose.Schema;
 
 // Create Schema
 var timesheetSchema = new Schema({
+  timesheetID: {
+    type: String,
+    required: true
+  },
   employeeID: {
     type: String,
     required: true
@@ -22,7 +26,18 @@ var timesheetSchema = new Schema({
   allocation: { 
     type: String, 
     required: true 
-  }
+  },
+  status: { 
+    type: String, 
+    required: true 
+  },
+  teamLead: { 
+    type: String, 
+    required: true 
+  },
+  firstName: { type: String, required: true },
+  
+  lastName: { type: String, required: true }
 });
 
 // Create a model, call 'timesheet' and connect it to timesheetSchema. Export to router and use it in other files

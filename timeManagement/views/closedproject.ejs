@@ -1,0 +1,164 @@
+<%- include header.ejs %>
+<div class="container">
+    <%- include msg.ejs %>
+</div>
+        <div class="main-content-container container-fluid px-4">
+          <!-- Page Header -->
+          <div class="page-header row no-gutters py-4">
+            <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+              <span class="text-uppercase page-subtitle">Overview</span>
+              <h3 class="page-title">All Projects</h3>
+            </div>
+           
+
+          </div>
+          <!-- End Page Header -->
+          <!-- Default Table -->
+          <div class="row">
+            <div class="col">
+              <div class="card card-small mb-4">
+                <div class="card-header border-bottom">
+                  <h6 class="m-0">Closed Project(s)</h6>
+                </div>
+                <div class="card-body p-0 pb-3 text-center">
+                  <table class="table mb-0">
+                    <thead class="bg-light">
+                      <tr>
+                        <th scope="col" class="border-0">Name</th>
+             
+                        <th scope="col" class="border-0">Team Members</th>
+                        <th scope="col" class="border-0">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                       
+                                <% for (var i = 0; i < projects.length; i++) { %>
+                                
+                   
+                                    <tr>
+                                    <td><%= projects[i].projectName %></td>
+                               
+
+
+                                    <% 
+                                    
+                                    var projectArray = projects[i].employeeID.split(","); 
+                                    console.log(projectArray);%>
+                                    <td>
+                                      <%for (var j = 0; j < projectArray.length; j++) {
+
+                                      
+                                        var name = projectArray[j].split(":"); 
+                                   
+                                       for (var k = 0; k < name.length; k+=3) { %>
+                                      <%= name[k+1] %>  <%= name[k+2] %><br>
+
+                                     
+                                      <% }  %>
+                                    
+                                    <% }  %>
+                                  </td>
+
+
+                                 
+                                    
+                           
+
+
+
+
+                                    
+                                            <td><button type="button" class="mb-2 btn btn-sm btn-success mr-1">Edit</button>
+                                                <button type="button" class="mb-2 btn btn-sm btn-danger mr-1">Del</button></td>
+                                        
+                                    </tr>
+                                 
+                                  <% } %>
+                        
+                      <tr>
+                            
+
+                        <td>Mobile App</td>
+                       
+                        <td>Liam, Noah, William, James, Logan, Benjamin</td>
+                        <td><button type="button" class="mb-2 btn btn-sm btn-success mr-1" data-toggle="modal"
+                          data-target="#editprojectmodal">Edit</button>
+
+                          <div class="modal fade" id="editprojectmodal">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h6 class="m-0">Edit Project</h6>
+                                </div>
+                                <div class="modal-body">
+                                  <form>
+                                    <div class="form-row">
+                                      <div class="form-group col-sm-8">
+                                        <label>Project Name</label>
+                                        <input type="text" class="form-control" placeholder="Project Name" value="Mobile App">
+                                      </div>
+                                      <div class="form-group col-sm-8">
+                                        <label>Member(s)</label>
+                                        <input type="text" class="form-control" placeholder="Leader" value="Liam">
+                                        <input type="text" class="form-control" placeholder="Member" value="Noah">
+                                        <input type="text" class="form-control" placeholder="Member" value="William">
+                                        <input type="text" class="form-control" placeholder="Member" value="James">
+                                        <input type="text" class="form-control" placeholder="Member" value="Logan">
+                                        <input type="text" class="form-control" placeholder="Member" value="Benjamin">
+                                      </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-success">Add Member</button>
+                                    <button type="submit" class="btn btn-success">Done Edit</button>
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <button type="button" class="mb-2 btn btn-sm btn-danger mr-1">Del</button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Blockchain</td>
+                        <!--<td><i class="material-icons">access_time</i> 3</td>-->
+                        <td>Emma, Olivia, Ava, Isabella, Sophia</td>
+                        <td><button type="button" class="mb-2 btn btn-sm btn-success mr-1">Edit</button>
+                          <button type="button" class="mb-2 btn btn-sm btn-danger mr-1">Del</button></td>
+                        </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        <!-- End Default Table -->
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+    integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+  <script src="https://unpkg.com/shards-ui@latest/dist/js/shards.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sharrre/2.0.1/jquery.sharrre.min.js"></script>
+  <script src="../scripts/extras.1.1.0.min.js"></script>
+  <script src="../scripts/shards-dashboards.1.1.0.min.js"></script>
+  <script src="../scripts/app/app-blog-overview.1.1.0.js"></script>
+  <script>
+        $(document).ready(function(){
+
+
+            
+    });
+
+  </script>
+</body>
+
+</html>
