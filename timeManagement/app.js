@@ -287,52 +287,71 @@ app.get('/project/:employeeID', function (req, res) {
 
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
-
+      console.log('Not a user.');
       return res.redirect('/error');
-    } else if (user.level != 2) {
+      
+    } else if (user.level != 2 && user.level != 0) {
+      console.log('Not authorized.');
       return res.redirect('/error');
     }
+    if (user.level == 2) {
+      User.find({ department: user.department, level: "3" }, function (err, allUser) {
+        if (allUser != null) {
 
-    User.find({ department: user.department, level: "3" }, function (err, allUser) {
-      if (allUser != null) {
-
-        Project.find({ status: 'Open' }, function (err, projects) {
-          res.render('project', {
-            user: req.user,
-            allUser,
-            projects
+          Project.find({ status: 'Open' }, function (err, projects) {
+            res.render('project', {
+              user: req.user,
+              allUser,
+              projects
+            });
           });
-        });
-        /*
-               Project.aggregate([
-                { $lookup:
-                  {
-                    from: 'users',
-                    localField: 'employeeID',
-                    foreignField: 'employeeID',
-                    as: 'orderdetails'
+          /*
+                Project.aggregate([
+                  { $lookup:
+                    {
+                      from: 'users',
+                      localField: 'employeeID',
+                      foreignField: 'employeeID',
+                      as: 'orderdetails'
+                    }
                   }
-                }
-               ], function(err, projects) {
-        
-               console.log(JSON.stringify(projects) + "WHATTT");
-                res.render('project', {
-                  user: req.user,
-                  allUser,
-                  projects
+                ], function(err, projects) {
+          
+                console.log(JSON.stringify(projects) + "WHATTT");
+                  res.render('project', {
+                    user: req.user,
+                    allUser,
+                    projects
+                });
+              
+                  
+                });
+          
+                */
+        }
+      });
+    };
+    if (user.level == 0) {
+      User.find({}, function (err, allUser) {
+        if (allUser != null) {
+          User.find({ level: "2"}, function(err, allLeaders) {
+            Project.find({ status: 'Open' }, function (err, projects) {
+              res.render('project', {
+                user: req.user,
+                allUser,
+                projects, 
+                allLeaders
               });
-             
-                
-              });
-        
-              */
-      }
-    });
+            });
+          });
+        };
+      });
+    };
   });
 });
 
 app.post('/project/:employeeID', function (req, res) {
-
+  
   function makeProjectID(length) {
     var text = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -342,21 +361,47 @@ app.post('/project/:employeeID', function (req, res) {
 
     return text;
   }
+    
 
-  var project = new Project({
+  if(req.user.level == 0) {
+    User.findOne({ employeeID : req.body.team_leaders}, function(err, leader){
+
+      var leadersTeam = leader.team;
+      var leadersID = leader.employeeID;
+      var leadersFirst = leader.firstName;
+      var leadersLast = leader.lastName;
+      var leadersDetails = leadersID + ":" + leadersFirst + ":" + leadersLast + ":";
+
+      var project = new Project({
+        projectID: makeProjectID(10),
+        employeeID: leadersDetails + req.body.team_members,
+        status: req.body.status,
+        projectName: req.body.project_name,
+        teamLead: req.body.team_leaders,
+        team: leadersTeam
+      });
+
+      project.save(function (err) {
+        console.log("it gets here");
+        res.redirect('/project/' + req.params.employeeID);
+      });
+    });
+  }
+  else {
+    var project = new Project({
     projectID: makeProjectID(10),
     employeeID: req.body.team_members,
     status: req.body.status,
     projectName: req.body.project_name,
     teamLead: req.params.employeeID,
     team: req.body.team
+    });
 
-  });
-
-  project.save(function (err) {
-    res.redirect('/project/' + req.params.employeeID);
-  })
-
+    project.save(function (err) {
+      console.log("it gets here");
+      res.redirect('/project/' + req.params.employeeID);
+    });
+  };
 });
 
 // *******************************************************************

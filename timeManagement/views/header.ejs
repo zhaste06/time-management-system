@@ -106,6 +106,12 @@
                 <span>All Users</span>
               </a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link " href='/project/<%= user.employeeID %>'>
+                <i class="material-icons">assignment_ind</i>
+                <span>Projects</span>
+              </a>
+            </li>
             <%} else if (user.level == 1) { %>
             <li class="nav-item">
               <a class="nav-link " href="/user">
@@ -119,7 +125,7 @@
             <li class="nav-item">
               <a class="nav-link " href='/project/<%= user.employeeID %>'>
                 <i class="material-icons">assignment_ind</i>
-                <span>My team</span>
+                <span>Projects</span>
               </a>
             </li>
 
