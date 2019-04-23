@@ -287,47 +287,44 @@ app.get('/project/:employeeID', function (req, res) {
 
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
-      console.log('Not a user.');
       return res.redirect('/error');
-      
     } else if (user.level != 2 && user.level != 0) {
-      console.log('Not authorized.');
       return res.redirect('/error');
     }
     if (user.level == 2) {
-      User.find({ department: user.department, level: "3" }, function (err, allUser) {
-        if (allUser != null) {
+    User.find({ department: user.department, level: "3" }, function (err, allUser) {
+      if (allUser != null) {
 
-          Project.find({ status: 'Open' }, function (err, projects) {
-            res.render('project', {
-              user: req.user,
-              allUser,
-              projects
-            });
+        Project.find({ status: 'Open' }, function (err, projects) {
+          res.render('project', {
+            user: req.user,
+            allUser,
+            projects
           });
-          /*
-                Project.aggregate([
-                  { $lookup:
-                    {
-                      from: 'users',
-                      localField: 'employeeID',
-                      foreignField: 'employeeID',
-                      as: 'orderdetails'
-                    }
+        });
+        /*
+               Project.aggregate([
+                { $lookup:
+                  {
+                    from: 'users',
+                    localField: 'employeeID',
+                    foreignField: 'employeeID',
+                    as: 'orderdetails'
                   }
-                ], function(err, projects) {
-          
-                console.log(JSON.stringify(projects) + "WHATTT");
-                  res.render('project', {
-                    user: req.user,
-                    allUser,
-                    projects
-                });
-              
-                  
-                });
-          
-                */
+                }
+               ], function(err, projects) {
+        
+               console.log(JSON.stringify(projects) + "WHATTT");
+                res.render('project', {
+                  user: req.user,
+                  allUser,
+                  projects
+              });
+             
+                
+              });
+        
+              */
         }
       });
     };
@@ -351,7 +348,7 @@ app.get('/project/:employeeID', function (req, res) {
 });
 
 app.post('/project/:employeeID', function (req, res) {
-  
+
   function makeProjectID(length) {
     var text = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -361,7 +358,6 @@ app.post('/project/:employeeID', function (req, res) {
 
     return text;
   }
-    
 
   if(req.user.level == 0) {
     User.findOne({ employeeID : req.body.team_leaders}, function(err, leader){
@@ -388,20 +384,19 @@ app.post('/project/:employeeID', function (req, res) {
     });
   }
   else {
-    var project = new Project({
+  var project = new Project({
     projectID: makeProjectID(10),
     employeeID: req.body.team_members,
     status: req.body.status,
     projectName: req.body.project_name,
     teamLead: req.params.employeeID,
     team: req.body.team
-    });
+  });
 
-    project.save(function (err) {
-      console.log("it gets here");
-      res.redirect('/project/' + req.params.employeeID);
-    });
-  };
+  project.save(function (err) {
+    res.redirect('/project/' + req.params.employeeID);
+  });
+};
 });
 
 // *******************************************************************
@@ -843,6 +838,18 @@ app.post('/timesheet/:employeeID', function (req, res, next) {
     timesheetID: makeProjectID(11),
     employeeID: req.body.employeeID,
     date: req.body.date,
+
+
+
+
+    allocable_percentage: req.body.allocable_percentage,
+    non_allocable_percentage: req.body.non_allocable_percentage,
+    personal_time_percentage: req.body.personal_time_percentage,
+
+
+
+
+    
     percentage: req.body.percentage,
     project: req.body.project,
     allocation: req.body.allocation,

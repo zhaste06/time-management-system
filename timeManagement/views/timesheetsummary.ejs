@@ -37,6 +37,13 @@
                 <%}%>                  
                 <th scope="col" class="border-0">Date</th>
 
+                <th scope="col" class="border-0">Allocable %</th>
+                <th scope="col" class="border-0">Non-Allocable %</th>
+                <th scope="col" class="border-0">Personal Time %</th>
+
+
+
+
                 <th scope="col" class="border-0">Project Name (Project ID)</th>
                 <th scope="col" class="border-0">Allocation</th>
                 <% if (user.fullTimePartTime == 'Full Time') { %>
@@ -58,6 +65,19 @@
                 <%}%>
                 
                 <td><%= filter_row[i].date %></td>
+
+
+
+
+                <td><%= filter_row[i].allocable_percentage %></td>
+
+                <td><%= filter_row[i].non_allocable_percentage %></td>
+
+                <td><%= filter_row[i].personal_time_percentage %></td>
+
+
+
+
 
 
                 <% var project = filter_row[i].project;
@@ -148,15 +168,13 @@
 
 
     projects.forEach((p, index) => {
-      row = { 'First Name': '', 'Last Name': '', '': '', 'Date': '', '': '', 'Project': p.split('(')[0], 'Percentage': percentage[index], 'Allocation': allocation[index] };
+      row = {   'DATE': '', '': '', 'First Name': '',              'Last Name': '',             '': '', '': '', 'Project': p.split('(')[0], 'Percentage': percentage[index], 'Allocation': allocation[index], '': '','Allocable %': '', 'Non-Allocable %': '', 'Personal Time %': '' };
       arr.push(row);
     });
-    arr.push({ 'Name': '', 'Last Name': '', '': '', 'Date': '', '': '', 'Project': '', 'Percentage': '', 'Allocation': '' });
-    arr.push({ 'Name': info.firstName, 'Last Name': info.lastName, '': '', 'Date': info.date, '': '', 'Project': '', 'Percentage': '', 'Allocation': '' });
 
-
-
-
+    arr.push({  'DATE': '', '': '', 'First Name': '',              'Last Name': '',             '': '', '': '', 'Project': '', 'Percentage': '', 'Allocation': '', '': '', 'Allocable %': '', 'Non-Allocable %': '', 'Personal Time %': '' });
+    arr.push({  'DATE': info.date, '': '', 'First Name': info.firstName,  'Last Name': info.lastName,  '': '', '': '', 'Project': '', 'Percentage': '', 'Allocation': '',  '': '', 'Allocable %': info.allocable_percentage,'Non-Allocable %': info.non_allocable_percentage, 'Personal Time %': info.personal_time_percentage });
+ 
 
     $("#dvjson").excelexportjs({
       containerid: "dvjson",
