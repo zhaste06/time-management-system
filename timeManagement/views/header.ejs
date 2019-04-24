@@ -82,18 +82,34 @@
               <span>Timesheets</span>
               </a>
             </li>
+
+            <% if (user.fullTimePartTime == 'Full Time') { %>
             <li class="nav-item">
               <a class="nav-link " href="/timesheet/<%= user.employeeID %>">
                 <i class="material-icons">note_add</i>
                 <span>Add New Timesheet</span>
               </a>
             </li>
+            <% } else { %>
+              <li class="nav-item">
+                <a class="nav-link " href="/timesheetTemp/<%= user.employeeID %>">
+                  <i class="material-icons">note_add</i>
+                  <span>Add New Timesheet</span>
+                </a>
+              </li>
+            <% } %>
 
             <% if (user.level == 0) { %>
             <li class="nav-item">
               <a class="nav-link " href='/employee/<%= user.employeeID %>'>
                 <i class="material-icons">assignment_ind</i>
                 <span>All Users</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link " href='/project/<%= user.employeeID %>'>
+                <i class="material-icons">assignment_ind</i>
+                <span>Projects</span>
               </a>
             </li>
             <%} else if (user.level == 1) { %>
@@ -109,7 +125,7 @@
             <li class="nav-item">
               <a class="nav-link " href='/project/<%= user.employeeID %>'>
                 <i class="material-icons">assignment_ind</i>
-                <span>My team</span>
+                <span>Projects</span>
               </a>
             </li>
 
@@ -189,7 +205,11 @@
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle text-nowrap px-3" data-toggle="dropdown" href="#" role="button"
                   aria-haspopup="true" aria-expanded="false">
-                  <img class="user-avatar rounded-circle mr-2" src="../images/avatars/0.jpg" alt="User Avatar">
+                  <% if (user.picture) {%>
+                    <img class="user-avatar rounded-circle mr-2" src="../image/<%= user.picture %>" alt="User Avatar">
+                    <% } else { %>
+                      <img class="user-avatar rounded-circle mr-2" src="../images/avatar-icon.png" alt="User Avatar">
+                    <% } %>
                   <span class="d-none d-md-inline-block"><%= user.firstName %> <%= user.lastName %></span>
             </a>
             <div class="dropdown-menu dropdown-menu-small">

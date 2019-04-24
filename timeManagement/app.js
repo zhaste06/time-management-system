@@ -5,8 +5,11 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 // To catch whatever is typed in the form
 var bodyParser = require('body-parser');
-var session = require('express-session')
+var session = require('express-session');
 var mongoose = require('mongoose');
+var multer = require('multer');
+var GridFsStorage = require('multer-gridfs-storage');
+var Grid = require('gridfs-stream');
 var nodemailer = require('nodemailer');
 var MongoStore = require('connect-mongo')(session);
 var passport = require('passport');
@@ -19,15 +22,12 @@ var expressValidator = require('express-validator');
 var flash = require('connect-flash');
 var app = express();
 
-
 // Load Timesheet and User Model into variables
 require('./models/Timesheet');
 var Timesheet = mongoose.model('Timesheet');
-require('./models/User');
-var User = mongoose.model('User');
 require('./models/Project');
 var Project = mongoose.model('Project');
-var request = require('./models/User');
+var User = require('./models/User');
 
 passport.use(new LocalStrategy(function (username, password, done) {
   // Check for the user and match username with name that is passed in
@@ -36,7 +36,7 @@ passport.use(new LocalStrategy(function (username, password, done) {
     // Null as the error, false is no user, and message
     if (!user) return done(null, false, { message: 'Incorrect username.' });
     // Match password
-    bcrypt.compare(password, user.password, (err, isMatch) => {
+    user.comparePassword(password, function (err, isMatch) {
       if (isMatch) {
         return done(null, user);
       } else {
@@ -56,32 +56,11 @@ passport.deserializeUser(function (id, done) {
   });
 });
 
-request.userSchema.pre('save', function (next) {
-  var user = this;
-  var SALT_FACTOR = 5;
-  if (!user.isModified('password')) return next();
-
-  bcrypt.genSalt(SALT_FACTOR, function (err, salt) {
-    if (err) return next(err);
-    bcrypt.hash(user.password, salt, null, function (err, hash) {
-      if (err) return next(err);
-      user.password = hash;
-      next();
-    });
-  });
-});
-
-request.userSchema.methods.comparePassword = function (candidatePassword, cb) {
-  bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
-    if (err) return cb(err);
-    cb(null, isMatch);
-  });
-};
-
 // Connect to mongoose. Pass the database (local, MLAB, etc)
 // mongoose.connect('mongodb://localhost:27017/db');
 mongoose.connect('mongodb://localhost/ObenDB', {
-  useMongoClient: true  // if not, error msg
+  //useMongoClient: true  // if not, error msg
+  useNewUrlParser: true
 })
   .then(() => console.log('\n\nMongoDB Connected!!!...'))  // catch
   .catch(err => console.log(err));  // if can't connect, display error
@@ -98,10 +77,10 @@ app.use(logger('dev'));
 // Body parser middleware -> 3rd party module
 // So we can access whatever is submitted and get the form values
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use(session({ secret: 'session secret key' }));
+app.use(session({ secret: 'session secret key', resave: true, saveUninitialized: true }));
 
 // Passport middleware
 app.use(passport.initialize());
@@ -141,8 +120,34 @@ app.use(function (req, res, next) {
   next();
 });
 
-
-
+// Store files on Mongodb
+// Init gfs
+const conn = mongoose.createConnection('mongodb://localhost/ObenDB');
+let gfs;
+conn.once('open', () => {
+  gfs = Grid(conn.db, mongoose.mongo);
+  gfs.collection('uploads');
+})
+var filename = '';
+const storage = new GridFsStorage({
+  url: 'mongodb://localhost/ObenDB',
+  file: (req, file) => {
+    return new Promise((resolve, reject) => {
+      crypto.randomBytes(16, (err, buf) => {
+        if (err) {
+          return reject(err);
+        }
+        filename = buf.toString('hex') + path.extname(file.originalname);
+        const fileInfo = {
+          filename: filename,
+          bucketName: 'uploads'
+        };
+        resolve(fileInfo);
+      });
+    });
+  }
+});
+const upload = multer({ storage });
 
 // ROUTES
 // Index Route. Get request, the home URL.
@@ -182,14 +187,86 @@ app.get('/logout', function (req, res) {
 });
 
 // *******************************************************************
+
+// EDIT PROJECTS
+app.get('/editproject/:employeeID', function(req, res){
+
+
+ 
+  User.findOne({ employeeID: req.params.employeeID}, function(err, user) {
+    if (!user) {
+      
+      return res.redirect('/error');
+    } else if(user.level != 2 || user.level != 0) {
+      return res.redirect('/error');
+    }
+
+   
+   
+    Project.findOne({projectID: req.query.projectID}, function(err, project){
+      if(project != null) {
+        
+       
+
+        User.find({department: user.department, level: "3"}, function(err, allUser){
+          if(allUser != null) {
+            res.render('editproject', {
+              user: req.user,
+              project,
+              allUser
+          });
+         
+    
+          }
+        });
+    
+        
+
+       
+         
+          
+       
+
+
+      }
+    });
+    
+
+  });
+
+});
+
+app.post('/editproject/:employeeID', function(req, res){
+  
+  Project.findOne({ projectID: req.query.projectID }, function (err, project) {
+    if (!project) {
+      return res.redirect('/error');
+    }
+
+    project.projectName = req.body.projectName,
+    project.status = req.body.status,
+    project.employeeID = req.body.team_members
+
+      project.save(function (err) {
+      req.flash('success_msg', + 'Project has been updated');
+      return res.redirect('/project/' + req.params.employeeID);
+    });
+  });
+
+
+
+  
+
+});
+
+// *******************************************************************
+
+
+
+// *******************************************************************
 app.get('/error', function (req, res) {
   res.render('error');
 });
-
-
-
-
-
 
 app.get('/newpassword/:employeeID', function (req, res) {
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
@@ -204,49 +281,31 @@ app.get('/newpassword/:employeeID', function (req, res) {
   });
 });
 
-
-
-    
-
 // *******************************************************************
 // TEAM LEADER APPROVES TIMESHEETS
-app.get('/approval/:employeeID', function(req, res){
+app.get('/approval/:employeeID', function (req, res) {
 
- 
-  User.findOne({ employeeID: req.params.employeeID}, function(err, user) {
+  User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
-      
+
       return res.redirect('/error');
-    } else if(user.level != 2) {
+    } else if (user.level != 2) {
       return res.redirect('/error');
     }
-
-   
-
-
-   
-    Timesheet.find({teamLead: req.params.employeeID, status: "Pending", employeeID: { $not:{ $eq: req.params.employeeID} }}, function(err,  allTimesheets){
-      if(allTimesheets != null) {
-       
-  
+    Timesheet.find({ teamLead: req.params.employeeID, status: "Pending", employeeID: { $not: { $eq: req.params.employeeID } } }, function (err, allTimesheets) {
+      if (allTimesheets != null) {
         res.render('approval', {
           user: req.user,
           allTimesheets
         });
-       
       }
-      
     });
-    
-
   });
-
 });
 
-app.post('/approval/:employeeID', function(req, res){
- 
+app.post('/approval/:employeeID', function (req, res) {
 
-  Timesheet.findOne({timesheetID: req.body.timesheetID }, function (err, timesheet) {
+  Timesheet.findOne({ timesheetID: req.body.timesheetID }, function (err, timesheet) {
 
     timesheet.status = "Approved";
 
@@ -254,12 +313,44 @@ app.post('/approval/:employeeID', function(req, res){
       req.flash('success_msg', 'You have approved a Timesheet');
       res.redirect('/approval/' + req.params.employeeID);
     });
- 
-   
+  });
+});
+
+// *******************************************************************
+
+
+// *******************************************************************
+// ASSIGN PROJECTS TO TEAM MEMBERS
+app.get('/closedproject/:employeeID', function (req, res) {
+
+  User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
+    if (!user) {
+
+      return res.redirect('/error');
+    } else if (user.level != 2) {
+      return res.redirect('/error');
+    }
+
+
+
+    Project.find({ status: "Closed" }, function (err, projects) {
+
+
+      res.render('closedproject', {
+        user: req.user,
+        projects
+      });
+
+
+    });
+
+
 
   });
-    
 
+});
+
+app.post('/closedproject/:employeeID', function (req, res) {
 
 });
 
@@ -269,127 +360,107 @@ app.post('/approval/:employeeID', function(req, res){
 // *******************************************************************
 
 // ASSIGN PROJECTS TO TEAM MEMBERS
-app.get('/closedproject/:employeeID', function(req, res){
+app.get('/project/:employeeID', function (req, res) {
 
-
- 
-  User.findOne({ employeeID: req.params.employeeID}, function(err, user) {
+  User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
-      
       return res.redirect('/error');
-    } else if(user.level != 2) {
+    } else if (user.level != 2 && user.level != 0) {
       return res.redirect('/error');
     }
+    if (user.level == 2) {
+    User.find({ department: user.department, level: "3" }, function (err, allUser) {
+      if (allUser != null) {
 
-
-        
-        Project.find({status: "Closed"}, function(err, projects) {
-
-       
-          res.render('closedproject', {
-            user: req.user,
-            projects
-        });
-       
-          
-        });
-
-    
-
-  });
-
-});
-
-app.post('/closedproject/:employeeID', function(req, res){
-  
-
-});
-
-// *******************************************************************
-
-
-
-
-// *******************************************************************
-
-// ASSIGN PROJECTS TO TEAM MEMBERS
-app.get('/project/:employeeID', function(req, res){
-
-
- 
-  User.findOne({ employeeID: req.params.employeeID}, function(err, user) {
-    if (!user) {
-      
-      return res.redirect('/error');
-    } else if(user.level != 2) {
-      return res.redirect('/error');
-    }
-
-   
-   
-    User.find({department: user.department, level: "3"}, function(err, allUser){
-      if(allUser != null) {
-        
-        Project.find({status: 'Open'}, function(err, projects) {
-
-       
+        Project.find({ status: 'Open' }, function (err, projects) {
           res.render('project', {
             user: req.user,
             allUser,
             projects
+          });
         });
-       
-          
-        });
-
-      
-/*
-       Project.aggregate([
-        { $lookup:
-          {
-            from: 'users',
-            localField: 'employeeID',
-            foreignField: 'employeeID',
-            as: 'orderdetails'
-          }
-        }
-       ], function(err, projects) {
-
-       console.log(JSON.stringify(projects) + "WHATTT");
-        res.render('project', {
-          user: req.user,
-          allUser,
-          projects
-      });
-     
+        /*
+               Project.aggregate([
+                { $lookup:
+                  {
+                    from: 'users',
+                    localField: 'employeeID',
+                    foreignField: 'employeeID',
+                    as: 'orderdetails'
+                  }
+                }
+               ], function(err, projects) {
         
+               console.log(JSON.stringify(projects) + "WHATTT");
+                res.render('project', {
+                  user: req.user,
+                  allUser,
+                  projects
+              });
+             
+                
+              });
+        
+              */
+        }
       });
-
-      */
-
-
-
-
-      }
-    });
-    
-
+    };
+    if (user.level == 0) {
+      User.find({}, function (err, allUser) {
+        if (allUser != null) {
+          User.find({ level: "2"}, function(err, allLeaders) {
+            Project.find({ status: 'Open' }, function (err, projects) {
+              res.render('project', {
+                user: req.user,
+                allUser,
+                projects, 
+                allLeaders
+              });
+            });
+          });
+        };
+      });
+    };
   });
-
 });
 
-app.post('/project/:employeeID', function(req, res){
-  
-    function makeProjectID(length) {
+app.post('/project/:employeeID', function (req, res) {
+
+  function makeProjectID(length) {
     var text = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  
+
     for (var i = 0; i < length; i++)
       text += possible.charAt(Math.floor(Math.random() * possible.length));
-  
+
     return text;
   }
 
+  if(req.user.level == 0) {
+    User.findOne({ employeeID : req.body.team_leaders}, function(err, leader){
+
+      var leadersTeam = leader.team;
+      var leadersID = leader.employeeID;
+      var leadersFirst = leader.firstName;
+      var leadersLast = leader.lastName;
+      var leadersDetails = leadersID + ":" + leadersFirst + ":" + leadersLast + ":";
+
+      var project = new Project({
+        projectID: makeProjectID(10),
+        employeeID: leadersDetails + req.body.team_members,
+        status: req.body.status,
+        projectName: req.body.project_name,
+        teamLead: req.body.team_leaders,
+        team: leadersTeam
+      });
+
+      project.save(function (err) {
+        console.log("it gets here");
+        res.redirect('/project/' + req.params.employeeID);
+      });
+    });
+  }
+  else {
   var project = new Project({
     projectID: makeProjectID(10),
     employeeID: req.body.team_members,
@@ -397,17 +468,15 @@ app.post('/project/:employeeID', function(req, res){
     projectName: req.body.project_name,
     teamLead: req.params.employeeID,
     team: req.body.team
-  
-    });
-  
-  project.save(function(err) {
-    res.redirect('/project/'+ req.params.employeeID);
-  })
+  });
 
+  project.save(function (err) {
+    res.redirect('/project/' + req.params.employeeID);
+  });
+};
 });
 
 // *******************************************************************
-
 
 // *******************************************************************
 // PASSWORD CHANGE
@@ -443,6 +512,36 @@ app.post('/passwordchange/:employeeID', function (req, res, next) {
       return res.redirect('/profile/' + user.employeeID);
     });
   });
+});
+// *********************************************************************
+// ADMIN CREATION
+app.get('/admincreate', function (req, res, next) {
+  res.render('admincreate');
+});
+app.post('/admincreate', function (req, res, next) {
+
+  // Create a new admin user
+  var user = new User({
+    username: req.body.username,
+    password: req.body.adminPassword,
+    employeeID: 'ADMIN01',
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    department: 'ADMIN',
+    jobTitle: 'ADMIN',
+    level: '0',
+    workingStatus: 'ADMIN',
+    startDate: '----',
+    team: 'ADMIN',
+    fullTimePartTime: 'ADMIN'
+  });
+
+  // Save admin to database
+  user.save(function (err) {
+    if (err) throw err;
+    return res.redirect('/');
+  });
+
 });
 
 // *******************************************************************
@@ -491,7 +590,6 @@ app.get('/team/:employeeID', function (req, res) {
 
 // *******************************************************************
 
-
 app.get('/profile/:employeeID', function (req, res) {
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
@@ -525,31 +623,49 @@ app.post('/profile/:employeeID', function (req, res) {
 // *******************************************************************
 // DELETE THE USER
 app.get('/deleteuser/:employeeID', function (req, res) {
-  
+
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
       return res.redirect('/error');
     } else if (user.level != 0) {
       return res.redirect('/error');
     }
-    
-    User.deleteOne({ employeeID:req.query.userID }, function (err, editUser) {
+
+    User.deleteOne({ employeeID: req.query.userID }, function (err, editUser) {
       if (!user) {
         return res.redirect('/error');
       } else if (user.level != 0) {
         return res.redirect('/error');
       }
-      req.flash('success_msg', 'User: '+ user.firstName + ' ' +user.lastName +  ' has been deleted');
+      req.flash('success_msg', 'User: ' + user.firstName + ' ' + user.lastName + ' has been deleted');
       return res.redirect('/employee/' + req.params.employeeID);
 
     });
-
-    
-
   });
+});
 
 
- 
+// *******************************************************************
+
+// DELETE THE project
+app.get('/deleteproject/:employeeID', function (req, res) {
+
+  User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
+    if (!user) {
+      return res.redirect('/error');
+    } else if (user.level != 2) {
+      return res.redirect('/error');
+    }
+
+    Project.deleteOne({ projectID: req.query.projectID }, function (err, project) {
+      if (!project) {
+        return res.redirect('/error');
+      } 
+      req.flash('success_msg', 'Project has been deleted');
+      return res.redirect('/project/' + req.params.employeeID);
+
+    });
+  });
 });
 
 
@@ -560,15 +676,15 @@ app.get('/deleteuser/:employeeID', function (req, res) {
 // *******************************************************************
 // EDIT THE USER
 app.get('/edituser/:employeeID', function (req, res) {
-  
+
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
       return res.redirect('/error');
     } else if (user.level != 0) {
       return res.redirect('/error');
     }
-    
-    User.findOne({ employeeID:req.query.userID }, function (err, editUser) {
+
+    User.findOne({ employeeID: req.query.userID }, function (err, editUser) {
       if (!user) {
         return res.redirect('/error');
       } else if (user.level != 0) {
@@ -578,15 +694,8 @@ app.get('/edituser/:employeeID', function (req, res) {
         user: req.user,
         editUser
       });
-
     });
-
-    
-
   });
-
-
- 
 });
 
 app.post('/edituser/:employeeID', function (req, res, next) {
@@ -594,32 +703,25 @@ app.post('/edituser/:employeeID', function (req, res, next) {
   User.findOne({ employeeID: req.query.userID }, function (err, user) {
     if (!user) {
       return res.redirect('/error');
-    } 
+    }
     user.username = req.body.username,
-    user.employeeID = req.body.employeeID,
-    user.firstName = req.body.firstName,
-    user.lastName = req.body.lastName,
-    user.department = req.body.department,
-    user.jobTitle = req.body.jobTitle,
-    user.level = req.body.level,
-    user.workingStatus = req.body.workingStatus,
-    user.startDate = req.body.startDate,
-    user.team = req.body.team,
-    user.fullTimePartTime = req.body.fullTimePartTime
+      user.employeeID = req.body.employeeID,
+      user.firstName = req.body.firstName,
+      user.lastName = req.body.lastName,
+      user.department = req.body.department,
+      user.jobTitle = req.body.jobTitle,
+      user.level = req.body.level,
+      user.workingStatus = req.body.workingStatus,
+      user.startDate = req.body.startDate,
+      user.team = req.body.team,
+      user.fullTimePartTime = req.body.fullTimePartTime
 
     user.save(function (err) {
-      req.flash('success_msg', 'User: '+ user.firstName + ' ' +user.lastName +  'has been updated');
+      req.flash('success_msg', 'User: ' + user.firstName + ' ' + user.lastName + 'has been updated');
       return res.redirect('/employee/' + req.params.employeeID);
     });
   });
-
-
-
 });
-
-
-
-
 
 // *******************************************************************
 // ADD NEW USER
@@ -661,7 +763,6 @@ app.post('/user/:employeeID', function (req, res, next) {
         user.save(function (err) {
           done(err, token, user);
         });
-
       },
       function (token, user, done) {
         var smtpTransport = nodemailer.createTransport({
@@ -692,9 +793,7 @@ app.post('/user/:employeeID', function (req, res, next) {
     req.flash('success_msg', 'An e-mail has been sent to ' + user.username + ' with further instructions.');
     res.redirect('/employee/' + req.params.employeeID);
   });
-
 });
-
 
 // *******************************************************************
 // ADD NEW TIMESHEET
@@ -705,67 +804,104 @@ app.get('/timesheet/:employeeID', function (req, res) {
     } else if (user.employeeID != req.user.employeeID) {
       return res.redirect('/error');
     }
-  var allmyproject = [];
-  var allmyprojectID = [];
-  var teamLead;
+    var allmyproject = [];
+    var allmyprojectID = [];
+    var teamLead;
 
-  Project.find({team: user.team, status: 'Open'}, function (err, allOpenedProject) {
-    if (allOpenedProject != null) {
+    Project.find({ team: user.team, status: 'Open' }, function (err, allOpenedProject) {
+      if (allOpenedProject != null) {
 
-          for (var i = 0; i < allOpenedProject.length; i++) {
-              var myProject = allOpenedProject[i].employeeID;
-             //
-              var projectArray = myProject.split(","); 
+        for (var i = 0; i < allOpenedProject.length; i++) {
+          var myProject = allOpenedProject[i].employeeID;
+          var projectArray = myProject.split(",");
+          for (j = 0; j < projectArray.length; j++) {
+            var projectArraywithID = projectArray[j].split(":");
 
+            for (k = 0; k < projectArraywithID.length; k += 3) {
+              console.log(projectArraywithID[k]);
+              if (projectArraywithID[k] == user.employeeID) {
 
+                allmyproject.push(allOpenedProject[i].projectName);
 
-             for (j =0; j < projectArray.length; j++){
-              var projectArraywithID = projectArray[j].split(":"); 
-
-              for (k =0; k < projectArraywithID.length; k+=3){
-                console.log( projectArraywithID[k]);
-                if( projectArraywithID[k] == user.employeeID) {
-                
-                  allmyproject.push(allOpenedProject[i].projectName);
-                 
-                  allmyprojectID.push(allOpenedProject[i].projectID);
-                  teamLead = allOpenedProject[i].teamLead;
-                }
+                allmyprojectID.push(allOpenedProject[i].projectID);
+                teamLead = allOpenedProject[i].teamLead;
               }
-
-
-               
-             }
-
-
-
-
-
+            }
           }
+        }
+        res.render('timesheet', {
+          user: req.user,
+          allmyproject,
+          allmyprojectID,
+          teamLead
+        });
 
-          res.render('timesheet', {
-            user: req.user,
-            allmyproject,
-            allmyprojectID,
-            teamLead
-          });
-        
-  
+      } else {
+        allmyproject.push("No Assigned Project(s)");
+        res.render('timesheet', {
+          user: req.user,
+          allmyproject
+        });
 
-    } else {
-      allmyproject.push("No Assigned Project(s)");
-      res.render('timesheet', {
-        user: req.user,
-        allmyproject
-      });
-    
-     
-    }
+
+      }
+    });
+
   });
 
 });
 
-});
+app.get('/timesheetTemp/:employeeID', function(req,res){
+  User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
+    if (!user) {
+      return res.redirect('/error');
+    } else if (user.employeeID != req.user.employeeID) {
+      return res.redirect('/error');
+    }
+    var allmyproject = [];
+    var allmyprojectID = [];
+    var teamLead;
+
+    Project.find({ team: user.team, status: 'Open' }, function (err, allOpenedProject) {
+      if (allOpenedProject != null) {
+
+        for (var i = 0; i < allOpenedProject.length; i++) {
+          var myProject = allOpenedProject[i].employeeID;
+          var projectArray = myProject.split(",");
+          for (j = 0; j < projectArray.length; j++) {
+            var projectArraywithID = projectArray[j].split(":");
+
+            for (k = 0; k < projectArraywithID.length; k += 3) {
+              console.log(projectArraywithID[k]);
+              if (projectArraywithID[k] == user.employeeID) {
+
+                allmyproject.push(allOpenedProject[i].projectName);
+
+                allmyprojectID.push(allOpenedProject[i].projectID);
+                teamLead = allOpenedProject[i].teamLead;
+              }
+            }
+          }
+        }
+        res.render('timesheetTemp', {
+          user: req.user,
+          allmyproject,
+          allmyprojectID,
+          teamLead
+        });
+
+      } else {
+        allmyproject.push("No Assigned Project(s)");
+        res.render('timesheetTemp', {
+          user: req.user,
+          allmyproject
+        });
+
+      }
+    });
+
+  });
+})
 
 function makeProjectID(length) {
   var text = "";
@@ -777,11 +913,7 @@ function makeProjectID(length) {
   return text;
 }
 
-
- 
-
-
-app.post('/timesheet/:employeeID', function (req, res, next) {
+app.post('/timesheetTemp/:employeeID', function (req, res, next) {
   var timesheet = new Timesheet({
     timesheetID: makeProjectID(11),
     employeeID: req.body.employeeID,
@@ -789,16 +921,12 @@ app.post('/timesheet/:employeeID', function (req, res, next) {
     percentage: req.body.percentage,
     project: req.body.project,
     allocation: req.body.allocation,
-    
+
     status: "Pending",
     teamLead: req.body.teamLead,
     firstName: req.body.firstName,
     lastName: req.body.lastName
   });
-
-  
-
-
 
   timesheet.save(function (err) {
     req.flash('success_msg', 'A new Timesheet has been entered');
@@ -806,6 +934,38 @@ app.post('/timesheet/:employeeID', function (req, res, next) {
   });
 });
 
+app.post('/timesheet/:employeeID', function (req, res, next) {
+  var timesheet = new Timesheet({
+    timesheetID: makeProjectID(11),
+    employeeID: req.body.employeeID,
+    date: req.body.date,
+
+
+
+
+    allocable_percentage: req.body.allocable_percentage,
+    non_allocable_percentage: req.body.non_allocable_percentage,
+    personal_time_percentage: req.body.personal_time_percentage,
+
+
+
+
+    
+    percentage: req.body.percentage,
+    project: req.body.project,
+    allocation: req.body.allocation,
+
+    status: "Pending",
+    teamLead: req.body.teamLead,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName
+  });
+
+  timesheet.save(function (err) {
+    req.flash('success_msg', 'A new Timesheet has been entered');
+    res.redirect('/timesheet/' + req.params.employeeID);
+  });
+});
 
 // *******************************************************************
 // TIMESHEET SUMARY
@@ -817,26 +977,26 @@ app.get('/timesheetsummary/:employeeID', function (req, res) {
       return res.redirect('/dashboard/' + req.params.employeeID);
     }
     */
-    Timesheet.find({}, function (err, allUser) {
-      if (allUser != null) {
-        User.find({employeeID: req.params.employeeID}, function (err, userInfo) {
-          if(userInfo[0].level != '0'){
-            filter_row = allUser.filter( x => x.employeeID == req.params.employeeID);
-          }else{
-            filter_row = allUser;
-            
-          }
-          
-          res.render('timesheetsummary', {
-            user: req.user,
-            allUser,
-            userInfo,
-            filter_row
-          });
+  Timesheet.find({}, function (err, allUser) {
+    if (allUser != null) {
+      User.find({ employeeID: req.params.employeeID }, function (err, userInfo) {
+        if (userInfo[0].level != '0') {
+          filter_row = allUser.filter(x => x.employeeID == req.params.employeeID);
+        } else {
+          filter_row = allUser;
+
+        }
+
+        res.render('timesheetsummary', {
+          user: req.user,
+          allUser,
+          userInfo,
+          filter_row
         });
-      }
-    });
- 
+      });
+    }
+  });
+
 });
 
 /*
@@ -877,7 +1037,6 @@ app.get('/timesheetsummary/:employeeID', async function(req, res){
 });
 */
 
-
 app.get('/dashboard/:employeeID', function (req, res) {
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
@@ -886,7 +1045,7 @@ app.get('/dashboard/:employeeID', function (req, res) {
       return res.redirect('/error');
     }
 
-    if(user.level == 0) {
+    if (user.level == 0) {
 
       User.find({}, function (err, allUser) {
         res.render('dashboard', {
@@ -898,58 +1057,45 @@ app.get('/dashboard/:employeeID', function (req, res) {
     } else {
       var allmyproject = [];
       var allmyprojectID = [];
-  
-      Project.find({team: user.team, status: 'Open'}, function (err, allOpenedProject) {
+
+      Project.find({ team: user.team, status: 'Open' }, function (err, allOpenedProject) {
         if (allOpenedProject != null) {
-  
-             
-              for (i = 0; i < allOpenedProject.length; i++) {
-                  var myProject = allOpenedProject[i].employeeID;
-                 //
-                  var projectArray = myProject.split(","); 
-                 for (j =0; j < projectArray.length; j++){
-  
-                  
-                  
-  
-                  var projectArraywithID = projectArray[j].split(":"); 
-  
-                  for (k =0; k < projectArraywithID.length; k+=3){
-                    console.log( projectArraywithID[k]);
-                    if( projectArraywithID[k] == user.employeeID) {
-                    
-                      allmyproject.push(allOpenedProject[i].projectName);
-                     
-                      allmyprojectID.push(allOpenedProject[i].projectID);
-                      teamLead = allOpenedProject[i].teamLead;
-                    }
-                  }
-  
-                 }
-  
+
+
+          for (i = 0; i < allOpenedProject.length; i++) {
+            var myProject = allOpenedProject[i].employeeID;
+            //
+            var projectArray = myProject.split(",");
+            for (j = 0; j < projectArray.length; j++) {
+
+              var projectArraywithID = projectArray[j].split(":");
+
+              for (k = 0; k < projectArraywithID.length; k += 3) {
+                console.log(projectArraywithID[k]);
+                if (projectArraywithID[k] == user.employeeID) {
+
+                  allmyproject.push(allOpenedProject[i].projectName);
+
+                  allmyprojectID.push(allOpenedProject[i].projectID);
+                  teamLead = allOpenedProject[i].teamLead;
+                }
               }
-  
-              User.find({}, function (err, allUser) {
-                res.render('dashboard', {
-                  user: req.user,
-                  allUser,
-                  allmyproject,
-                  allmyprojectID
-                });
-              });
-  
-             
-      
-  
+
+            }
+
+          }
+
+          User.find({}, function (err, allUser) {
+            res.render('dashboard', {
+              user: req.user,
+              allUser,
+              allmyproject,
+              allmyprojectID
+            });
+          });
         }
       });
     }
-
- 
-
-   
-
-
   });
 });
 
@@ -1031,7 +1177,6 @@ app.get('/reset/:token', function (req, res) {
   });
 });
 
-
 app.post('/reset/:token', function (req, res) {
   async.waterfall([
     function (done) {
@@ -1089,7 +1234,6 @@ app.get('/validate/:token', function (req, res) {
   });
 });
 
-
 app.post('/validate/:token', function (req, res) {
   async.waterfall([
     function (done) {
@@ -1134,5 +1278,57 @@ app.post('/validate/:token', function (req, res) {
   ]);
 });
 // *******************************************************************
+
+//****** Profile Picture Upload ****************************************** */
+// @route POST /upload
+// @desc Uploads file to DB
+app.post('/upload/:employeeID', upload.single('file'), (req, res) => {
+  //res.json({ file: req.file });
+  User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
+    if (!user) {
+      return res.redirect('/error')
+    }
+    user.picture = filename;
+    user.save(function (err) {
+      res.redirect('/profile/' + user.employeeID);
+    });
+  });
+});
+
+// @route GET /files/:filename
+// @desc Display file in json
+app.get('/files/:filename', (req, res) => {
+  gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
+    // Check if file
+    if (!file || file.length === 0) {
+      return res.status(404).json({
+        err: 'No file exists'
+      });
+    }
+    return res.json(file);
+  });
+});
+
+// @route GET /image/:filename
+// @desc Display files in json
+app.get('/image/:filename', (req, res) => {
+  gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
+    // Check if file
+    if (!file || file.length === 0) {
+      return res.status(404).json({
+        err: 'No file exists'
+      });
+    }
+    // Check if image
+    if (file.contentType === 'image/jpeg' || file.contentType === 'img/png') {
+      const readstream = gfs.createReadStream(file.filename);
+      readstream.pipe(res);
+    } else {
+      res.status(404).json({
+        err: 'Not an image'
+      });
+    }
+  });
+});
 
 module.exports = app;

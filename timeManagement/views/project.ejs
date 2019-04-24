@@ -29,21 +29,39 @@
                           <label>Project Name</label>
                           <input type="text" class="form-control" placeholder="Project Name" id="project_name" name="project_name">
                         </div>
-                        <div class="form-group col-md-6">
-                          <label>Team Member</label> <br>
-                          <select id="team_members" name="team_members" multiple style="width: 200px;">
-                            <% for (var i = 0; i < allUser.length; i++) { %>
-                                
-                             
-                                  <option value='<%= user.employeeID %>:<%= user.firstName %>:<%= user.lastName %>,<%= allUser[i].employeeID %>:<%= allUser[i].firstName %>:<%= allUser[i].lastName %>'><%= allUser[i].firstName %> <%= allUser[i].lastName %></option>
-                               
-                               
+                        <% if (user.level == 0) { %>
+                          <div class="form-group col-md-6">
+                            <label>Team Leader for the project:</label> <br>
+                            <select id="team_leaders" name="team_leaders" style="width: 200px;">
+                              <% for (var i = 0; i < allLeaders.length; i++) { %>
+                              <option
+                                value='<%= allLeaders[i].employeeID %>'>
+                                <%= allLeaders[i].firstName %> <%= allLeaders[i].lastName %></option>
+                              <% } %>
+                            </select>
+                          </div>
+                          <div class="form-group col-md-6">
+                            <label>Team Member(s)</label> <br>
+                            <select id="team_members" name="team_members" multiple style="width: 200px;">
+                              <% for (var i = 0; i < allUser.length; i++) { %>
+                              <option
+                                value='<%= allUser[i].employeeID %>:<%= allUser[i].firstName %>:<%= allUser[i].lastName %>'>
+                                <%= allUser[i].firstName %> <%= allUser[i].lastName %></option>
+                              <% } %>
+                            </select>
+                          </div>
+                          <% } else { %>
+                            <div class="form-group col-md-6">
+                              <label>Team Member(s)</label> <br>
+                              <select id="team_members" name="team_members" multiple style="width: 200px;">
+                                <% for (var i = 0; i < allUser.length; i++) { %>
+                                <option
+                                  value='<%= user.employeeID %>:<%= user.firstName %>:<%= user.lastName %>,<%= allUser[i].employeeID %>:<%= allUser[i].firstName %>:<%= allUser[i].lastName %>'>
+                                  <%= allUser[i].firstName %> <%= allUser[i].lastName %></option>
                                 <% } %>
-
-
-                           
-                          </select>
-                        </div>
+                              </select>
+                            </div>
+                            <% } %>
                       </div>
                       <button type="submit" class="btn btn-success project-btn" href="#">Add Project!</button>
                     </form>
@@ -108,8 +126,8 @@
 
 
                                     
-                                            <td><button type="button" class="mb-2 btn btn-sm btn-success mr-1">Edit</button>
-                                                <button type="button" class="mb-2 btn btn-sm btn-danger mr-1">Del</button></td>
+                                            <td><a class="mb-2 btn btn-sm btn-success mr-1" href='/editproject/<%= user.employeeID %>?projectID=<%= projects[i].projectID %>'>Edit</a>
+                                              <a class="mb-2 btn btn-sm mr-1 btn-danger" style="color: #fff;" href='/deleteproject/<%= user.employeeID %>?projectID=<%= projects[i].projectID %>'>Delete</a></td>
                                         
                                     </tr>
                                  

@@ -27,6 +27,24 @@ var timesheetSchema = new Schema({
     type: String, 
     required: true 
   },
+
+
+
+  allocable_percentage: { 
+    type: String, 
+    required: true 
+  },
+  non_allocable_percentage: { 
+    type: String, 
+    required: true 
+  },
+  personal_time_percentage: { 
+    type: String, 
+    required: true 
+  },
+
+
+
   status: { 
     type: String, 
     required: true 
