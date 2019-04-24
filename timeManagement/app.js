@@ -187,6 +187,83 @@ app.get('/logout', function (req, res) {
 });
 
 // *******************************************************************
+
+// EDIT PROJECTS
+app.get('/editproject/:employeeID', function(req, res){
+
+
+ 
+  User.findOne({ employeeID: req.params.employeeID}, function(err, user) {
+    if (!user) {
+      
+      return res.redirect('/error');
+    } else if(user.level != 2 || user.level != 0) {
+      return res.redirect('/error');
+    }
+
+   
+   
+    Project.findOne({projectID: req.query.projectID}, function(err, project){
+      if(project != null) {
+        
+       
+
+        User.find({department: user.department, level: "3"}, function(err, allUser){
+          if(allUser != null) {
+            res.render('editproject', {
+              user: req.user,
+              project,
+              allUser
+          });
+         
+    
+          }
+        });
+    
+        
+
+       
+         
+          
+       
+
+
+      }
+    });
+    
+
+  });
+
+});
+
+app.post('/editproject/:employeeID', function(req, res){
+  
+  Project.findOne({ projectID: req.query.projectID }, function (err, project) {
+    if (!project) {
+      return res.redirect('/error');
+    }
+
+    project.projectName = req.body.projectName,
+    project.status = req.body.status,
+    project.employeeID = req.body.team_members
+
+      project.save(function (err) {
+      req.flash('success_msg', + 'Project has been updated');
+      return res.redirect('/project/' + req.params.employeeID);
+    });
+  });
+
+
+
+  
+
+});
+
+// *******************************************************************
+
+
+
+// *******************************************************************
 app.get('/error', function (req, res) {
   res.render('error');
 });
@@ -562,6 +639,30 @@ app.get('/deleteuser/:employeeID', function (req, res) {
       }
       req.flash('success_msg', 'User: ' + user.firstName + ' ' + user.lastName + ' has been deleted');
       return res.redirect('/employee/' + req.params.employeeID);
+
+    });
+  });
+});
+
+
+// *******************************************************************
+
+// DELETE THE project
+app.get('/deleteproject/:employeeID', function (req, res) {
+
+  User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
+    if (!user) {
+      return res.redirect('/error');
+    } else if (user.level != 2) {
+      return res.redirect('/error');
+    }
+
+    Project.deleteOne({ projectID: req.query.projectID }, function (err, project) {
+      if (!project) {
+        return res.redirect('/error');
+      } 
+      req.flash('success_msg', 'Project has been deleted');
+      return res.redirect('/project/' + req.params.employeeID);
 
     });
   });
