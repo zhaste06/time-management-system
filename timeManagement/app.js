@@ -197,7 +197,7 @@ app.get('/editproject/:employeeID', function(req, res){
     if (!user) {
       
       return res.redirect('/error');
-    } else if(user.level != 2 || user.level != 0) {
+    } else if(user.level != 2 && user.level != 0) {
       return res.redirect('/error');
     }
 
