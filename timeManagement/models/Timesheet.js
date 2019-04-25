@@ -43,6 +43,11 @@ var timesheetSchema = new Schema({
     required: true 
   },
 
+level: { 
+    type: String, 
+    required: true 
+  },
+
 
 
   status: { 

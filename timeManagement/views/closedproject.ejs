@@ -9,7 +9,9 @@
               <span class="text-uppercase page-subtitle">Overview</span>
               <h3 class="page-title">All Projects</h3>
             </div>
-           
+            <div class="col-12 col-sm-8 text-right mb-0">
+                  <a class="btn btn-dark mt-2 mr-2" href='/project/<%= user.employeeID %>'>View Opened Project(s)</a>
+              </div>
 
           </div>
           <!-- End Page Header -->
@@ -67,64 +69,13 @@
 
 
 
-                                    
-                                            <td><button type="button" class="mb-2 btn btn-sm btn-success mr-1">Edit</button>
-                                                <button type="button" class="mb-2 btn btn-sm btn-danger mr-1">Del</button></td>
+                                  <td><a class="mb-2 btn btn-sm btn-success mr-1" href='/editproject/<%= user.employeeID %>?projectID=<%= projects[i].projectID %>'>Edit</a>
+                                    <a class="mb-2 btn btn-sm mr-1 btn-danger" style="color: #fff;" href='/deleteproject/<%= user.employeeID %>?projectID=<%= projects[i].projectID %>'>Delete</a></td>
                                         
                                     </tr>
                                  
                                   <% } %>
-                        
-                      <tr>
-                            
-
-                        <td>Mobile App</td>
-                       
-                        <td>Liam, Noah, William, James, Logan, Benjamin</td>
-                        <td><button type="button" class="mb-2 btn btn-sm btn-success mr-1" data-toggle="modal"
-                          data-target="#editprojectmodal">Edit</button>
-
-                          <div class="modal fade" id="editprojectmodal">
-                            <div class="modal-dialog">
-                              <div class="modal-content">
-                                <div class="modal-header">
-                                  <h6 class="m-0">Edit Project</h6>
-                                </div>
-                                <div class="modal-body">
-                                  <form>
-                                    <div class="form-row">
-                                      <div class="form-group col-sm-8">
-                                        <label>Project Name</label>
-                                        <input type="text" class="form-control" placeholder="Project Name" value="Mobile App">
-                                      </div>
-                                      <div class="form-group col-sm-8">
-                                        <label>Member(s)</label>
-                                        <input type="text" class="form-control" placeholder="Leader" value="Liam">
-                                        <input type="text" class="form-control" placeholder="Member" value="Noah">
-                                        <input type="text" class="form-control" placeholder="Member" value="William">
-                                        <input type="text" class="form-control" placeholder="Member" value="James">
-                                        <input type="text" class="form-control" placeholder="Member" value="Logan">
-                                        <input type="text" class="form-control" placeholder="Member" value="Benjamin">
-                                      </div>
-                                    </div>
-                                    <button type="submit" class="btn btn-success">Add Member</button>
-                                    <button type="submit" class="btn btn-success">Done Edit</button>
-                                  </form>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <button type="button" class="mb-2 btn btn-sm btn-danger mr-1">Del</button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Blockchain</td>
-                        <!--<td><i class="material-icons">access_time</i> 3</td>-->
-                        <td>Emma, Olivia, Ava, Isabella, Sophia</td>
-                        <td><button type="button" class="mb-2 btn btn-sm btn-success mr-1">Edit</button>
-                          <button type="button" class="mb-2 btn btn-sm btn-danger mr-1">Del</button></td>
-                        </tr>
+        
                     </tbody>
                   </table>
                 </div>

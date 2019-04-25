@@ -76,29 +76,33 @@
 
               
             </li>
-            <li class="nav-item">
-              <a class="nav-link " href="/timesheetsummary/<%= user.employeeID %>">
-              <i class="material-icons">assignment</i>
-              <span>Timesheets</span>
-              </a>
-            </li>
 
+            <% if (user.level != 0) { %>  
             <% if (user.fullTimePartTime == 'Full Time') { %>
             <li class="nav-item">
               <a class="nav-link " href="/timesheet/<%= user.employeeID %>">
                 <i class="material-icons">note_add</i>
-                <span>Add New Timesheet</span>
+                <span>New Timesheet</span>
               </a>
             </li>
             <% } else { %>
               <li class="nav-item">
                 <a class="nav-link " href="/timesheetTemp/<%= user.employeeID %>">
                   <i class="material-icons">note_add</i>
-                  <span>Add New Timesheet</span>
+                  <span>New Timesheet</span>
                 </a>
               </li>
             <% } %>
+            <% } %>
 
+
+
+            <li class="nav-item">
+                <a class="nav-link " href="/timesheetsummary/<%= user.employeeID %>">
+                <i class="material-icons">assignment</i>
+                <span>Timesheet Summary</span>
+                </a>
+              </li>
             <% if (user.level == 0) { %>
             <li class="nav-item">
               <a class="nav-link " href='/employee/<%= user.employeeID %>'>
@@ -109,12 +113,12 @@
             <li class="nav-item">
               <a class="nav-link " href='/project/<%= user.employeeID %>'>
                 <i class="material-icons">assignment_ind</i>
-                <span>Projects</span>
+                <span> Project Summary</span>
               </a>
             </li>
             <%} else if (user.level == 1) { %>
             <li class="nav-item">
-              <a class="nav-link " href="/user">
+              <a class="nav-link " href="/viewemployee/<%= user.employeeID %>">
                 <i class="material-icons">assignment_ind</i>
                 <span>All Employees</span>
               </a>
@@ -125,7 +129,7 @@
             <li class="nav-item">
               <a class="nav-link " href='/project/<%= user.employeeID %>'>
                 <i class="material-icons">assignment_ind</i>
-                <span>Projects</span>
+                <span>Project Summary</span>
               </a>
             </li>
 
@@ -133,18 +137,29 @@
             <% if (user.level == 2) { %>
               <li class="nav-item">
                 <a class="nav-link " href='/approval/<%= user.employeeID %>'>
-                  <i class="material-icons">assignment_ind</i>
-                  <span>My Team Timesheet</span>
+                  <i class="material-icons">table_chart</i>
+                  <span>Timesheet Approval</span>
                 </a>
               </li>
               <%} %>
+              <% if (user.level == 1) { %>
+                <li class="nav-item">
+                  <a class="nav-link " href='/approval/<%= user.employeeID %>'>
+                    <i class="material-icons">table_chart</i>
+                    <span>Timesheet Approval</span>
+                  </a>
+                </li>
+                <%} %>
+                <% if (user.level == 0) { %>
+                  <li class="nav-item">
+                    <a class="nav-link " href='/approval/<%= user.employeeID %>'>
+                      <i class="material-icons">table_chart</i>
+                      <span>Timesheet Approval</span>
+                    </a>
+                  </li>
+                  <%} %>
             
-            <li class="nav-item">
-              <a class="nav-link " href="">
-                <i class="material-icons">table_chart</i>
-                <span>All Timesheets</span>
-              </a>
-            </li>
+     
           </ul>
         </div>
       </aside>
@@ -167,7 +182,7 @@
               </div>
             </form>
             <ul class="navbar-nav border-left flex-row ">
-              <li class="nav-item border-right dropdown notifications">
+              <!--<li class="nav-item border-right dropdown notifications">
                 <a class="nav-link nav-link-icon text-center" href="#" role="button" id="dropdownMenuLink"
                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <div class="nav-link-icon__wrapper">
@@ -175,6 +190,8 @@
                     <span class="badge badge-pill badge-danger">2</span>
                   </div>
                 </a>
+
+                
                 <div class="dropdown-menu dropdown-menu-small" aria-labelledby="dropdownMenuLink">
                   <a class="dropdown-item" href="#">
                     <div class="notification__icon-wrapper">
@@ -201,7 +218,10 @@
                   </a>
                   <a class="dropdown-item notification__all text-center" href="#"> View all Notifications </a>
                 </div>
-              </li>
+
+
+
+              </li>-->
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle text-nowrap px-3" data-toggle="dropdown" href="#" role="button"
                   aria-haspopup="true" aria-expanded="false">
@@ -221,14 +241,14 @@
                 <%} else { %>
                 <a class="dropdown-item" href='/profile/<%= user.employeeID %>'>
                   <i class="material-icons">&#xE7FD;</i> User Profile</a>
-                <a class="dropdown-item" href="">
+                <a class="dropdown-item" href="/timesheet/<%= user.employeeID %>">
 
-                  <%}%>
+                 
 
 
 
                   
-                    <i class="material-icons">note_add</i> Add New Timesheet</a>
+                    <i class="material-icons">note_add</i>New Timesheet</a> <%}%>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item text-danger" onclick="msg()" href="/logout">
                     <i class="material-icons text-danger">&#xE879;</i> Logout </a>

@@ -13,6 +13,7 @@
               <button type="button" class="btn btn-success mt-2 mr-2" data-toggle="modal"
                 data-target="#addprojectmodal">Add
                 Project</button>
+                <a class="btn btn-dark mt-2 mr-2" href='/closedproject/<%= user.employeeID %>'>View Closed Project(s)</a>
             </div>
             <div class="modal fade" id="addprojectmodal">
               <div class="modal-dialog">
@@ -63,7 +64,7 @@
                             </div>
                             <% } %>
                       </div>
-                      <button type="submit" class="btn btn-success project-btn" href="#">Add Project!</button>
+                      <button type="submit" class="btn btn-success project-btn" href="#">Add Project</button>
                     </form>
                   </div>
                 </div>
@@ -132,57 +133,7 @@
                                     </tr>
                                  
                                   <% } %>
-                        
-                      <tr>
-                            
 
-                        <td>Mobile App</td>
-                       
-                        <td>Liam, Noah, William, James, Logan, Benjamin</td>
-                        <td><button type="button" class="mb-2 btn btn-sm btn-success mr-1" data-toggle="modal"
-                          data-target="#editprojectmodal">Edit</button>
-
-                          <div class="modal fade" id="editprojectmodal">
-                            <div class="modal-dialog">
-                              <div class="modal-content">
-                                <div class="modal-header">
-                                  <h6 class="m-0">Edit Project</h6>
-                                </div>
-                                <div class="modal-body">
-                                  <form>
-                                    <div class="form-row">
-                                      <div class="form-group col-sm-8">
-                                        <label>Project Name</label>
-                                        <input type="text" class="form-control" placeholder="Project Name" value="Mobile App">
-                                      </div>
-                                      <div class="form-group col-sm-8">
-                                        <label>Member(s)</label>
-                                        <input type="text" class="form-control" placeholder="Leader" value="Liam">
-                                        <input type="text" class="form-control" placeholder="Member" value="Noah">
-                                        <input type="text" class="form-control" placeholder="Member" value="William">
-                                        <input type="text" class="form-control" placeholder="Member" value="James">
-                                        <input type="text" class="form-control" placeholder="Member" value="Logan">
-                                        <input type="text" class="form-control" placeholder="Member" value="Benjamin">
-                                      </div>
-                                    </div>
-                                    <button type="submit" class="btn btn-success">Add Member</button>
-                                    <button type="submit" class="btn btn-success">Done Edit</button>
-                                  </form>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <button type="button" class="mb-2 btn btn-sm btn-danger mr-1">Del</button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Blockchain</td>
-                        <!--<td><i class="material-icons">access_time</i> 3</td>-->
-                        <td>Emma, Olivia, Ava, Isabella, Sophia</td>
-                        <td><button type="button" class="mb-2 btn btn-sm btn-success mr-1">Edit</button>
-                          <button type="button" class="mb-2 btn btn-sm btn-danger mr-1">Del</button></td>
-                        </tr>
                     </tbody>
                   </table>
                 </div>

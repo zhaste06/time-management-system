@@ -197,7 +197,7 @@ app.get('/editproject/:employeeID', function(req, res){
     if (!user) {
       
       return res.redirect('/error');
-    } else if(user.level != 2 || user.level != 0) {
+    } else if(user.level != 2 && user.level != 0) {
       return res.redirect('/error');
     }
 
@@ -289,17 +289,37 @@ app.get('/approval/:employeeID', function (req, res) {
     if (!user) {
 
       return res.redirect('/error');
-    } else if (user.level != 2) {
+    } else if (user.level == 2) {
+      Timesheet.find({ teamLead: req.params.employeeID, status: "Pending", level: "3", employeeID: { $not: { $eq: req.params.employeeID } } }, function (err, allTimesheets) {
+        if (allTimesheets != null) {
+          res.render('approval', {
+            user: req.user,
+            allTimesheets
+          });
+        }
+      });
+    } else if (user.level ==1) {
+      Timesheet.find({ level: "2", status: "Pending", employeeID: { $not: { $eq: req.params.employeeID } } }, function (err, allTimesheets) {
+        if (allTimesheets != null) {
+          res.render('approval', {
+            user: req.user,
+            allTimesheets
+          });
+        }
+      });
+    } else if (user.level ==0) {
+      Timesheet.find({ level: "1", status: "Pending", employeeID: { $not: { $eq: req.params.employeeID } } }, function (err, allTimesheets) {
+        if (allTimesheets != null) {
+          res.render('approval', {
+            user: req.user,
+            allTimesheets
+          });
+        }
+      });
+    }else {
       return res.redirect('/error');
     }
-    Timesheet.find({ teamLead: req.params.employeeID, status: "Pending", employeeID: { $not: { $eq: req.params.employeeID } } }, function (err, allTimesheets) {
-      if (allTimesheets != null) {
-        res.render('approval', {
-          user: req.user,
-          allTimesheets
-        });
-      }
-    });
+
   });
 });
 
@@ -327,7 +347,7 @@ app.get('/closedproject/:employeeID', function (req, res) {
     if (!user) {
 
       return res.redirect('/error');
-    } else if (user.level != 2) {
+    } else if (user.level != 2 && user.level != 0 ) {
       return res.redirect('/error');
     }
 
@@ -554,9 +574,80 @@ app.get('/employee/:employeeID', function (req, res) {
       return res.redirect('/error');
     }
 
+  //Sorting 
+if(Object.keys(req.query).length !== 0){
+      for (const key in req.query) {
+        console.log("HERE TOO");
+        if(req.query[key] == 'asc') {
+        User.find().sort({[key] : 1 }).exec( function(err, allUser){
+      
+        res.render('employee', {
+          user: req.user,
+          allUser
+        });}
+        );
+        
+      } else if (req.query[key] == 'des') {
+        User.find().sort({[key]: -1 }).exec( function(err, allUser){
+      
+        res.render('employee', {
+          user: req.user,
+          allUser
+        });}
+        );
+      } 
+   
+      
+
+       
+
+      }
+      
+    } else {
+      User.find({}, function (err, allUser) {
+        if (allUser != null) {
+          console.log("HERE");
+          res.render('employee', {
+            user: req.user,
+            allUser
+          });
+        }
+      });
+    }
+      /*User.find().sort({}, function(err, allUser){
+        if (allUser != null) {
+          res.render('employee', {
+            user: req.user,
+            allUser
+          });
+        }
+
+      });*/
+      
+    
+
+  
+
+  
+  });
+});
+
+// *******************************************************************
+
+
+// *******************************************************************
+app.get('/viewemployee/:employeeID', function (req, res) {
+  User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
+    if (!user) {
+
+      return res.redirect('/error');
+    } else if (user.level == 3 || user.level == 2) {
+      return res.redirect('/error');
+    }
+
     User.find({}, function (err, allUser) {
       if (allUser != null) {
-        res.render('employee', {
+        res.render('viewemployee', {
           user: req.user,
           allUser
         });
@@ -566,6 +657,8 @@ app.get('/employee/:employeeID', function (req, res) {
 });
 
 // *******************************************************************
+
+
 
 // *******************************************************************
 app.get('/team/:employeeID', function (req, res) {
@@ -921,7 +1014,7 @@ app.post('/timesheetTemp/:employeeID', function (req, res, next) {
     percentage: req.body.percentage,
     project: req.body.project,
     allocation: req.body.allocation,
-
+    level: req.body.level,
     status: "Pending",
     teamLead: req.body.teamLead,
     firstName: req.body.firstName,
@@ -939,7 +1032,7 @@ app.post('/timesheet/:employeeID', function (req, res, next) {
     timesheetID: makeProjectID(11),
     employeeID: req.body.employeeID,
     date: req.body.date,
-
+    level: req.body.level,
 
 
 

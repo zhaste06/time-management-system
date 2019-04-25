@@ -31,12 +31,12 @@
               <tr>
 
                 <th scope="col" class="border-0">Team Lead</th>
-                <th scope="col" class="border-0">First Name</th>
-                <th scope="col" class="border-0">Last Name</th>
-                <th scope="col" class="border-0">Employee ID</th>
-                <th scope="col" class="border-0">Department</th>
-                <th scope="col" class="border-0">Team</th>
-                <th scope="col" class="border-0">Job Title</th>
+                <th scope="col" class="border-0"><a href="/employee/<%= user.employeeID %>?firstName=asc">First Name</a></th>
+                <th scope="col" class="border-0"><a href="/employee/<%= user.employeeID %>?lastName=asc">Last Name</a></th>
+                <th scope="col" class="border-0"><a href="/employee/<%= user.employeeID %>?employeeID=asc">Employee ID</a></th>
+                <th scope="col" class="border-0"><a href="/employee/<%= user.employeeID %>?department=asc">Department</a></th>
+                <th scope="col" class="border-0"><a href="/employee/<%= user.employeeID %>?team=asc">Team</a></th>
+                <th scope="col" class="border-0"><a href="/employee/<%= user.employeeID %>?jobTitle=asc">Job Title</a></th>
                 <th scope="col" class="border-0">Email</th>
                 <th scope="col" class="border-0">Verfrication Status</th>
                 <th scope="col" class="border-0">Action</th>

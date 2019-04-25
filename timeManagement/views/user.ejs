@@ -71,11 +71,11 @@
                                         <div class="form-group col-md-6">
                                             <label for="feEmpolyeeID">Department</label>
                                             <input type="text" name="department" placeholder="Department"
-                                                class="form-control" required></div>
+                                                class="form-control"></div>
                                          <div class="form-group col-md-6">
                                                 <label for="feEmpolyeeID">Team</label>
                                                  <input type="text" name="team" placeholder="Team"
-                                                    class="form-control" required></div>
+                                                    class="form-control"></div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
@@ -83,7 +83,8 @@
                                             <div class="form-group">
                                                     <select class="form-control" name="level">
                                                         <option value="3" selected>Team Member</option>
-                                                        <option value="2">Team Lead/Top Managment</option>
+                                                        <option value="2">Team Lead</option>
+                                                        <option value="1">Top Managment</option>
                                                         <option value="0">Admin</option>
                                                     </select>
                                                 </div>
@@ -109,8 +110,15 @@
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="feFulltimePartTime">Full Time Or Part-Time/Contractor</label>
-                                            <input type="text" name="fullTimePartTime" placeholder="Status"
-                                                class="form-control" required> </div>
+                                              <select class="form-control" name="fullTimePartTime">
+                                                        <option value="Full Time" selected>Full Time</option>
+                                                        <option value="PartTime/Contractor">Part Time/Contractor</option>
+                                                       
+                                                    </select>
+                                             </div>
+
+                                    
+
                                     </div>
                                     <input type="submit" value="Add User" class="btn btn-success">
                                 </form>

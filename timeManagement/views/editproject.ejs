@@ -85,7 +85,15 @@
                                     </div>
                                 
                                   
-                                    <input type="submit" value="Add User" class="btn btn-success">
+                                    <input type="submit" value="Submit" class="btn btn-success">
+                                    <% if (project.status == "Open") { %>
+                                        <a class="btn btn-light" href='/project/<%= user.employeeID %>'>Cancel</a>
+                                     
+                    
+                                    <%} else {%>
+                                        <a class="btn btn-light" href='/closedproject/<%= user.employeeID %>'>Cancel</a>
+                                    <% }%>
+                                   
                                 </form>
                             </div>
                         </div>
