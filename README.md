@@ -1,6 +1,28 @@
 # time-management-system
 Time Management System Project for CIS 4290
 
+# Required Downloads:
+- MongoDB & Robo3T
+- Compiler/IDE (Ex. Visual Studio Code)
+- Node.js
+
+# To run the project locally:
+
+In compiler:
+- Download and install node modules "npm install"
+- Start the application using "npm start"
+
+In web browser:
+- localhost:3000
+
+# Creating accounts:
+- To create an admin account: localhost:3000/admincreate
+
+- To create a team leader/member account:
+  + Log into admin account
+  + Navigate to "All Users"
+  + Create new user using "Add User" button
+  + Create password through email verification
 
 ### Front End
 
