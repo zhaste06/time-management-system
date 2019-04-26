@@ -39,7 +39,8 @@
             </a>
           </nav>
         </div>
-        <form action="#" class="main-sidebar__search w-100 border-right d-sm-flex d-md-none d-lg-none">
+
+        <!--<form action="#" class="main-sidebar__search w-100 border-right d-sm-flex d-md-none d-lg-none">
           <div class="input-group input-group-seamless ml-3">
             <div class="input-group-prepend">
               <div class="input-group-text">
@@ -49,7 +50,7 @@
             <input class="navbar-search form-control" type="text" placeholder="Search for something..."
               aria-label="Search">
           </div>
-        </form>
+        </form>-->
 
         <div class="nav-wrapper">
           <ul class="nav flex-column">
@@ -77,8 +78,8 @@
               
             </li>
 
-            <% if (user.level != 0) { %>  
-            <% if (user.fullTimePartTime == 'Full Time') { %>
+            <% if (user.level != 0) { %>
+              <% if (user.fullTimePartTime == 'Full Time') { %>
             <li class="nav-item">
               <a class="nav-link " href="/timesheet/<%= user.employeeID %>">
                 <i class="material-icons">note_add</i>
@@ -86,23 +87,23 @@
               </a>
             </li>
             <% } else { %>
-              <li class="nav-item">
-                <a class="nav-link " href="/timesheetTemp/<%= user.employeeID %>">
-                  <i class="material-icons">note_add</i>
-                  <span>New Timesheet</span>
-                </a>
-              </li>
+            <li class="nav-item">
+              <a class="nav-link " href="/timesheetTemp/<%= user.employeeID %>">
+                <i class="material-icons">note_add</i>
+                <span>New Timesheet</span>
+              </a>
+            </li>
             <% } %>
             <% } %>
 
 
 
             <li class="nav-item">
-                <a class="nav-link " href="/timesheetsummary/<%= user.employeeID %>">
+              <a class="nav-link " href="/timesheetsummary/<%= user.employeeID %>">
                 <i class="material-icons">assignment</i>
                 <span>Timesheet Summary</span>
-                </a>
-              </li>
+              </a>
+            </li>
             <% if (user.level == 0) { %>
             <li class="nav-item">
               <a class="nav-link " href='/employee/<%= user.employeeID %>'>
@@ -135,31 +136,31 @@
 
             <%}%>
             <% if (user.level == 2) { %>
-              <li class="nav-item">
-                <a class="nav-link " href='/approval/<%= user.employeeID %>'>
-                  <i class="material-icons">table_chart</i>
-                  <span>Timesheet Approval</span>
-                </a>
-              </li>
-              <%} %>
-              <% if (user.level == 1) { %>
-                <li class="nav-item">
-                  <a class="nav-link " href='/approval/<%= user.employeeID %>'>
-                    <i class="material-icons">table_chart</i>
-                    <span>Timesheet Approval</span>
-                  </a>
-                </li>
-                <%} %>
-                <% if (user.level == 0) { %>
-                  <li class="nav-item">
-                    <a class="nav-link " href='/approval/<%= user.employeeID %>'>
-                      <i class="material-icons">table_chart</i>
-                      <span>Timesheet Approval</span>
-                    </a>
-                  </li>
-                  <%} %>
-            
-     
+            <li class="nav-item">
+              <a class="nav-link " href='/approval/<%= user.employeeID %>'>
+                <i class="material-icons">table_chart</i>
+                <span>Timesheet Approval</span>
+              </a>
+            </li>
+            <%} %>
+            <% if (user.level == 1) { %>
+            <li class="nav-item">
+              <a class="nav-link " href='/approval/<%= user.employeeID %>'>
+                <i class="material-icons">table_chart</i>
+                <span>Timesheet Approval</span>
+              </a>
+            </li>
+            <%} %>
+            <% if (user.level == 0) { %>
+            <li class="nav-item">
+              <a class="nav-link " href='/approval/<%= user.employeeID %>'>
+                <i class="material-icons">table_chart</i>
+                <span>Timesheet Approval</span>
+              </a>
+            </li>
+            <%} %>
+
+
           </ul>
         </div>
       </aside>
@@ -170,17 +171,8 @@
         <div class="main-navbar sticky-top bg-white">
           <!-- Main Navbar -->
           <nav class="navbar align-items-stretch navbar-light flex-md-nowrap p-0">
-            <form action="#" class="main-navbar__search w-100 d-none d-md-flex d-lg-flex">
-              <div class="input-group input-group-seamless ml-3">
-                <div class="input-group-prepend">
-                  <div class="input-group-text">
-                    <i class="fas fa-search"></i>
-                  </div>
-                </div>
-                <input class="navbar-search form-control" type="text" placeholder="Search for something..."
-                  aria-label="Search">
-              </div>
-            </form>
+            <form action="#" class="main-navbar__search w-100 d-none d-md-flex d-lg-flex"></form>
+
             <ul class="navbar-nav border-left flex-row ">
               <!--<li class="nav-item border-right dropdown notifications">
                 <a class="nav-link nav-link-icon text-center" href="#" role="button" id="dropdownMenuLink"
@@ -226,29 +218,29 @@
                 <a class="nav-link dropdown-toggle text-nowrap px-3" data-toggle="dropdown" href="#" role="button"
                   aria-haspopup="true" aria-expanded="false">
                   <% if (user.picture) {%>
-                    <img class="user-avatar rounded-circle mr-2" src="../image/<%= user.picture %>" alt="User Avatar">
-                    <% } else { %>
-                      <img class="user-avatar rounded-circle mr-2" src="../images/avatar-icon.png" alt="User Avatar">
-                    <% } %>
+                  <img class="user-avatar rounded-circle mr-2" src="../image/<%= user.picture %>" alt="User Avatar">
+                  <% } else { %>
+                  <img class="user-avatar rounded-circle mr-2" src="../images/avatar-icon.png" alt="User Avatar">
+                  <% } %>
                   <span class="d-none d-md-inline-block"><%= user.firstName %> <%= user.lastName %></span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-small">
+                </a>
+                <div class="dropdown-menu dropdown-menu-small">
 
-              <% if (user.level == 0) { %>
-              <a class="dropdown-item" href='/profile/<%= user.employeeID %>'>
-                <i class="material-icons">&#xE7FD;</i> Admin Profile</a>
-              <a class="dropdown-item" href="">
-                <%} else { %>
-                <a class="dropdown-item" href='/profile/<%= user.employeeID %>'>
-                  <i class="material-icons">&#xE7FD;</i> User Profile</a>
-                <a class="dropdown-item" href="/timesheet/<%= user.employeeID %>">
-
-                 
+                  <% if (user.level == 0) { %>
+                  <a class="dropdown-item" href='/profile/<%= user.employeeID %>'>
+                    <i class="material-icons">&#xE7FD;</i> Admin Profile</a>
+                  <a class="dropdown-item" href="">
+                    <%} else { %>
+                    <a class="dropdown-item" href='/profile/<%= user.employeeID %>'>
+                      <i class="material-icons">&#xE7FD;</i> User Profile</a>
+                    <a class="dropdown-item" href="/timesheet/<%= user.employeeID %>">
 
 
 
-                  
-                    <i class="material-icons">note_add</i>New Timesheet</a> <%}%>
+
+
+
+                      <i class="material-icons">note_add</i>New Timesheet</a> <%}%>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item text-danger" onclick="msg()" href="/logout">
                     <i class="material-icons text-danger">&#xE879;</i> Logout </a>
@@ -264,8 +256,8 @@
           </nav>
         </div>
         <script>
-        function msg(){
-          /*var msg = document.getElementById("alert_succ");
-          msg.style.visibility = "visible";*/
-        }
+          function msg() {
+            /*var msg = document.getElementById("alert_succ");
+            msg.style.visibility = "visible";*/
+          }
         </script>

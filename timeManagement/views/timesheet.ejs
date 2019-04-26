@@ -224,13 +224,13 @@
 <script>
     $(document).ready(function () {
         $('#add_project').click(function () {
-            $('#addformProject').append('<tr> <td> <div class="form-group"> <select id="inputAllocable" name="allocation" class="form-control"> <option selected>Allocable</option> <option>Non-Allocable</option> <option>Personal</option></select> </div> </td>' +
+            $('#addformProject').append('<tr> <td> <div class="form-group"> <select id="inputAllocable" name="allocation" class="form-control"> <option selected>Allocable</option> <option>Non-Allocable</option></select> </div> </td>' +
                 '<td> <div class="form-group"> <select id="inputAllocable" class="form-control" name="project"> <% for (var i = 0; i < allmyproject.length; i++) { %> <option value="<%= allmyproject[i] %> (<%= allmyprojectID[i] %>)"><%= allmyproject[i] %></option> <% } %> </select> </div> </td> <td>' +
                 '<div class="form-group"><input type="text" class="form-control" id="inputPerc" name="percentage" required></div></td> <td><button type="button" onclick="delete_pro(this)" class="mb-2 btn btn-danger mr-1" id="delete_project"><i class="material-icons">delete</i></button> </td> </tr>');
         });
 
         $('#add_custom_project').click(function () {
-            $('#addformProject').append('<tr> <td> <div class="form-group"> <select id="inputAllocable" name="allocation" class="form-control"> <option selected>Allocable</option> <option>Non-Allocable</option> <option>Personal</option> </select> </div> </td>' +
+            $('#addformProject').append('<tr> <td> <div class="form-group"> <select id="inputAllocable" name="allocation" class="form-control"> <option selected>Allocable</option> <option>Non-Allocable</option></select> </div> </td>' +
                 '<td> <div class="form-group"> <input type="text" class="form-control" id="inputProject" placeholder="Enter Project" name="project" required> </div> </td> <td>' +
                 '<div class="form-group"><input type="text" class="form-control" id="inputPerc" name="percentage"> </div> </td> <td><button type="button" onclick="delete_pro(this)" class="mb-2 btn btn-danger mr-1" id="delete_project"><i class="material-icons">delete</i></button> </td> </tr>');
         });
@@ -248,6 +248,9 @@
             var personal_time_percentage = parseInt($('#personal_time_percentage').val());
             var non_allocable_total;
             var allocable_total;
+            var date = $('#date').val();
+            //console.log('fer', date);
+            // console.log(date);
 
             if (non_allocable_percentage == parseInt(0)) {
                 non_allocable_total = 0;
@@ -279,20 +282,31 @@
                 });
                 var zero = parseInt(0);
                 if (non_allocable_percentage == zero && non_allocable_total != zero) {
-                    alert('Cannot create a Non-Allocable Project. Your Non-Allocable Percentage is 0%');
+                    swal('Cannot create a Non-Allocable Project. Your Non-Allocable Percentage is 0%');
                     e.preventDefault();
                 } else if (non_allocable_total != zero) {
-                    alert('Your Non-Allocable Percentage does not add up to 100%');
+                    swal('Your Non-Allocable Percentage does not add up to 100%');
                     e.preventDefault();
                 }
 
                 if (allocable_percentage == zero && allocable_total != zero) {
-                    alert('Cannot create an Allocable Project. Your Allocable Percentage is 0%');
+                    swal('Cannot create an Allocable Project. Your Allocable Percentage is 0%');
                     e.preventDefault();
                 } else if (allocable_total != zero) {
-                    alert('Your Allocable Percentage does not add up to 100%');
+                    swal('Your Allocable Percentage does not add up to 100%');
                     e.preventDefault();
                 }
+
+
+                console.log(date);
+
+                if (date === null) {
+                    swal('WEEK');
+                    e.preventDefault();
+                    console.log(date);
+                }
+
+
             }
         });
     });

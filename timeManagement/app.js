@@ -189,65 +189,65 @@ app.get('/logout', function (req, res) {
 // *******************************************************************
 
 // EDIT PROJECTS
-app.get('/editproject/:employeeID', function(req, res){
+app.get('/editproject/:employeeID', function (req, res) {
 
 
- 
-  User.findOne({ employeeID: req.params.employeeID}, function(err, user) {
+
+  User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
-      
+
       return res.redirect('/error');
-    } else if(user.level != 2 && user.level != 0) {
+    } else if (user.level != 2 && user.level != 0) {
       return res.redirect('/error');
     }
 
-   
-   
-    Project.findOne({projectID: req.query.projectID}, function(err, project){
-      if(project != null) {
-        
-       
 
-        User.find({department: user.department, level: "3"}, function(err, allUser){
-          if(allUser != null) {
+
+    Project.findOne({ projectID: req.query.projectID }, function (err, project) {
+      if (project != null) {
+
+
+
+        User.find({ department: user.department, level: "3" }, function (err, allUser) {
+          if (allUser != null) {
             res.render('editproject', {
               user: req.user,
               project,
               allUser
-          });
-         
-    
+            });
+
+
           }
         });
-    
-        
 
-       
-         
-          
-       
+
+
+
+
+
+
 
 
       }
     });
-    
+
 
   });
 
 });
 
-app.post('/editproject/:employeeID', function(req, res){
-  
+app.post('/editproject/:employeeID', function (req, res) {
+
   Project.findOne({ projectID: req.query.projectID }, function (err, project) {
     if (!project) {
       return res.redirect('/error');
     }
 
     project.projectName = req.body.projectName,
-    project.status = req.body.status,
-    project.employeeID = req.body.team_members
+      project.status = req.body.status,
+      project.employeeID = req.body.team_members
 
-      project.save(function (err) {
+    project.save(function (err) {
       req.flash('success_msg', + 'Project has been updated');
       return res.redirect('/project/' + req.params.employeeID);
     });
@@ -255,7 +255,7 @@ app.post('/editproject/:employeeID', function(req, res){
 
 
 
-  
+
 
 });
 
@@ -298,7 +298,7 @@ app.get('/approval/:employeeID', function (req, res) {
           });
         }
       });
-    } else if (user.level ==1) {
+    } else if (user.level == 1) {
       Timesheet.find({ level: "2", status: "Pending", employeeID: { $not: { $eq: req.params.employeeID } } }, function (err, allTimesheets) {
         if (allTimesheets != null) {
           res.render('approval', {
@@ -307,7 +307,7 @@ app.get('/approval/:employeeID', function (req, res) {
           });
         }
       });
-    } else if (user.level ==0) {
+    } else if (user.level == 0) {
       Timesheet.find({ level: "1", status: "Pending", employeeID: { $not: { $eq: req.params.employeeID } } }, function (err, allTimesheets) {
         if (allTimesheets != null) {
           res.render('approval', {
@@ -316,7 +316,7 @@ app.get('/approval/:employeeID', function (req, res) {
           });
         }
       });
-    }else {
+    } else {
       return res.redirect('/error');
     }
 
@@ -347,7 +347,7 @@ app.get('/closedproject/:employeeID', function (req, res) {
     if (!user) {
 
       return res.redirect('/error');
-    } else if (user.level != 2 && user.level != 0 ) {
+    } else if (user.level != 2 && user.level != 0) {
       return res.redirect('/error');
     }
 
@@ -389,51 +389,51 @@ app.get('/project/:employeeID', function (req, res) {
       return res.redirect('/error');
     }
     if (user.level == 2) {
-    User.find({ department: user.department, level: "3" }, function (err, allUser) {
-      if (allUser != null) {
+      User.find({ department: user.department, level: "3" }, function (err, allUser) {
+        if (allUser != null) {
 
-        Project.find({ status: 'Open' }, function (err, projects) {
-          res.render('project', {
-            user: req.user,
-            allUser,
-            projects
+          Project.find({ status: 'Open' }, function (err, projects) {
+            res.render('project', {
+              user: req.user,
+              allUser,
+              projects
+            });
           });
-        });
-        /*
-               Project.aggregate([
-                { $lookup:
-                  {
-                    from: 'users',
-                    localField: 'employeeID',
-                    foreignField: 'employeeID',
-                    as: 'orderdetails'
+          /*
+                 Project.aggregate([
+                  { $lookup:
+                    {
+                      from: 'users',
+                      localField: 'employeeID',
+                      foreignField: 'employeeID',
+                      as: 'orderdetails'
+                    }
                   }
-                }
-               ], function(err, projects) {
-        
-               console.log(JSON.stringify(projects) + "WHATTT");
-                res.render('project', {
-                  user: req.user,
-                  allUser,
-                  projects
-              });
-             
-                
-              });
-        
-              */
+                 ], function(err, projects) {
+          
+                 console.log(JSON.stringify(projects) + "WHATTT");
+                  res.render('project', {
+                    user: req.user,
+                    allUser,
+                    projects
+                });
+               
+                  
+                });
+          
+                */
         }
       });
     };
     if (user.level == 0) {
       User.find({}, function (err, allUser) {
         if (allUser != null) {
-          User.find({ level: "2"}, function(err, allLeaders) {
+          User.find({ level: "2" }, function (err, allLeaders) {
             Project.find({ status: 'Open' }, function (err, projects) {
               res.render('project', {
                 user: req.user,
                 allUser,
-                projects, 
+                projects,
                 allLeaders
               });
             });
@@ -456,8 +456,8 @@ app.post('/project/:employeeID', function (req, res) {
     return text;
   }
 
-  if(req.user.level == 0) {
-    User.findOne({ employeeID : req.body.team_leaders}, function(err, leader){
+  if (req.user.level == 0) {
+    User.findOne({ employeeID: req.body.team_leaders }, function (err, leader) {
 
       var leadersTeam = leader.team;
       var leadersID = leader.employeeID;
@@ -481,19 +481,19 @@ app.post('/project/:employeeID', function (req, res) {
     });
   }
   else {
-  var project = new Project({
-    projectID: makeProjectID(10),
-    employeeID: req.body.team_members,
-    status: req.body.status,
-    projectName: req.body.project_name,
-    teamLead: req.params.employeeID,
-    team: req.body.team
-  });
+    var project = new Project({
+      projectID: makeProjectID(10),
+      employeeID: req.body.team_members,
+      status: req.body.status,
+      projectName: req.body.project_name,
+      teamLead: req.params.employeeID,
+      team: req.body.team
+    });
 
-  project.save(function (err) {
-    res.redirect('/project/' + req.params.employeeID);
-  });
-};
+    project.save(function (err) {
+      res.redirect('/project/' + req.params.employeeID);
+    });
+  };
 });
 
 // *******************************************************************
@@ -527,12 +527,21 @@ app.post('/passwordchange/:employeeID', function (req, res, next) {
     } else if (user.employeeID != req.user.employeeID) {
       return res.redirect('/error');
     }
+
+
+
+
+
+
+    
     user.password = req.body.newPassword;
     user.save(function (err) {
+      req.flash('success_msg', 'You have updated your password');
       return res.redirect('/profile/' + user.employeeID);
     });
   });
 });
+
 // *********************************************************************
 // ADMIN CREATION
 app.get('/admincreate', function (req, res, next) {
@@ -574,35 +583,37 @@ app.get('/employee/:employeeID', function (req, res) {
       return res.redirect('/error');
     }
 
-  //Sorting 
-if(Object.keys(req.query).length !== 0){
+    //Sorting 
+    if (Object.keys(req.query).length !== 0) {
       for (const key in req.query) {
         console.log("HERE TOO");
-        if(req.query[key] == 'asc') {
-        User.find().sort({[key] : 1 }).exec( function(err, allUser){
-      
-        res.render('employee', {
-          user: req.user,
-          allUser
-        });}
-        );
-        
-      } else if (req.query[key] == 'des') {
-        User.find().sort({[key]: -1 }).exec( function(err, allUser){
-      
-        res.render('employee', {
-          user: req.user,
-          allUser
-        });}
-        );
-      } 
-   
-      
+        if (req.query[key] == 'asc') {
+          User.find().sort({ [key]: 1 }).exec(function (err, allUser) {
 
-       
+            res.render('employee', {
+              user: req.user,
+              allUser
+            });
+          }
+          );
+
+        } else if (req.query[key] == 'des') {
+          User.find().sort({ [key]: -1 }).exec(function (err, allUser) {
+
+            res.render('employee', {
+              user: req.user,
+              allUser
+            });
+          }
+          );
+        }
+
+
+
+
 
       }
-      
+
     } else {
       User.find({}, function (err, allUser) {
         if (allUser != null) {
@@ -614,21 +625,21 @@ if(Object.keys(req.query).length !== 0){
         }
       });
     }
-      /*User.find().sort({}, function(err, allUser){
-        if (allUser != null) {
-          res.render('employee', {
-            user: req.user,
-            allUser
-          });
-        }
+    /*User.find().sort({}, function(err, allUser){
+      if (allUser != null) {
+        res.render('employee', {
+          user: req.user,
+          allUser
+        });
+      }
 
-      });*/
-      
-    
+    });*/
 
-  
 
-  
+
+
+
+
   });
 });
 
@@ -730,7 +741,11 @@ app.get('/deleteuser/:employeeID', function (req, res) {
       } else if (user.level != 0) {
         return res.redirect('/error');
       }
-      req.flash('success_msg', 'User: ' + user.firstName + ' ' + user.lastName + ' has been deleted');
+
+      req.flash('success_msg', 'A user has been deleted');
+      
+      // req.flash('success_msg', 'User: ' + user.firstName + ' ' + user.lastName + '  has been deleted');
+
       return res.redirect('/employee/' + req.params.employeeID);
 
     });
@@ -753,7 +768,7 @@ app.get('/deleteproject/:employeeID', function (req, res) {
     Project.deleteOne({ projectID: req.query.projectID }, function (err, project) {
       if (!project) {
         return res.redirect('/error');
-      } 
+      }
       req.flash('success_msg', 'Project has been deleted');
       return res.redirect('/project/' + req.params.employeeID);
 
@@ -810,7 +825,7 @@ app.post('/edituser/:employeeID', function (req, res, next) {
       user.fullTimePartTime = req.body.fullTimePartTime
 
     user.save(function (err) {
-      req.flash('success_msg', 'User: ' + user.firstName + ' ' + user.lastName + 'has been updated');
+      req.flash('success_msg', 'User: ' + user.firstName + ' ' + user.lastName + '  has been updated');
       return res.redirect('/employee/' + req.params.employeeID);
     });
   });
@@ -944,7 +959,7 @@ app.get('/timesheet/:employeeID', function (req, res) {
 
 });
 
-app.get('/timesheetTemp/:employeeID', function(req,res){
+app.get('/timesheetTemp/:employeeID', function (req, res) {
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
       return res.redirect('/error');
@@ -1014,6 +1029,11 @@ app.post('/timesheetTemp/:employeeID', function (req, res, next) {
     percentage: req.body.percentage,
     project: req.body.project,
     allocation: req.body.allocation,
+
+    //allocable_percentage: 0,
+    //non_allocable_percentage: 0,
+    //personal_time_percentage: 0,
+
     level: req.body.level,
     status: "Pending",
     teamLead: req.body.teamLead,
@@ -1033,21 +1053,12 @@ app.post('/timesheet/:employeeID', function (req, res, next) {
     employeeID: req.body.employeeID,
     date: req.body.date,
     level: req.body.level,
-
-
-
     allocable_percentage: req.body.allocable_percentage,
     non_allocable_percentage: req.body.non_allocable_percentage,
     personal_time_percentage: req.body.personal_time_percentage,
-
-
-
-
-    
     percentage: req.body.percentage,
     project: req.body.project,
     allocation: req.body.allocation,
-
     status: "Pending",
     teamLead: req.body.teamLead,
     firstName: req.body.firstName,
@@ -1383,6 +1394,7 @@ app.post('/upload/:employeeID', upload.single('file'), (req, res) => {
     }
     user.picture = filename;
     user.save(function (err) {
+      req.flash('success_msg', 'Profile picture uploaded');
       res.redirect('/profile/' + user.employeeID);
     });
   });
