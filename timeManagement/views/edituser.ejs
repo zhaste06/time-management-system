@@ -23,8 +23,9 @@
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="feFirstName">Email</label>
-                                            <input type="text" name="username" value="<%= editUser.username %>" class="form-control"
-                                                readonly> </div>
+                                            <input type="text" name="username" value="<%= editUser.username %>"
+                                                class="form-control" readonly>
+                                        </div>
                                         <div class="form-group col-md-6">
                                             <label for="feEmailAddress">Employee ID</label>
                                             <input type="text" name="employeeID" value="<%= editUser.employeeID %>"
@@ -36,68 +37,92 @@
                                         <div class="form-group col-md-6">
                                             <label for="feLastName">Last Name</label>
                                             <input type="text" name="lastName" value="<%= editUser.lastName %>"
-                                                class="form-control" required></div>
+                                                class="form-control" required>
+                                        </div>
                                         <div class="form-group col-md-6">
                                             <label for="fePhone">First Name</label>
                                             <input type="text" name="firstName" value="<%= editUser.firstName %>"
-                                                class="form-control" required> </div>
-
+                                                class="form-control" required>
+                                        </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="feEmpolyeeID">Department</label>
                                             <input type="text" name="department" value="<%= editUser.department %>"
-                                                class="form-control" required></div>
-                                         <div class="form-group col-md-6">
-                                                <label for="feEmpolyeeID">Team</label>
-                                                 <input type="text" name="team" value="<%= editUser.team %>"
-                                                    class="form-control" required></div>
+                                                class="form-control" required>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="feEmpolyeeID">Team</label>
+                                            <input type="text" name="team" value="<%= editUser.team %>"
+                                                class="form-control" required>
+                                        </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="feEmpolyeeID">Level</label>
                                             <div class="form-group">
-                                                    <select class="form-control" name="level">
-                                                        <% if (editUser.level == 3) { %>
-                                                            <option value="3" selected>Team Member</option>
-                                                            <option value="2">Team Lead/Top Managment</option>
-                                                            <option value="0">Admin</option>
-                                                        <%} else if (editUser.level == 2) {%>
-                                                            <option value="3">Team Member</option>
-                                                            <option value="2" selected>Team Lead/Top Managment</option>
-                                                            <option value="0">Admin</option>
-                                                        <%} else {%>
-                                                            <option value="3">Team Member</option>
-                                                            <option value="2">Team Lead/Top Managment</option>
-                                                            <option value="0" selected>Admin</option>
-                                                        <% }%>
-                                                       
-                                                    </select>
-                                                </div>
-                                            <!--<input type="text" name="level" placeholder="Level" class="form-control"
-                                                required>--> </div>
-                                                <div class="form-group col-md-6">
-                                                    <label for="feJobTitle">Job Title</label>
-                                                    <input type="text" name="jobTitle" value="<%= editUser.jobTitle %>"
-                                                        class="form-control" required> </div>
+                                                <select class="form-control" name="level">
+                                                    <% if (editUser.level == 3) { %>
+                                                    <option value="3" selected>Team Member</option>
+                                                    <option value="2">Team Lead/Top Managment</option>
+                                                    <option value="0">Admin</option>
+                                                    <%} else if (editUser.level == 2) {%>
+                                                    <option value="3">Team Member</option>
+                                                    <option value="2" selected>Team Lead/Top Managment</option>
+                                                    <option value="0">Admin</option>
+                                                    <%} else {%>
+                                                    <option value="3">Team Member</option>
+                                                    <option value="2">Team Lead/Top Managment</option>
+                                                    <option value="0" selected>Admin</option>
+                                                    <% }%>
 
-                                     
+                                                </select>
+                                            </div>
+                                            <!--<input type="text" name="level" placeholder="Level" class="form-control"
+                                                required>-->
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="feJobTitle">Job Title</label>
+                                            <input type="text" name="jobTitle" value="<%= editUser.jobTitle %>"
+                                                class="form-control" required> </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="feLegalWorkingStatus">Legal Working Status</label>
-                                            <input type="text" name="workingStatus" value="<%= editUser.workingStatus %>"
-                                                class="form-control" required> </div>
+                                            <input type="text" name="workingStatus"
+                                                value="<%= editUser.workingStatus %>" class="form-control" required>
+                                        </div>
                                         <div class="form-group col-md-6">
                                             <label for="feStartDate">Start Date</label>
                                             <input type="text" name="startDate" value="<%= editUser.startDate %>"
                                                 class="form-control" required> </div>
                                     </div>
+
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="feFulltimePartTime">Full Time Or Part-Time/Contractor</label>
-                                            <input type="text" name="fullTimePartTime" value="<%= editUser.fullTimePartTime %>"
-                                                class="form-control" required> </div>
+
+                                            <select class="form-control" name="fullTimePartTime">
+                                                <% if (editUser.fullTimePartTime == "Full Time") { %>
+                                                <option value="Full Time" selected>Full Time</option>
+                                                <option value="PartTime/Contractor">PartTime/Contractor</option>
+                                                <%} else {%>
+                                                <option value="Full Time">Full Time</option>
+                                                <option value="PartTime/Contractor" selected>PartTime/Contractor
+                                                </option>
+                                                <% }%>
+                                            </select>
+
+                                            <!--<select class="form-control" name="fullTimePartTime">
+                                                <option value="<%= editUser.fullTimePartTime %>" selected>
+                                                    <%= editUser.fullTimePartTime %></option>
+                                                <option value="Full Time" selected>Full Time</option>
+                                                <option value="PartTime/Contractor">Part Time/Contractor</option>
+                                            </select>-->
+
+                                            <!--<input type="text" name="fullTimePartTime"
+                                                value="<%= editUser.fullTimePartTime %>" class="form-control" required>-->
+                                        </div>
                                     </div>
                                     <input type="submit" value="Add User" class="btn btn-success">
                                 </form>

@@ -11,6 +11,11 @@ var userSchema = new Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   phone: String,
+
+  address: String,
+  contactName: String,
+  contactPhone: String,
+
   department: String,
   team: String,
   jobTitle: { type: String, required: true },

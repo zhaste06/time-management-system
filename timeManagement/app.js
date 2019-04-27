@@ -268,6 +268,7 @@ app.get('/error', function (req, res) {
   res.render('error');
 });
 
+// *******************************************************************
 app.get('/newpassword/:employeeID', function (req, res) {
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
@@ -351,32 +352,19 @@ app.get('/closedproject/:employeeID', function (req, res) {
       return res.redirect('/error');
     }
 
-
-
     Project.find({ status: "Closed" }, function (err, projects) {
-
-
       res.render('closedproject', {
         user: req.user,
         projects
       });
-
-
     });
-
-
-
   });
-
 });
 
 app.post('/closedproject/:employeeID', function (req, res) {
-
 });
 
 // *******************************************************************
-
-
 // *******************************************************************
 
 // ASSIGN PROJECTS TO TEAM MEMBERS
@@ -529,11 +517,6 @@ app.post('/passwordchange/:employeeID', function (req, res, next) {
     }
 
 
-
-
-
-
-    
     user.password = req.body.newPassword;
     user.save(function (err) {
       req.flash('success_msg', 'You have updated your password');
@@ -715,7 +698,12 @@ app.post('/profile/:employeeID', function (req, res) {
       return res.redirect('/error');
     }
     user.phone = req.body.phone;
+    user.address = req.body.address;
+    user.contactName = req.body.contactName;
+    user.contactPhone = req.body.contactPhone;
     user.save(function (err) {
+
+
       req.flash('success_msg', 'Profile updated');
       return res.redirect('/profile/' + user.employeeID);
     });
@@ -743,9 +731,7 @@ app.get('/deleteuser/:employeeID', function (req, res) {
       }
 
       req.flash('success_msg', 'A user has been deleted');
-      
       // req.flash('success_msg', 'User: ' + user.firstName + ' ' + user.lastName + '  has been deleted');
-
       return res.redirect('/employee/' + req.params.employeeID);
 
     });
@@ -950,15 +936,13 @@ app.get('/timesheet/:employeeID', function (req, res) {
           user: req.user,
           allmyproject
         });
-
-
       }
     });
-
   });
-
 });
 
+// *******************************************************************
+// ADD NEW TIMESHEET-TEMP for Admin
 app.get('/timesheetTemp/:employeeID', function (req, res) {
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
@@ -1004,10 +988,8 @@ app.get('/timesheetTemp/:employeeID', function (req, res) {
           user: req.user,
           allmyproject
         });
-
       }
     });
-
   });
 })
 
@@ -1017,7 +999,6 @@ function makeProjectID(length) {
 
   for (var i = 0; i < length; i++)
     text += possible.charAt(Math.floor(Math.random() * possible.length));
-
   return text;
 }
 
@@ -1029,10 +1010,12 @@ app.post('/timesheetTemp/:employeeID', function (req, res, next) {
     percentage: req.body.percentage,
     project: req.body.project,
     allocation: req.body.allocation,
-
     //allocable_percentage: 0,
     //non_allocable_percentage: 0,
-    //personal_time_percentage: 0,
+    //personal_time_percentage: 0,    
+    allocable_percentage: req.body.allocable_percentage,
+    non_allocable_percentage: req.body.non_allocable_percentage,
+    personal_time_percentage: req.body.personal_time_percentage,    
 
     level: req.body.level,
     status: "Pending",
@@ -1043,9 +1026,10 @@ app.post('/timesheetTemp/:employeeID', function (req, res, next) {
 
   timesheet.save(function (err) {
     req.flash('success_msg', 'A new Timesheet has been entered');
-    res.redirect('/timesheet/' + req.params.employeeID);
+    res.redirect('/timesheetTemp/' + req.params.employeeID);
   });
 });
+
 
 app.post('/timesheet/:employeeID', function (req, res, next) {
   var timesheet = new Timesheet({
@@ -1088,7 +1072,6 @@ app.get('/timesheetsummary/:employeeID', function (req, res) {
           filter_row = allUser.filter(x => x.employeeID == req.params.employeeID);
         } else {
           filter_row = allUser;
-
         }
 
         res.render('timesheetsummary', {
@@ -1100,7 +1083,6 @@ app.get('/timesheetsummary/:employeeID', function (req, res) {
       });
     }
   });
-
 });
 
 /*
@@ -1150,14 +1132,12 @@ app.get('/dashboard/:employeeID', function (req, res) {
     }
 
     if (user.level == 0) {
-
       User.find({}, function (err, allUser) {
         res.render('dashboard', {
           user: req.user,
           allUser
         });
       });
-
     } else {
       var allmyproject = [];
       var allmyprojectID = [];
@@ -1165,28 +1145,22 @@ app.get('/dashboard/:employeeID', function (req, res) {
       Project.find({ team: user.team, status: 'Open' }, function (err, allOpenedProject) {
         if (allOpenedProject != null) {
 
-
           for (i = 0; i < allOpenedProject.length; i++) {
             var myProject = allOpenedProject[i].employeeID;
-            //
             var projectArray = myProject.split(",");
             for (j = 0; j < projectArray.length; j++) {
-
               var projectArraywithID = projectArray[j].split(":");
 
               for (k = 0; k < projectArraywithID.length; k += 3) {
                 console.log(projectArraywithID[k]);
                 if (projectArraywithID[k] == user.employeeID) {
-
                   allmyproject.push(allOpenedProject[i].projectName);
 
                   allmyprojectID.push(allOpenedProject[i].projectID);
                   teamLead = allOpenedProject[i].teamLead;
                 }
               }
-
             }
-
           }
 
           User.find({}, function (err, allUser) {
@@ -1204,8 +1178,6 @@ app.get('/dashboard/:employeeID', function (req, res) {
 });
 
 // *******************************************************************
-
-
 // *******************************************************************
 app.get('/forgot', function (req, res) {
   res.render('forgot', {
@@ -1265,9 +1237,8 @@ app.post('/forgot', function (req, res, next) {
     res.redirect('/forgot');
   });
 });
+
 // *******************************************************************
-
-
 // *******************************************************************
 app.get('/reset/:token', function (req, res) {
   User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function (err, user) {

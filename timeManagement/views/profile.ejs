@@ -23,126 +23,171 @@
                 <div class="card-header border-bottom text-center">
                     <div class="mb-3 mx-auto">
                         <% if (user.picture) {%>
-                        <img class="rounded-circle" src="../image/<%= user.picture %>" alt="User Avatar" width="110">
-                        <% } else { %>
-                        <img class="rounded-circle" src="../images/avatar-icon.png" alt="User Avatar" width="110">
-                        <% } %>
+            <img class="rounded-circle" src="../image/<%= user.picture %>" alt="User Avatar" width="110">
+            <% } else { %>
+            <img class="rounded-circle" src="../images/avatar-icon.png" alt="User Avatar" width="110">
+            <% } %>
+        </div>
+        <button type="button" class="mb-2 btn btn-sm btn-success mr-1" data-toggle="modal"
+            data-target="#profilepicture">Upload New Picture</button><br><br>
+        <div class="modal fade" id="profilepicture">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h6 class="m-0">Upload Profile Picture</h6>
                     </div>
-                    <button type="button" class="mb-2 btn btn-sm btn-success mr-1" data-toggle="modal"
-                          data-target="#profilepicture">Upload New Picture</button><br><br>
-                    <div class="modal fade" id="profilepicture">
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h6 class="m-0">Upload Profile Picture</h6>
+                    <div class="modal-body">
+                        <form action="/upload/<%= user.employeeID %>" method="POST" enctype="multipart/form-data">
+                            <div class="custom-file mb-3">
+                                <input type="file" name="file" id="file" class="custom-file-input">
+                                <label for="file" class="custom-file-label">Choose File</label>
                             </div>
-                            <div class="modal-body">
-                                <form action="/upload/<%= user.employeeID %>" method="POST" enctype="multipart/form-data">
-                                    <div class="custom-file mb-3">
-                                        <input type="file" name="file" id="file" class="custom-file-input">
-                                        <label for="file" class="custom-file-label">Choose File</label>
-                                    </div>
-                                    <input type="submit" value="Upload" class="btn btn-primary btn-block">
-                                </form>
-                            </div>
-                          </div>
-                        </div>
+                            <input type="submit" value="Upload" class="btn btn-primary btn-block">
+                        </form>
                     </div>
-
-                    <h4 class="mb-0"><%= user.firstName %> <%= user.lastName %></h4>
-                    <span class="text-muted d-block mb-2"><%= user.jobTitle %></span>
                 </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item p-4">
-                        <strong class="text-muted d-block mb-2">Employee ID</strong>
-                        <span><%= user.employeeID %></span>
-                        <br><br>
-                        <strong class="text-muted d-block mb-2">Department</strong>
-                        <span><%= user.department %></span>
-                        <br><br>
-                        <strong class="text-muted d-block mb-2">Employment Duration</strong>
-                        <span class="duration"></span>
-                        <br><br>
-                        <strong class="text-muted d-block mb-2">Legal Working Status</strong>
-                        <span><%=user.workingStatus %></span>
-                        <br><br>
-                        <strong class="text-muted d-block mb-2">Start Date</strong>
-                        <span class="startDate"><%=user.startDate %></span>
-                        <br><br>
-                        <strong class="text-muted d-block mb-2">Full Time Or Part-Time/Contractor</strong>
-                        <span><%=user.fullTimePartTime %></span>
-                        <br><br>
-                        <a class="btn btn-accent" href='/passwordchange/<%= user.employeeID %>'>Change Password</a>
-                    </li>
-                </ul>
             </div>
         </div>
 
-        <div class="col-lg-8">
-            <div class="card card-small mb-4">
-                <div class="card-header border-bottom">
-                    <h6 class="m-0">Account Details</h6>
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item p-3">
-                        <div class="row">
-                            <div class="col">
-                                <form method="post">
-                                    <div class="form-row">
-                                        <div class="form-group col-md-6">
-                                            <label for="feFirstName">First Name</label>
-                                            <input type="text" class="form-control" id="feFirstName" placeholder="First Name"
-                                                value="<%= user.firstName %>" name="firstName" readonly> </div>
-                                        <div class="form-group col-md-6">
-                                            <label for="feLastName">Last Name</label>
-                                            <input type="text" class="form-control" id="feLastName" placeholder="Last Name"
-                                                value="<%= user.lastName %>" name="lastName" readonly> </div>
-                                    </div>
-                                    <div class="form-row">
-                                        <div class="form-group col-md-6">
-                                            <label for="feEmailAddress">Email</label>
-                                            <input type="email" class="form-control" id="feEmailAddress" placeholder="Email"
-                                                value="<%= user.username %>" readonly> </div>
-                                        <div class="form-group col-md-6">
-                                            <label for="fePhone">Phone</label>
-                                            <input type="text" class="form-control" id="fePhone" placeholder="<%= user.phone %>"
-                                                name="phone" value="<%= user.phone %>"> </div>
-                                    </div>
-                                    <button type="submit" class="btn btn-accent">Update Account</button>
-                                </form>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            <div class="card card-small mb-4">
-                <div class="card-header border-bottom">
-                    <h6 class="m-0">Documents</h6>
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item p-3">
-                        <div class="row">
-                            <div class="col">
-                                <form action="/upload/w4" method="POST" enctype="multipart/form-data">
-                                            <div class="custom-file mb-3">
-                                                <input type="file" name="file" id="filew4" class="custom-file-input">
-                                                <label for="file" class="custom-file-label">W4</label>
-                                            </div>
-                                </form>
-                                <form action="/upload/w9" method="POST" enctype="multipart/form-data">
-                                            <div class="custom-file mb-3">
-                                                <input type="file" name="file" id="filew9" class="custom-file-input">
-                                                <label for="file" class="custom-file-label">W9</label>
-                                            </div>
-                                </form>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-<!-- End Default Light Table -->
+        <h4 class="mb-0"><%= user.firstName %> <%= user.lastName %></h4>
+        <span class="text-muted d-block mb-2"><%= user.jobTitle %></span>
     </div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item p-4">
+            <strong class="text-muted d-block mb-2">Employee ID</strong>
+            <span><%= user.employeeID %></span>
+            <br><br>
+            <strong class="text-muted d-block mb-2">Department</strong>
+            <span><%= user.department %></span>
+            <br><br>
+            <strong class="text-muted d-block mb-2">Employment Duration</strong>
+            <span class="duration"></span>
+            <br><br>
+            <strong class="text-muted d-block mb-2">Legal Working Status</strong>
+            <span><%=user.workingStatus %></span>
+            <br><br>
+            <strong class="text-muted d-block mb-2">Start Date</strong>
+            <span class="startDate"><%=user.startDate %></span>
+            <br><br>
+            <strong class="text-muted d-block mb-2">Full Time Or Part-Time/Contractor</strong>
+            <span><%=user.fullTimePartTime %></span>
+            <br><br>
+            <a class="btn btn-accent" href='/passwordchange/<%= user.employeeID %>'>Change Password</a>
+        </li>
+    </ul>
+</div>
+</div>
+
+<div class="col-lg-8">
+    <div class="card card-small mb-4">
+        <div class="card-header border-bottom">
+            <h6 class="m-0">
+                <center>Account Details</center>
+            </h6>
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item p-3">
+                <div class="row">
+                    <div class="col">
+                        <form method="post">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="feFirstName">First Name</label>
+                                    <input type="text" class="form-control" id="feFirstName" placeholder="First Name"
+                                        value="<%= user.firstName %>" name="firstName" readonly>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="feLastName">Last Name</label>
+                                    <input type="text" class="form-control" id="feLastName" placeholder="Last Name"
+                                        value="<%= user.lastName %>" name="lastName" readonly>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="feEmailAddress">Email</label>
+                                    <input type="email" class="form-control" id="feEmailAddress" placeholder="Email"
+                                        value="<%= user.username %>" readonly>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="fePhone">Phone</label>
+                                    <input type="text" class="form-control" id="fePhone" placeholder="<%= user.phone %>"
+                                        name="phone" value="<%= user.phone %>">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="feAddress">Address</label>
+                                    <input type="text" class="form-control" id="feAddress"
+                                        placeholder="<%= user.address %>" name="address" value="<%= user.address %>">
+                                </div>
+                            </div> <br />
+                          
+
+
+                            <div class="card-header border-bottom">
+                                <h6 class="m-0">
+                                    <center>Emergency Contact Information</center>
+                                </h6>
+                            </div><br />
+
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="feContactName">Name</label>
+                                    <input type="text" class="form-control" id="feContactName"
+                                        placeholder="<%= user.contactName %>" name="contactName"
+                                        value="<%= user.contactName %>">
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label for="feContactPhone">Phone</label>
+                                    <input type="text" class="form-control" id="feContactPhone"
+                                        placeholder="<%= user.contactPhone %>" name="contactPhone"
+                                        value="<%= user.contactPhone %>">
+                                </div>
+                            </div>
+
+
+
+
+
+
+
+
+
+                            <button type="submit" class="btn btn-accent">Update Account</button>
+                        </form>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="card card-small mb-4">
+        <div class="card-header border-bottom">
+            <h6 class="m-0">Documents</h6>
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item p-3">
+                <div class="row">
+                    <div class="col">
+                        <form action="/upload/w4" method="POST" enctype="multipart/form-data">
+                            <div class="custom-file mb-3">
+                                <input type="file" name="file" id="filew4" class="custom-file-input">
+                                <label for="file" class="custom-file-label">W4</label>
+                            </div>
+                        </form>
+                        <form action="/upload/w9" method="POST" enctype="multipart/form-data">
+                            <div class="custom-file mb-3">
+                                <input type="file" name="file" id="filew9" class="custom-file-input">
+                                <label for="file" class="custom-file-label">W9</label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- End Default Light Table -->
+</div>
 </div>
 </main>
 
@@ -169,9 +214,7 @@
             return Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate())) / (1000 * 60 * 60 * 24));
         }
 
-
         $('.duration').text(date_diff_indays($('.startDate').text()) + ' days');
-
     });
 </script>
 </body>
