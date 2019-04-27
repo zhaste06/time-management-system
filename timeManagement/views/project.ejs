@@ -135,8 +135,32 @@
 <script src="../scripts/shards-dashboards.1.1.0.min.js"></script>
 <script src="../scripts/app/app-blog-overview.1.1.0.js"></script>
 <script>
-  $(document).ready(function () {
-  });
+ 
+    $('#team_leaders').change(() => {
+      $('#team_members').empty();
+
+      var teamLeader = $('#team_leaders').val();
+      console.log(teamLeader);
+
+      $.ajax({
+        url : '/genMembers',
+        method : 'POST',
+        contentType : 'application/json',
+        data : JSON.stringify({
+          name: $('#team_leaders').val() 
+        }),
+        success : (data) => {
+          console.log('ajax was successful', data);
+          
+          var newMembers = data;
+          $.each(newMembers, function(index, member){
+            console.log(member.firstName)
+            $('#team_members').append('<option value="' + member.employeeID + ':' + member.firstName + ':' + member.lastName + '">' + member.firstName + ' ' + member.lastName + '</option>')
+          })
+        }
+      });
+
+    });
 
 </script>
 </body>

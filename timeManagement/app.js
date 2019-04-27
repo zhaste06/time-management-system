@@ -484,6 +484,18 @@ app.post('/project/:employeeID', function (req, res) {
   };
 });
 
+app.post('/genMembers', function(req, res) {
+  var name = req.body.name;
+  console.log(name);
+  User.findOne({ employeeID : name}, function(err, leader){
+    User.find({ team : leader.team, level: "3"}, function(err, teamMembers){
+      res.send(teamMembers);
+    })
+  })
+
+
+});
+
 // *******************************************************************
 
 // *******************************************************************
