@@ -20,7 +20,7 @@
     <div class="col">
       <div class="card card-small mb-4">
         <div class="card-header border-bottom">
-          <h6 class="m-0">Total Employee Users: <%= allUser.length %></h6>
+          <h6 class="m-0">Total Full Time & Part Time Users: <%= allUser.length %></h6>
         </div>
         <div class="card-body p-0 pb-3 text-center">
 
@@ -38,7 +38,7 @@
                 <th scope="col" class="border-0"><a href="/employee/<%= user.employeeID %>?team=asc">Team</a></th>
                 <th scope="col" class="border-0"><a href="/employee/<%= user.employeeID %>?jobTitle=asc">Job Title</a></th>
                 <th scope="col" class="border-0">Email</th>
-                <th scope="col" class="border-0">Verfrication Status</th>
+                <th scope="col" class="border-0">Verification Status</th>
                 <th scope="col" class="border-0">Action</th>
               </tr>
             </thead>
@@ -79,53 +79,45 @@
     <div class="col">
       <div class="card card-small mb-4">
         <div class="card-header border-bottom">
-          <h6 class="m-0">Contractor Users</h6>
+          <h6 class="m-0">Total Contractor Users: <%= allContractors.length %></h6>
         </div>
         <div class="card-body p-0 pb-3 text-center">
           <table class="table mb-0">
             <thead class="bg-light">
               <tr>
-                <th scope="col" class="border-0">#</th>
-                <th scope="col" class="border-0">First Name</th>
-                <th scope="col" class="border-0">Last Name</th>
-                <th scope="col" class="border-0">Project</th>
-                <th scope="col" class="border-0">End</th>
-                <th scope="col" class="border-0">Phone</th>
+                  <th scope="col" class="border-0"><a href="/employee/<%= user.employeeID %>?firstName=asc">First Name</a></th>
+                  <th scope="col" class="border-0"><a href="/employee/<%= user.employeeID %>?lastName=asc">Last Name</a></th>
+                  <th scope="col" class="border-0"><a href="/employee/<%= user.employeeID %>?employeeID=asc">Employee ID</a></th>
+                  <th scope="col" class="border-0"><a href="/employee/<%= user.employeeID %>?department=asc">Department</a></th>
+                  <th scope="col" class="border-0"><a href="/employee/<%= user.employeeID %>?team=asc">Team</a></th>
+                  <th scope="col" class="border-0"><a href="/employee/<%= user.employeeID %>?jobTitle=asc">Job Title</a></th>
+                  <th scope="col" class="border-0">Email</th>
+                  <th scope="col" class="border-0">Verification Status</th>
+                  <th scope="col" class="border-0">Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>Ali</td>
-                <td>Kerry</td>
-                <td>Web</td>
-                <td>May 05, 2019</td>
-                <td>303-107-0339</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Clark</td>
-                <td>Angela</td>
-                <td>APP</td>
-                <td>April 30, 2019</td>
-                <td>660-850-1647</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>Jerry</td>
-                <td>Nathan</td>
-                <td>AI</td>
-                <td>March 03, 2019</td>
-                <td>909-214-4225</td>
-              </tr>
-              <tr>
-                <td>4</td>
-                <td>Colt</td>
-                <td>Angela</td>
-                <td>Blockchain</td>
-                <td>July 24, 2019</td>
-                <td>818-473-7416</td>
-              </tr>
+              <% if (allContractors != null) { %> 
+                <% for (var i = 0; i < allContractors.length; i++) { %>
+                  <tr>
+                    <td><%= allContractors[i].firstName %></td>
+                    <td><%= allContractors[i].lastName %></td>
+                    <td><%= allContractors[i].employeeID %></td>
+                    <td><%= allContractors[i].department %></td>
+                    <td><%= allContractors[i].team %></td>
+                    <td><%= allContractors[i].jobTitle %></td>
+                    <td><%= allContractors[i].username %></td>
+                    <% if (allContractors[i].verifyUserToken != undefined) { %>
+                    <td><i class="material-icons">close</i></td>
+                    <%} else { %>
+                    <td><i class="material-icons">check</i></td>
+                    <%} %>
+    
+                    <td><a class="mb-2 btn btn-sm btn-success mr-1" href='/edituser/<%= user.employeeID %>?userID=<%= allContractors[i].employeeID %>'>Edit</a>
+                      <a class="mb-2 btn btn-sm mr-1 btn-danger" style="color: #fff;" href='/deleteuser/<%= user.employeeID %>?userID=<%= allContractors[i].employeeID %>'>Delete</a></td>
+                  </tr>
+                  <% } %>
+                <% } %>
             </tbody>
           </table>
         </div>

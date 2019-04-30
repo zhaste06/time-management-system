@@ -578,63 +578,47 @@ app.get('/employee/:employeeID', function (req, res) {
       return res.redirect('/error');
     }
 
-    //Sorting 
+    //Query & Sorting for Users
     if (Object.keys(req.query).length !== 0) {
       for (const key in req.query) {
         console.log("HERE TOO");
         if (req.query[key] == 'asc') {
-          User.find().sort({ [key]: 1 }).exec(function (err, allUser) {
+          User.find({fullTimePartTime : { $not: { $eq: "Contractor" } } }).sort({ [key]: 1 }).exec(function (err, allUser) {
+            User.find({fullTimePartTime : "Contractor" }).sort({ [key]: 1 }).exec(function (err, allContractors) {
 
-            res.render('employee', {
-              user: req.user,
-              allUser
+              res.render('employee', {
+                user: req.user,
+                allUser,
+                allContractors
+              });
             });
-          }
-          );
-
-        } else if (req.query[key] == 'des') {
-          User.find().sort({ [key]: -1 }).exec(function (err, allUser) {
-
-            res.render('employee', {
-              user: req.user,
-              allUser
+          });
+          
+        } 
+        else if (req.query[key] == 'des') {
+          User.find({fullTimePartTime : { $not: { $eq: "Contractor" } } }).sort({ [key]: -1 }).exec(function (err, allUser) {
+            User.find({fullTimePartTime : "Contractor" }).sort({ [key]: -1 }).exec(function (err, allContractors) {
+              res.render('employee', {
+                user: req.user,
+                allUser,
+                allContractors
+              });
             });
-          }
-          );
-        }
-
-
-
-
-
-      }
-
-    } else {
-      User.find({}, function (err, allUser) {
-        if (allUser != null) {
-          console.log("HERE");
-          res.render('employee', {
-            user: req.user,
-            allUser
           });
         }
+      }
+    } 
+    else {
+      User.find({fullTimePartTime : { $not: { $eq: "Contractor" } } }, function (err, allUser) {
+        User.find({fullTimePartTime : "Contractor" }, function (err, allContractors) {
+            res.render('employee', {
+              user: req.user,
+              allUser,
+              allContractors
+            });
+        });
       });
     }
-    /*User.find().sort({}, function(err, allUser){
-      if (allUser != null) {
-        res.render('employee', {
-          user: req.user,
-          allUser
-        });
-      }
-
-    });*/
-
-
-
-
-
-
   });
 });
 
