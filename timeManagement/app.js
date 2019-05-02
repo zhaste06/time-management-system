@@ -484,11 +484,11 @@ app.post('/project/:employeeID', function (req, res) {
   };
 });
 
-app.post('/genMembers', function(req, res) {
+app.post('/genMembers', function (req, res) {
   var name = req.body.name;
   console.log(name);
-  User.findOne({ employeeID : name}, function(err, leader){
-    User.find({ team : leader.team, level: "3"}, function(err, teamMembers){
+  User.findOne({ employeeID: name }, function (err, leader) {
+    User.find({ team: leader.team, level: "3" }, function (err, teamMembers) {
       res.send(teamMembers);
     })
   })
@@ -531,8 +531,8 @@ app.post('/passwordchange/:employeeID', function (req, res, next) {
       } else if (user.employeeID != req.user.employeeID) {
         return res.redirect('/error');
       }
-  
-  
+
+
       user.password = req.body.newPassword;
       user.save(function (err) {
         req.flash('success_msg', 'You have updated your password');
@@ -592,8 +592,8 @@ app.get('/employee/:employeeID', function (req, res) {
       for (const key in req.query) {
         console.log("HERE TOO");
         if (req.query[key] == 'asc') {
-          User.find({fullTimePartTime : { $not: { $eq: "Contractor" } } }).sort({ [key]: 1 }).exec(function (err, allUser) {
-            User.find({fullTimePartTime : "Contractor" }).sort({ [key]: 1 }).exec(function (err, allContractors) {
+          User.find({ fullTimePartTime: { $not: { $eq: "Contractor" } } }).sort({ [key]: 1 }).exec(function (err, allUser) {
+            User.find({ fullTimePartTime: "Contractor" }).sort({ [key]: 1 }).exec(function (err, allContractors) {
 
               res.render('employee', {
                 user: req.user,
@@ -602,11 +602,11 @@ app.get('/employee/:employeeID', function (req, res) {
               });
             });
           });
-          
-        } 
+
+        }
         else if (req.query[key] == 'des') {
-          User.find({fullTimePartTime : { $not: { $eq: "Contractor" } } }).sort({ [key]: -1 }).exec(function (err, allUser) {
-            User.find({fullTimePartTime : "Contractor" }).sort({ [key]: -1 }).exec(function (err, allContractors) {
+          User.find({ fullTimePartTime: { $not: { $eq: "Contractor" } } }).sort({ [key]: -1 }).exec(function (err, allUser) {
+            User.find({ fullTimePartTime: "Contractor" }).sort({ [key]: -1 }).exec(function (err, allContractors) {
               res.render('employee', {
                 user: req.user,
                 allUser,
@@ -616,15 +616,15 @@ app.get('/employee/:employeeID', function (req, res) {
           });
         }
       }
-    } 
+    }
     else {
-      User.find({fullTimePartTime : { $not: { $eq: "Contractor" } } }, function (err, allUser) {
-        User.find({fullTimePartTime : "Contractor" }, function (err, allContractors) {
-            res.render('employee', {
-              user: req.user,
-              allUser,
-              allContractors
-            });
+      User.find({ fullTimePartTime: { $not: { $eq: "Contractor" } } }, function (err, allUser) {
+        User.find({ fullTimePartTime: "Contractor" }, function (err, allContractors) {
+          res.render('employee', {
+            user: req.user,
+            allUser,
+            allContractors
+          });
         });
       });
     }
@@ -1020,7 +1020,7 @@ app.post('/timesheetTemp/:employeeID', function (req, res, next) {
     //personal_time_percentage: 0,    
     allocable_percentage: req.body.allocable_percentage,
     non_allocable_percentage: req.body.non_allocable_percentage,
-    personal_time_percentage: req.body.personal_time_percentage,    
+    personal_time_percentage: req.body.personal_time_percentage,
 
     level: req.body.level,
     status: "Pending",
@@ -1266,16 +1266,21 @@ app.post('/reset/:token', function (req, res) {
           return res.redirect('back');
         }
 
-        user.password = req.body.password;
-        user.resetPasswordToken = undefined;
-        user.resetPasswordExpires = undefined;
+        if (req.body.password != req.body.rePassword) {
+          req.flash('error', 'Passwords do Not match.');
+          return res.redirect('/reset/' + req.params.token);
+        } else {
+          user.password = req.body.password;
+          user.resetPasswordToken = undefined;
+          user.resetPasswordExpires = undefined;
 
-        user.save(function (err) {
-          req.logIn(user, function (err) {
-            res.redirect('/dashboard/' + user.employeeID);
-            done(err, user);
+          user.save(function (err) {
+            req.logIn(user, function (err) {
+              res.redirect('/dashboard/' + user.employeeID);
+              done(err, user);
+            });
           });
-        });
+        }
       });
     },
     function (user, done) {
