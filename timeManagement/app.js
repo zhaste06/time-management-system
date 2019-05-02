@@ -521,20 +521,25 @@ app.post('/passwordchange/:employeeID', function (req, res, next) {
     }
   });
 
-  User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
-    if (!user) {
-      return res.redirect('/error');
-    } else if (user.employeeID != req.user.employeeID) {
-      return res.redirect('/error');
-    }
-
-
-    user.password = req.body.newPassword;
-    user.save(function (err) {
-      req.flash('success_msg', 'You have updated your password');
-      return res.redirect('/profile/' + user.employeeID);
+  if (req.body.newPassword != req.body.reNewPassword) {
+    req.flash('error_msg', 'Re-enter Password does Not match.');
+    return res.redirect('/passwordchange/' + req.params.employeeID);
+  } else {
+    User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
+      if (!user) {
+        return res.redirect('/error');
+      } else if (user.employeeID != req.user.employeeID) {
+        return res.redirect('/error');
+      }
+  
+  
+      user.password = req.body.newPassword;
+      user.save(function (err) {
+        req.flash('success_msg', 'You have updated your password');
+        return res.redirect('/profile/' + user.employeeID);
+      });
     });
-  });
+  }
 });
 
 // *********************************************************************
@@ -544,28 +549,32 @@ app.get('/admincreate', function (req, res, next) {
 });
 app.post('/admincreate', function (req, res, next) {
 
-  // Create a new admin user
-  var user = new User({
-    username: req.body.username,
-    password: req.body.adminPassword,
-    employeeID: 'ADMIN01',
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    department: 'ADMIN',
-    jobTitle: 'ADMIN',
-    level: '0',
-    workingStatus: 'ADMIN',
-    startDate: '----',
-    team: 'ADMIN',
-    fullTimePartTime: 'ADMIN'
-  });
+  if (req.body.adminPassword != req.body.reAdminPassword) {
+    req.flash('error_msg', 'Re-enter Password does Not match.');
+    return res.redirect('/admincreate');
+  } else {
+    // Create a new admin user
+    var user = new User({
+      username: req.body.username,
+      password: req.body.adminPassword,
+      employeeID: 'ADMIN01',
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      department: 'ADMIN',
+      jobTitle: 'ADMIN',
+      level: '0',
+      workingStatus: 'ADMIN',
+      startDate: '----',
+      team: 'ADMIN',
+      fullTimePartTime: 'ADMIN'
+    });
 
-  // Save admin to database
-  user.save(function (err) {
-    if (err) throw err;
-    return res.redirect('/');
-  });
-
+    // Save admin to database
+    user.save(function (err) {
+      if (err) throw err;
+      return res.redirect('/');
+    });
+  }
 });
 
 // *******************************************************************
