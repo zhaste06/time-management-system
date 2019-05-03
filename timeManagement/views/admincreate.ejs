@@ -9,7 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
     <link rel="shortcut icon" href="images/favicon.ico">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.6/css/all.css">
     <link rel="stylesheet" href="styles/shards-dashboards.1.1.0.css">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
@@ -19,6 +20,9 @@
     <div class="sufee-login d-flex align-content-center flex-wrap">
         <div class="container">
             <div class="login-content">
+                <div class="container">
+                    <%- include msg.ejs %>
+                </div>
                 <div class="login-logo">
                     <a href="index.html">
                         <img class="align-content" src="images/logo.png" alt="">
@@ -44,11 +48,13 @@
                         </div>
                         <div class="form-group">
                             <label>Password</label>
-                            <input type="password" class="form-control" name="adminPassword" required placeholder="Password">
+                            <input type="password" class="form-control" name="adminPassword" required
+                                placeholder="Password">
                         </div>
                         <div class="form-group">
                             <label>Re-enter Password</label>
-                            <input type="password" class="form-control" name="REAdminPassword" required placeholder="Re-enter Password">
+                            <input type="password" class="form-control" name="reAdminPassword" required
+                                placeholder="Re-enter Password">
                         </div>
                         <button type="submit" class="btn btn-primary btn-flat m-b-30 m-t-30">Register</button>
                         <div class="register-link m-t-15 text-center">
