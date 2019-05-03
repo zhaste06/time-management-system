@@ -568,7 +568,7 @@ app.post('/admincreate', function (req, res, next) {
   var user = new User({
     username: req.body.username,
     password: req.body.adminPassword,
-    employeeID: 'ADMIN01',
+    employeeID: req.body.adminID,
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     department: 'ADMIN',
