@@ -521,25 +521,34 @@ app.post('/passwordchange/:employeeID', function (req, res, next) {
     }
   });
 
-  if (req.body.newPassword != req.body.reNewPassword) {
-    req.flash('error_msg', 'Re-enter Password does Not match.');
-    return res.redirect('/passwordchange/' + req.params.employeeID);
-  } else {
-    User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
-      if (!user) {
-        return res.redirect('/error');
-      } else if (user.employeeID != req.user.employeeID) {
-        return res.redirect('/error');
+  User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
+    if (!user) {
+      req.flash('error_msg', 'User Not Found.');
+      return res.redirect('/login');
+    } else if (user.employeeID != req.user.employeeID) {
+      req.flash('error_msg', 'Invalid Form Submission.');
+      return res.redirect('/login');
+    }
+    user.comparePassword(req.body.password, function(err, isMatch){
+      if(isMatch){
+        if (req.body.newPassword != req.body.reNewPassword) {
+          req.flash('error_msg', 'Re-enter Password does Not match.');
+          return res.redirect('/passwordchange/' + req.params.employeeID);
+        }
+        else {
+          user.password = req.body.newPassword;
+          user.save(function (err) {
+            req.flash('success_msg', 'You have updated your password');
+            return res.redirect('/profile/' + user.employeeID);
+          });
+        }
       }
-
-
-      user.password = req.body.newPassword;
-      user.save(function (err) {
-        req.flash('success_msg', 'You have updated your password');
-        return res.redirect('/profile/' + user.employeeID);
-      });
-    });
-  }
+      else {
+        req.flash('error_msg', 'Current Password is incorrect.');
+        return res.redirect('/passwordchange/' + req.params.employeeID);
+      }
+    })
+  });
 });
 
 // *********************************************************************
@@ -868,7 +877,7 @@ app.post('/user/:employeeID', function (req, res, next) {
           service: 'gmail',
           auth: {
             user: '5bitsoftwareteam@gmail.com',
-            pass: 'cppcispn1!!'
+            pass: 'cppcispn1!!2'
           }
         });
         var mailOptions = {
