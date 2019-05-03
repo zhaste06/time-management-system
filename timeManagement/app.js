@@ -521,6 +521,7 @@ app.post('/passwordchange/:employeeID', function (req, res, next) {
     }
   });
 
+<<<<<<< HEAD
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
       return res.redirect('/error');
@@ -533,6 +534,25 @@ app.post('/passwordchange/:employeeID', function (req, res, next) {
     user.save(function (err) {
       req.flash('success_msg', 'You have updated your password');
       return res.redirect('/profile/' + user.employeeID);
+=======
+  if (req.body.newPassword != req.body.reNewPassword) {
+    req.flash('error_msg', 'Re-enter Password does Not match.');
+    return res.redirect('/passwordchange/' + req.params.employeeID);
+  } else {
+    User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
+      if (!user) {
+        return res.redirect('/error');
+      } else if (user.employeeID != req.user.employeeID) {
+        return res.redirect('/error');
+      }
+  
+  
+      user.password = req.body.newPassword;
+      user.save(function (err) {
+        req.flash('success_msg', 'You have updated your password');
+        return res.redirect('/profile/' + user.employeeID);
+      });
+>>>>>>> parent of bd89762... Reset password validation
     });
   });
 });
@@ -548,7 +568,7 @@ app.post('/admincreate', function (req, res, next) {
   var user = new User({
     username: req.body.username,
     password: req.body.adminPassword,
-    employeeID: 'ADMIN01',
+    employeeID: req.body.adminID,
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     department: 'ADMIN',
