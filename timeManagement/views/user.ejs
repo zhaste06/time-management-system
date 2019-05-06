@@ -59,7 +59,7 @@
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="feLastName">Last Name</label>
-                                            <input type="text" name="lastName" placeholder="LastName"
+                                            <input type="text" name="lastName" placeholder="Last Name"
                                                 class="form-control" required></div>
                                         <div class="form-group col-md-6">
                                             <label for="fePhone">First Name</label>
@@ -72,55 +72,57 @@
                                             <label for="feEmpolyeeID">Department</label>
                                             <input type="text" name="department" placeholder="Department"
                                                 class="form-control"></div>
-                                         <div class="form-group col-md-6">
-                                                <label for="feEmpolyeeID">Team</label>
-                                                 <input type="text" name="team" placeholder="Team"
-                                                    class="form-control"></div>
+                                        <div class="form-group col-md-6">
+                                            <label for="feEmpolyeeID">Team</label>
+                                            <input type="text" name="team" placeholder="Team" class="form-control">
+                                        </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
-                                            <label for="feEmpolyeeID">Level</label>
+                                            <label for="feEmpolyeeID">User Level</label>
                                             <div class="form-group">
-                                                    <select class="form-control" name="level">
-                                                        <option value="3" selected>Team Member</option>
-                                                        <option value="2">Team Lead</option>
-                                                        <option value="1">Top Managment</option>
-                                                        <option value="0">Admin</option>
-                                                    </select>
-                                                </div>
+                                                <select class="form-control" name="level">
+                                                    <option value="3" selected>Team Member</option>
+                                                    <option value="2">Team Lead</option>
+                                                    <option value="1">Top Managment</option>
+                                                    <option value="0">Admin</option>
+                                                </select>
+                                            </div>
                                             <!--<input type="text" name="level" placeholder="Level" class="form-control"
-                                                required>--> </div>
-                                                <div class="form-group col-md-6">
-                                                    <label for="feJobTitle">Job Title</label>
-                                                    <input type="text" name="jobTitle" placeholder="Job Title"
-                                                        class="form-control" required> </div>
+                                                required>-->
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="feJobTitle">Job Title</label>
+                                            <input type="text" name="jobTitle" placeholder="Job Title"
+                                                class="form-control" required> </div>
 
-                                     
+
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="feLegalWorkingStatus">Legal Working Status</label>
                                             <input type="text" name="workingStatus" placeholder="Working Status"
-                                                class="form-control" required> </div>
+                                                class="form-control" required> 
+                                        </div>
                                         <div class="form-group col-md-6">
                                             <label for="feStartDate">Start Date</label>
-                                            <input type="text" name="startDate" placeholder="Start Date"
-                                                class="form-control" required> </div>
+                                            <input type="text" name="startDate" id="startDate" placeholder="MM/DD/YYYY"
+                                                class="form-control" required>
+                                        </div>
+                                        
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
-                                            <label for="feFulltimePartTime">Full Time Or Part-Time/Contractor</label>
-                                              <select class="form-control" name="fullTimePartTime">
-                                                        <option value="Full Time" selected>Full Time</option>
-                                                        <option value="PartTime/Contractor">Part Time/Contractor</option>
-                                                       
-                                                    </select>
-                                             </div>
-
-                                    
-
+                                            <label for="feFulltimePartTime">Full-Time/Part-Time/Contractor</label>
+                                            <select class="form-control" name="fullTimePartTime">
+                                                <option value="Full Time" selected>Full Time</option>
+                                                <option value="Part Time">Part Time</option>
+                                                <option value="Contractor">Contractor</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <input type="submit" value="Add User" class="btn btn-success">
+                                    <a href='/employee/<%= user.employeeID %>' class="btn btn-light">Cancel</a>
                                 </form>
                             </div>
                         </div>
@@ -136,19 +138,30 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous">
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
     integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-    crossorigin="anonymous"></script>
+    crossorigin="anonymous">
+</script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
     integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
-    crossorigin="anonymous"></script>
+    crossorigin="anonymous">
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
 <script src="https://unpkg.com/shards-ui@latest/dist/js/shards.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sharrre/2.0.1/jquery.sharrre.min.js"></script>
 <script src="scripts/extras.1.1.0.min.js"></script>
 <script src="scripts/shards-dashboards.1.1.0.min.js"></script>
 <script src="scripts/app/app-blog-overview.1.1.0.js"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.css">
+
+<script>
+    $( function() {
+      $( "#startDate" ).datepicker();
+    } );
+    </script>
 </body>
 
 </html>

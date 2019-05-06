@@ -1,0 +1,111 @@
+<%- include header.ejs %>
+<div class="container">
+  <%- include msg.ejs %>
+</div>
+<div class="main-content-container container-fluid px-4">
+  <!-- Page Header -->
+  <div class="page-header row no-gutters py-4">
+    <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+      <span class="text-uppercase page-subtitle">Overview</span>
+      <h3 class="page-title">All Contractors</h3>
+    </div>
+    <div class="col-12 col-sm-8 text-right mb-0">
+      <a href='/user/<%= user.employeeID %>'><button type="button" class="mb-2 btn btn-success mr-2">Add User</button></a>
+      <a href='/employee/<%= user.employeeID %>'><button type="button" class="mb-2 btn btn-dark mr-2">View Full Time/Part Time Users</button></a>
+    </div>
+  </div>
+  <!-- End Page Header -->
+  <!-- Default Table -->
+  <div class="row">
+    <div class="col">
+      <div class="card card-small mb-4">
+        <div class="card-header border-bottom">
+          <h6 class="m-0">Total Contractor Users: <%= allContractors.length %></h6>
+        </div>
+        <div class="card-body p-0 pb-3 text-center">
+          <table class="table mb-0">
+            <thead class="bg-light">
+              <tr>
+                    <th scope="col" class="border-0"><a class="sort" href="/contractor/<%= user.employeeID %>?firstName=asc"  name="firstName">First Name</a></th>
+                    <th scope="col" class="border-0"><a class="sort" href="/contractor/<%= user.employeeID %>?lastName=asc"  name="lastName">Last Name</a></th>
+                    <th scope="col" class="border-0"><a class="sort" href="/contractor/<%= user.employeeID %>?employeeID=asc"  name="employeeID">Employee ID</a></th>
+                    <th scope="col" class="border-0"><a class="sort" href="/contractor/<%= user.employeeID %>?department=asc"  name="department">Department</a></th>
+                    <th scope="col" class="border-0"><a class="sort" href="/contractor/<%= user.employeeID %>?team=asc"  name="team">Team</a></th>
+                    <th scope="col" class="border-0"><a class="sort" href="/contractor/<%= user.employeeID %>?jobTitle=asc"  name="jobTitle">Job Title</a></th>
+                  <th scope="col" class="border-0">Email</th>
+                  <th scope="col" class="border-0">Verification Status</th>
+                  <th scope="col" class="border-0">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (allContractors != null) { %> 
+                <% for (var i = 0; i < allContractors.length; i++) { %>
+                  <tr>
+                    <td><%= allContractors[i].firstName %></td>
+                    <td><%= allContractors[i].lastName %></td>
+                    <td><%= allContractors[i].employeeID %></td>
+                    <td><%= allContractors[i].department %></td>
+                    <td><%= allContractors[i].team %></td>
+                    <td><%= allContractors[i].jobTitle %></td>
+                    <td><%= allContractors[i].username %></td>
+                    <% if (allContractors[i].verifyUserToken != undefined) { %>
+                    <td><i class="material-icons">close</i></td>
+                    <%} else { %>
+                    <td><i class="material-icons">check</i></td>
+                    <%} %>
+    
+                    <td><a class="mb-2 btn btn-sm btn-success mr-1" href='/edituser/<%= user.employeeID %>?userID=<%= allContractors[i].employeeID %>'>Edit</a>
+                      <a class="mb-2 btn btn-sm mr-1 btn-danger" style="color: #fff;" href='/deleteuser/<%= user.employeeID %>?userID=<%= allContractors[i].employeeID %>'>Delete</a></td>
+                  </tr>
+                  <% } %>
+                <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+    <!-- End Default Table -->
+</div>
+</main>
+</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+  integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+  integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+<script src="https://unpkg.com/shards-ui@latest/dist/js/shards.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sharrre/2.0.1/jquery.sharrre.min.js"></script>
+<script src="scripts/extras.1.1.0.min.js"></script>
+<script src="scripts/shards-dashboards.1.1.0.min.js"></script>
+<script src="scripts/app/app-blog-overview.1.1.0.js"></script>
+
+<script>
+  $( document ).ready(function() {
+    $(document).on('click', 'a.sort', function(){
+      var urlParams = new URLSearchParams(window.location.search);
+      
+      if(urlParams == '') {
+        //alert($(this).attr('name'));
+        $(this).attr("href", "/contractor/<%= user.employeeID %>?"+ $(this).attr('name') + "=asc");
+      } else {
+        var param = urlParams.get($(this).attr('name'));
+        if(param == 'asc') {
+          $(this).attr("href", "/contractor/<%= user.employeeID %>?"+ $(this).attr('name') + "=des");
+        } else if(param == 'des') {
+          $(this).attr("href", "/contractor/<%= user.employeeID %>?"+ $(this).attr('name') + "=asc");
+        }
+        
+      }
+       // alert(urlParams);
+       // alert('df');
+    });
+  });
+</script>
+</body>
+
+</html>

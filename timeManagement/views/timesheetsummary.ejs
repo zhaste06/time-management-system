@@ -27,6 +27,7 @@
                 </br><a href="#" id="test" style="font-size: 20px;" onClick="javascript:fnExcelReport();">Export to
                   Excel</a></br>
               </tr>
+
               <tr>
                 <!-- <%  if (user.level == 0 || user.level == 1) { %>
                                 <th scope="col" class="border-0">Name</th>
@@ -40,9 +41,6 @@
                 <th scope="col" class="border-0">Allocable %</th>
                 <th scope="col" class="border-0">Non-Allocable %</th>
                 <th scope="col" class="border-0">Personal Time %</th>
-
-
-
 
                 <th scope="col" class="border-0">Project Name (Project ID)</th>
                 <th scope="col" class="border-0">Allocation</th>
@@ -66,19 +64,11 @@
                 
                 <td><%= filter_row[i].date %></td>
 
-
-
-
                 <td><%= filter_row[i].allocable_percentage %></td>
 
                 <td><%= filter_row[i].non_allocable_percentage %></td>
 
                 <td><%= filter_row[i].personal_time_percentage %></td>
-
-
-
-
-
 
                 <% var project = filter_row[i].project;
                         var projectArray = project.split(","); 
@@ -168,13 +158,13 @@
 
 
     projects.forEach((p, index) => {
-      row = {   'DATE': '', '': '', 'First Name': '',              'Last Name': '',             '': '', '': '', 'Project': p.split('(')[0], 'Percentage': percentage[index], 'Allocation': allocation[index], '': '','Allocable %': '', 'Non-Allocable %': '', 'Personal Time %': '' };
+      row = { 'DATE': '', '': '', 'First Name': '', 'Last Name': '', '': '', '': '', 'Project': p.split('(')[0], 'Percentage': percentage[index], 'Allocation': allocation[index], '': '', 'Allocable %': '', 'Non-Allocable %': '', 'Personal Time %': '' };
       arr.push(row);
     });
 
-    arr.push({  'DATE': '', '': '', 'First Name': '',              'Last Name': '',             '': '', '': '', 'Project': '', 'Percentage': '', 'Allocation': '', '': '', 'Allocable %': '', 'Non-Allocable %': '', 'Personal Time %': '' });
-    arr.push({  'DATE': info.date, '': '', 'First Name': info.firstName,  'Last Name': info.lastName,  '': '', '': '', 'Project': '', 'Percentage': '', 'Allocation': '',  '': '', 'Allocable %': info.allocable_percentage,'Non-Allocable %': info.non_allocable_percentage, 'Personal Time %': info.personal_time_percentage });
- 
+    arr.push({ 'DATE': '', '': '', 'First Name': '', 'Last Name': '', '': '', '': '', 'Project': '', 'Percentage': '', 'Allocation': '', '': '', 'Allocable %': '', 'Non-Allocable %': '', 'Personal Time %': '' });
+    arr.push({ 'DATE': info.date, '': '', 'First Name': info.firstName, 'Last Name': info.lastName, '': '', '': '', 'Project': '', 'Percentage': '', 'Allocation': '', '': '', 'Allocable %': info.allocable_percentage, 'Non-Allocable %': info.non_allocable_percentage, 'Personal Time %': info.personal_time_percentage });
+
 
     $("#dvjson").excelexportjs({
       containerid: "dvjson",
