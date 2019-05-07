@@ -266,7 +266,7 @@ app.post('/editproject/:employeeID', function (req, res) {
           
     
         project.save(function (err) {
-          req.flash('success_msg', + 'The project has been updated');
+          req.flash('success_msg', 'The project has been updated');
           return res.redirect('/project/' + req.params.employeeID);
         });
       });
@@ -284,7 +284,7 @@ app.post('/editproject/:employeeID', function (req, res) {
           
     
         project.save(function (err) {
-          req.flash('success_msg', + 'The project has been updated');
+          req.flash('success_msg', 'The project has been updated');
           return res.redirect('/project/' + req.params.employeeID);
         });
       });
@@ -506,7 +506,7 @@ app.post('/project/:employeeID', function (req, res) {
       });
 
       project.save(function (err) {
-        console.log("it gets here");
+        req.flash('success_msg', 'You created a Project');
         res.redirect('/project/' + req.params.employeeID);
       });
     });
@@ -893,7 +893,7 @@ app.get('/deleteproject/:employeeID', function (req, res) {
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
       return res.redirect('/error');
-    } else if (user.level != 2) {
+    } else if (user.level != 2 && user.level != 0) {
       return res.redirect('/error');
     }
 
