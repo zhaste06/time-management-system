@@ -1375,7 +1375,7 @@ app.post('/forgot', function (req, res, next) {
         service: 'gmail',
         auth: {
           user: '5bitsoftwareteam@gmail.com',
-          pass: 'cppcispn1!!'
+          pass: 'cppcispn1!!2'
         }
       });
       var mailOptions = {
