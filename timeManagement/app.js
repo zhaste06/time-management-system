@@ -1565,7 +1565,7 @@ app.post('/validate/:token', function (req, res) {
         from: '5bitsoftwareteam@gmail.com',
         subject: 'Your account has been verified',
         text: 'Hello,' + user.firstName + user.lastName + '\n\n' +
-          'This is a confirmation that your account ' + user.username + ' has just been verifiied.\n'
+          'This is a confirmation that your account ' + user.username + ' has just been verified.\n'
       };
       smtpTransport.sendMail(mailOptions, function (err) {
         req.flash('success', 'Success! Your password has been changed.');
