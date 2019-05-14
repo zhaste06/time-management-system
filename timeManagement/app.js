@@ -211,36 +211,36 @@ app.get('/editproject/:employeeID', function (req, res) {
                 project,
                 allUser
               });
-  
-  
+
+
             }
           });
         }
       });
-  
+
     } else if (user.level == 0) {
       Project.findOne({ projectID: req.query.projectID }, function (err, project) {
         if (project != null) {
           User.find({ level: "3" }, function (err, allUser) {
             User.find({ level: "2" }, function (err, allTeamLead) {
-            if (allUser != null) {
-              res.render('editproject', {
-                user: req.user,
-                project,
-                allUser,
-                allTeamLead
-              });
-  
-  
-            }
-          });
+              if (allUser != null) {
+                res.render('editproject', {
+                  user: req.user,
+                  project,
+                  allUser,
+                  allTeamLead
+                });
+
+
+              }
+            });
           });
         }
       });
-  
+
     }
 
-    
+
 
   });
 
@@ -251,50 +251,50 @@ app.post('/editproject/:employeeID', function (req, res) {
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
       return res.redirect('/error');
-    } if(user.level == 0) {
+    } if (user.level == 0) {
       var teamLeadArray = req.body.teamLead.split(":");
 
       Project.findOne({ projectID: req.query.projectID }, function (err, project) {
         if (!project) {
           return res.redirect('/error');
         }
-    
-          project.projectName = req.body.projectName,
+
+        project.projectName = req.body.projectName,
           project.status = req.body.status,
-          project.employeeID = req.body.teamLead +',' + req.body.team_members
-          project.teamLead =  teamLeadArray[0]
-          
-    
+          project.employeeID = req.body.teamLead + ',' + req.body.team_members
+        project.teamLead = teamLeadArray[0]
+
+
         project.save(function (err) {
           req.flash('success_msg', 'The project has been updated');
           return res.redirect('/project/' + req.params.employeeID);
         });
       });
     } else if (user.level == 2) {
-     
+
 
       Project.findOne({ projectID: req.query.projectID }, function (err, project) {
         if (!project) {
           return res.redirect('/error');
         }
-    
-          project.projectName = req.body.projectName,
+
+        project.projectName = req.body.projectName,
           project.status = req.body.status,
-          project.employeeID = user.employeeID + ':' + user.firstName + ':' + user.lastName + ',' + req.body.team_members 
-          
-    
+          project.employeeID = user.employeeID + ':' + user.firstName + ':' + user.lastName + ',' + req.body.team_members
+
+
         project.save(function (err) {
           req.flash('success_msg', 'The project has been updated');
           return res.redirect('/project/' + req.params.employeeID);
         });
       });
     }
-    
+
   });
 
 
 
- 
+
 
 
 
@@ -572,8 +572,8 @@ app.post('/passwordchange/:employeeID', function (req, res, next) {
       req.flash('error_msg', 'Invalid Form Submission.');
       return res.redirect('/login');
     }
-    user.comparePassword(req.body.password, function(err, isMatch){
-      if(isMatch){
+    user.comparePassword(req.body.password, function (err, isMatch) {
+      if (isMatch) {
         if (req.body.newPassword != req.body.reNewPassword) {
           req.flash('error_msg', 'Re-enter Password does Not match.');
           return res.redirect('/passwordchange/' + req.params.employeeID);
@@ -637,9 +637,9 @@ app.get('/employee/:employeeID', function (req, res) {
       return res.redirect('/error');
     } else if (user.level == 3) {
       return res.redirect('/error');
-    }else if (user.level == 2) {
+    } else if (user.level == 2) {
       return res.redirect('/error');
-    }else if (user.level == 1) {
+    } else if (user.level == 1) {
       return res.redirect('/error');
     }
 
@@ -759,26 +759,26 @@ app.get('/viewemployee/:employeeID', function (req, res) {
     if (Object.keys(req.query).length !== 0) {
       for (const key in req.query) {
         if (req.query[key] == 'asc') {
-        
-            User.find({}).sort({ [key]: 1 }).exec(function (err, allUser) {
 
-              res.render('viewemployee', {
-                user: req.user,
-                allUser
-              });
+          User.find({}).sort({ [key]: 1 }).exec(function (err, allUser) {
+
+            res.render('viewemployee', {
+              user: req.user,
+              allUser
             });
-         
+          });
+
 
         }
         else if (req.query[key] == 'des') {
-  
-            User.find({}).sort({ [key]: -1 }).exec(function (err, allUser) {
-              res.render('viewemployee', {
-                user: req.user,
-                allUser
-              });
+
+          User.find({}).sort({ [key]: -1 }).exec(function (err, allUser) {
+            res.render('viewemployee', {
+              user: req.user,
+              allUser
             });
-  
+          });
+
         }
       }
     }
@@ -1158,7 +1158,7 @@ app.post('/timesheetTemp/:employeeID', function (req, res, next) {
     begDate: new Date(fechas[0]),
     endDate: new Date(fechas[1]),
 
-    
+
     percentage: req.body.percentage,
     project: req.body.project,
     allocation: req.body.allocation,
@@ -1250,19 +1250,20 @@ app.post('/timesheetsummary/:employeeID', function (req, res) {
   e = new Date(endDate);
   var eDay = e.getDay();
   sum = e.getDate() + (7 - eDay - 1);
-  
+
   var initDate = new Date(d.setDate(diff));
   var lastDate = new Date(e.setDate(sum));
 
 
-  Timesheet.find({ begDate: {
-        $gte: initDate,
-        $lt: lastDate,
-      }, endDate: {
-        $gte: initDate,
-        $lt: lastDate,
-      }
-}, function (err, allUser) {
+  Timesheet.find({
+    begDate: {
+      $gte: initDate,
+      $lt: lastDate,
+    }, endDate: {
+      $gte: initDate,
+      $lt: lastDate,
+    }
+  }, function (err, allUser) {
     if (allUser != null) {
       User.find({ employeeID: req.params.employeeID }, function (err, userInfo) {
         if (userInfo[0].level != '0') {
@@ -1333,19 +1334,19 @@ app.get('/dashboard/:employeeID', function (req, res) {
       User.find({}, function (err, allUser) {
         Project.find({}, function (err, allProject) {
           Timesheet.find({}, function (err, allTimesheets) {
-            Timesheet.find({status: 'Pending'}, function (err, pendingTimesheets) {
-            res.render('dashboard', {
-              user: req.user,
-              allUser,
-              allProject,
-              allTimesheets,
-              pendingTimesheets
+            Timesheet.find({ status: 'Pending' }, function (err, pendingTimesheets) {
+              res.render('dashboard', {
+                user: req.user,
+                allUser,
+                allProject,
+                allTimesheets,
+                pendingTimesheets
+              });
             });
-          });
           });
         });
 
-       
+
       });
     } else {
       var allmyproject = [];
@@ -1373,20 +1374,20 @@ app.get('/dashboard/:employeeID', function (req, res) {
           }
 
           User.find({}, function (err, allUser) {
-            Timesheet.find({ employeeID: req.params.employeeID}, function (err, allTimesheets) {
-              Timesheet.find({ employeeID: req.params.employeeID, status: 'Pending'}, function (err, pendingTimesheets) {
+            Timesheet.find({ employeeID: req.params.employeeID }, function (err, allTimesheets) {
+              Timesheet.find({ employeeID: req.params.employeeID, status: 'Pending' }, function (err, pendingTimesheets) {
                 res.render('dashboard', {
-                user: req.user,
-                allUser,
-                allmyproject,
-                allmyprojectID,
-                allTimesheets,
-                pendingTimesheets
-               });
-            });
+                  user: req.user,
+                  allUser,
+                  allmyproject,
+                  allmyprojectID,
+                  allTimesheets,
+                  pendingTimesheets
+                });
+              });
             });
 
-          
+
           });
         }
       });
@@ -1540,16 +1541,21 @@ app.post('/validate/:token', function (req, res) {
           return res.redirect('back');
         }
 
-        user.password = req.body.password;
-        user.verifyUserToken = undefined;
-        user.verifyUserExpires = undefined;
+        if (req.body.password != req.body.rePassword) {
+          req.flash('error', 'Passwords do Not match.');
+          return res.redirect('/reset/' + req.params.token);
+        } else {
+          user.password = req.body.password;
+          user.verifyUserToken = undefined;
+          user.verifyUserExpires = undefined;
 
-        user.save(function (err) {
-          req.logIn(user, function (err) {
-            res.redirect('/dashboard/' + user.employeeID);
-            done(err, user);
+          user.save(function (err) {
+            req.logIn(user, function (err) {
+              res.redirect('/dashboard/' + user.employeeID);
+              done(err, user);
+            });
           });
-        });
+        }
       });
     },
     function (user, done) {

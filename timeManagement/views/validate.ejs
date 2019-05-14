@@ -27,6 +27,9 @@
     <div class="sufee-login d-flex align-content-center flex-wrap">
         <div class="container">
             <div class="login-content">
+                <div class="container">
+                    <%- include msg.ejs %>
+                </div>
                 <div class="login-logo">
                     <a href="index.html">
                         <img class="align-content" src="images/logo.png" alt="">
@@ -38,12 +41,12 @@
                             <label>New Password</label>
                             <input type="password" class="form-control" placeholder="Password" name="password"><br>
                             <label>Confirm Password</label>
-                            <input type="password" class="form-control" placeholder="Confirm Password">
+                            <input type="password" class="form-control" placeholder="Confirm Password" name="rePassword">
                         </div>
-                    
+
                         <button type="submit" class="btn btn-success btn-flat m-b-30 m-t-30">Sign in</button>
-                        
-                      
+
+
                     </form>
                 </div>
             </div>
