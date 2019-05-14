@@ -1,3 +1,4 @@
+var AWS = require('aws-sdk')
 var express = require('express');
 var path = require('path');
 var favicon = require('static-favicon');
@@ -21,6 +22,7 @@ var crypto = require('crypto');
 var expressValidator = require('express-validator');
 var flash = require('connect-flash');
 var app = express();
+var credentials = new AWS.SharedIniFileCredentials({profile: 'ses'});
 
 // Load Timesheet and User Model into variables
 require('./models/Timesheet');
@@ -28,7 +30,8 @@ var Timesheet = mongoose.model('Timesheet');
 require('./models/Project');
 var Project = mongoose.model('Project');
 var User = require('./models/User');
-
+AWS.config.update({region: 'us-west-2'});
+AWS.config.credentials = credentials;
 passport.use(new LocalStrategy(function (username, password, done) {
   // Check for the user and match username with name that is passed in
   User.findOne({ username: username }, function (err, user) {
@@ -201,46 +204,36 @@ app.get('/editproject/:employeeID', function (req, res) {
       return res.redirect('/error');
     }
 
-    if (user.level == 2) {
-      Project.findOne({ projectID: req.query.projectID }, function (err, project) {
-        if (project != null) {
-          User.find({ team: user.team, level: "3" }, function (err, allUser) {
-            if (allUser != null) {
-              res.render('editproject', {
-                user: req.user,
-                project,
-                allUser
-              });
-  
-  
-            }
-          });
-        }
-      });
-  
-    } else if (user.level == 0) {
-      Project.findOne({ projectID: req.query.projectID }, function (err, project) {
-        if (project != null) {
-          User.find({ level: "3" }, function (err, allUser) {
-            User.find({ level: "2" }, function (err, allTeamLead) {
-            if (allUser != null) {
-              res.render('editproject', {
-                user: req.user,
-                project,
-                allUser,
-                allTeamLead
-              });
-  
-  
-            }
-          });
-          });
-        }
-      });
-  
-    }
 
-    
+
+    Project.findOne({ projectID: req.query.projectID }, function (err, project) {
+      if (project != null) {
+
+
+
+        User.find({ department: user.department, level: "3" }, function (err, allUser) {
+          if (allUser != null) {
+            res.render('editproject', {
+              user: req.user,
+              project,
+              allUser
+            });
+
+
+          }
+        });
+
+
+
+
+
+
+
+
+
+      }
+    });
+
 
   });
 
@@ -248,53 +241,20 @@ app.get('/editproject/:employeeID', function (req, res) {
 
 app.post('/editproject/:employeeID', function (req, res) {
 
-  User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
-    if (!user) {
+  Project.findOne({ projectID: req.query.projectID }, function (err, project) {
+    if (!project) {
       return res.redirect('/error');
-    } if(user.level == 0) {
-      var teamLeadArray = req.body.teamLead.split(":");
-
-      Project.findOne({ projectID: req.query.projectID }, function (err, project) {
-        if (!project) {
-          return res.redirect('/error');
-        }
-    
-          project.projectName = req.body.projectName,
-          project.status = req.body.status,
-          project.employeeID = req.body.teamLead +',' + req.body.team_members
-          project.teamLead =  teamLeadArray[0]
-          
-    
-        project.save(function (err) {
-          req.flash('success_msg', 'The project has been updated');
-          return res.redirect('/project/' + req.params.employeeID);
-        });
-      });
-    } else if (user.level == 2) {
-     
-
-      Project.findOne({ projectID: req.query.projectID }, function (err, project) {
-        if (!project) {
-          return res.redirect('/error');
-        }
-    
-          project.projectName = req.body.projectName,
-          project.status = req.body.status,
-          project.employeeID = user.employeeID + ':' + user.firstName + ':' + user.lastName + ',' + req.body.team_members 
-          
-    
-        project.save(function (err) {
-          req.flash('success_msg', 'The project has been updated');
-          return res.redirect('/project/' + req.params.employeeID);
-        });
-      });
     }
-    
+
+    project.projectName = req.body.projectName,
+      project.status = req.body.status,
+      project.employeeID = req.body.team_members
+
+    project.save(function (err) {
+      req.flash('success_msg', + 'Project has been updated');
+      return res.redirect('/project/' + req.params.employeeID);
+    });
   });
-
-
-
- 
 
 
 
@@ -506,7 +466,7 @@ app.post('/project/:employeeID', function (req, res) {
       });
 
       project.save(function (err) {
-        req.flash('success_msg', 'You created a Project');
+        console.log("it gets here");
         res.redirect('/project/' + req.params.employeeID);
       });
     });
@@ -527,11 +487,11 @@ app.post('/project/:employeeID', function (req, res) {
   };
 });
 
-app.post('/genMembers', function (req, res) {
+app.post('/genMembers', function(req, res) {
   var name = req.body.name;
   console.log(name);
-  User.findOne({ employeeID: name }, function (err, leader) {
-    User.find({ team: leader.team, level: "3" }, function (err, teamMembers) {
+  User.findOne({ employeeID : name}, function(err, leader){
+    User.find({ team : leader.team, level: "3"}, function(err, teamMembers){
       res.send(teamMembers);
     })
   })
@@ -566,31 +526,17 @@ app.post('/passwordchange/:employeeID', function (req, res, next) {
 
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
-      req.flash('error_msg', 'User Not Found.');
-      return res.redirect('/login');
+      return res.redirect('/error');
     } else if (user.employeeID != req.user.employeeID) {
-      req.flash('error_msg', 'Invalid Form Submission.');
-      return res.redirect('/login');
+      return res.redirect('/error');
     }
-    user.comparePassword(req.body.password, function(err, isMatch){
-      if(isMatch){
-        if (req.body.newPassword != req.body.reNewPassword) {
-          req.flash('error_msg', 'Re-enter Password does Not match.');
-          return res.redirect('/passwordchange/' + req.params.employeeID);
-        }
-        else {
-          user.password = req.body.newPassword;
-          user.save(function (err) {
-            req.flash('success_msg', 'You have updated your password');
-            return res.redirect('/profile/' + user.employeeID);
-          });
-        }
-      }
-      else {
-        req.flash('error_msg', 'Current Password is incorrect.');
-        return res.redirect('/passwordchange/' + req.params.employeeID);
-      }
-    })
+
+
+    user.password = req.body.newPassword;
+    user.save(function (err) {
+      req.flash('success_msg', 'You have updated your password');
+      return res.redirect('/profile/' + user.employeeID);
+    });
   });
 });
 
@@ -601,32 +547,28 @@ app.get('/admincreate', function (req, res, next) {
 });
 app.post('/admincreate', function (req, res, next) {
 
-  if (req.body.adminPassword != req.body.reAdminPassword) {
-    req.flash('error_msg', 'Re-enter Password does Not match.');
-    return res.redirect('/admincreate');
-  } else {
-    // Create a new admin user
-    var user = new User({
-      username: req.body.username,
-      password: req.body.adminPassword,
-      employeeID: req.body.adminID,
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      department: 'ADMIN',
-      jobTitle: 'ADMIN',
-      level: '0',
-      workingStatus: 'ADMIN',
-      startDate: '----',
-      team: 'ADMIN',
-      fullTimePartTime: 'ADMIN'
-    });
+  // Create a new admin user
+  var user = new User({
+    username: req.body.username,
+    password: req.body.adminPassword,
+    employeeID: 'ADMIN01',
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    department: 'ADMIN',
+    jobTitle: 'ADMIN',
+    level: '0',
+    workingStatus: 'ADMIN',
+    startDate: '----',
+    team: 'ADMIN',
+    fullTimePartTime: 'ADMIN'
+  });
 
-    // Save admin to database
-    user.save(function (err) {
-      if (err) throw err;
-      return res.redirect('/');
-    });
-  }
+  // Save admin to database
+  user.save(function (err) {
+    if (err) throw err;
+    return res.redirect('/');
+  });
+
 });
 
 // *******************************************************************
@@ -637,18 +579,15 @@ app.get('/employee/:employeeID', function (req, res) {
       return res.redirect('/error');
     } else if (user.level == 3) {
       return res.redirect('/error');
-    }else if (user.level == 2) {
-      return res.redirect('/error');
-    }else if (user.level == 1) {
-      return res.redirect('/error');
     }
 
     //Query & Sorting for Users
     if (Object.keys(req.query).length !== 0) {
       for (const key in req.query) {
+        console.log("HERE TOO");
         if (req.query[key] == 'asc') {
-          User.find({ fullTimePartTime: { $not: { $eq: "Contractor" } } }).sort({ [key]: 1 }).exec(function (err, allUser) {
-            User.find({ fullTimePartTime: "Contractor" }).sort({ [key]: 1 }).exec(function (err, allContractors) {
+          User.find({fullTimePartTime : { $not: { $eq: "Contractor" } } }).sort({ [key]: 1 }).exec(function (err, allUser) {
+            User.find({fullTimePartTime : "Contractor" }).sort({ [key]: 1 }).exec(function (err, allContractors) {
 
               res.render('employee', {
                 user: req.user,
@@ -657,11 +596,11 @@ app.get('/employee/:employeeID', function (req, res) {
               });
             });
           });
-
-        }
+          
+        } 
         else if (req.query[key] == 'des') {
-          User.find({ fullTimePartTime: { $not: { $eq: "Contractor" } } }).sort({ [key]: -1 }).exec(function (err, allUser) {
-            User.find({ fullTimePartTime: "Contractor" }).sort({ [key]: -1 }).exec(function (err, allContractors) {
+          User.find({fullTimePartTime : { $not: { $eq: "Contractor" } } }).sort({ [key]: -1 }).exec(function (err, allUser) {
+            User.find({fullTimePartTime : "Contractor" }).sort({ [key]: -1 }).exec(function (err, allContractors) {
               res.render('employee', {
                 user: req.user,
                 allUser,
@@ -671,15 +610,15 @@ app.get('/employee/:employeeID', function (req, res) {
           });
         }
       }
-    }
+    } 
     else {
-      User.find({ fullTimePartTime: { $not: { $eq: "Contractor" } } }, function (err, allUser) {
-        User.find({ fullTimePartTime: "Contractor" }, function (err, allContractors) {
-          res.render('employee', {
-            user: req.user,
-            allUser,
-            allContractors
-          });
+      User.find({fullTimePartTime : { $not: { $eq: "Contractor" } } }, function (err, allUser) {
+        User.find({fullTimePartTime : "Contractor" }, function (err, allContractors) {
+            res.render('employee', {
+              user: req.user,
+              allUser,
+              allContractors
+            });
         });
       });
     }
@@ -687,63 +626,6 @@ app.get('/employee/:employeeID', function (req, res) {
 });
 
 // *******************************************************************
-
-// *******************************************************************
-app.get('/contractor/:employeeID', function (req, res) {
-  User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
-    if (!user) {
-
-      return res.redirect('/error');
-    } else if (user.level == 3) {
-      return res.redirect('/error');
-    }
-
-    //Query & Sorting for Users
-    if (Object.keys(req.query).length !== 0) {
-      for (const key in req.query) {
-        if (req.query[key] == 'asc') {
-          User.find({ fullTimePartTime: { $not: { $eq: "Contractor" } } }).sort({ [key]: 1 }).exec(function (err, allUser) {
-            User.find({ fullTimePartTime: "Contractor" }).sort({ [key]: 1 }).exec(function (err, allContractors) {
-
-              res.render('contractor', {
-                user: req.user,
-                allUser,
-                allContractors
-              });
-            });
-          });
-
-        }
-        else if (req.query[key] == 'des') {
-          User.find({ fullTimePartTime: { $not: { $eq: "Contractor" } } }).sort({ [key]: -1 }).exec(function (err, allUser) {
-            User.find({ fullTimePartTime: "Contractor" }).sort({ [key]: -1 }).exec(function (err, allContractors) {
-              res.render('contractor', {
-                user: req.user,
-                allUser,
-                allContractors
-              });
-            });
-          });
-        }
-      }
-    }
-    else {
-      User.find({ fullTimePartTime: { $not: { $eq: "Contractor" } } }, function (err, allUser) {
-        User.find({ fullTimePartTime: "Contractor" }, function (err, allContractors) {
-          res.render('contractor', {
-            user: req.user,
-            allUser,
-            allContractors
-          });
-        });
-      });
-    }
-  });
-});
-
-// *******************************************************************
-
-
 
 
 // *******************************************************************
@@ -756,43 +638,14 @@ app.get('/viewemployee/:employeeID', function (req, res) {
       return res.redirect('/error');
     }
 
-    if (Object.keys(req.query).length !== 0) {
-      for (const key in req.query) {
-        if (req.query[key] == 'asc') {
-        
-            User.find({}).sort({ [key]: 1 }).exec(function (err, allUser) {
-
-              res.render('viewemployee', {
-                user: req.user,
-                allUser
-              });
-            });
-         
-
-        }
-        else if (req.query[key] == 'des') {
-  
-            User.find({}).sort({ [key]: -1 }).exec(function (err, allUser) {
-              res.render('viewemployee', {
-                user: req.user,
-                allUser
-              });
-            });
-  
-        }
+    User.find({}, function (err, allUser) {
+      if (allUser != null) {
+        res.render('viewemployee', {
+          user: req.user,
+          allUser
+        });
       }
-    }
-    else {
-      User.find({}, function (err, allUser) {
-        if (allUser != null) {
-          res.render('viewemployee', {
-            user: req.user,
-            allUser
-          });
-        }
-      });
-    }
-
+    });
   });
 });
 
@@ -893,7 +746,7 @@ app.get('/deleteproject/:employeeID', function (req, res) {
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
       return res.redirect('/error');
-    } else if (user.level != 2 && user.level != 0) {
+    } else if (user.level != 2) {
       return res.redirect('/error');
     }
 
@@ -987,6 +840,8 @@ app.post('/user/:employeeID', function (req, res, next) {
     fullTimePartTime: req.body.fullTimePartTime
   });
 
+//  var validateUrl = http:// + req.headers.host + '/validate/' + token
+
   user.save(function (err) {
     async.waterfall([
       function (done) {
@@ -1005,31 +860,38 @@ app.post('/user/:employeeID', function (req, res, next) {
         });
       },
       function (token, user, done) {
-        var smtpTransport = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: '5bitsoftwareteam@gmail.com',
-            pass: 'cppcispn1!!2'
-          }
-        });
-        var mailOptions = {
-          to: user.username,
-          from: '5bitsoftwareteam@gmail.com',
-          subject: 'Login Instrusction for your Time Managment Account',
-          text: 'You are receiving this because your account has been created.\n\n' +
-            'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-            'http://' + req.headers.host + '/validate/' + token + '\n\n' +
-            'If you did not request this, please ignore this email.\n'
-        };
-        smtpTransport.sendMail(mailOptions, function (err) {
-          req.flash('info', 'An e-mail has been sent to ' + user.username + ' with further instructions.');
-          done(err, 'done');
-        });
-      }
-    ], function (err) {
+      console.log(token)
+    var params = {
+	  Destination: {
+	    ToAddresses: [
+	      user.username
+	    ]
+	  },
+	  Message: {
+		  Body: {
+		    Text: {
+		    Charset: "UTF-8",
+		    Data: 'You are receiving this because your account has been created.\n\n' +
+           'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+           'http://' + req.headers.host + '/validate/' + token + '\n' +
+           'If you did not request this, please ignore this email.\n\n'
+           }
+		  },
+		  Subject: {
+		    Charset: 'UTF-8',
+		    Data: 'Test email from time management local system'
+		  }
+		  },
+	  Source: 'timetracking@oben.com'
+	  };
+	  console.log(user.username);
+	  var sendPromise = new AWS.SES({apiVersion: '2010-12-01'}).sendEmail(params).promise();
+//	}
+     },
+     function (err) {
       if (err) return next(err);
       res.redirect('/employee/' + req.params.employeeID);
-    });
+    }]);
     req.flash('success_msg', 'An e-mail has been sent to ' + user.username + ' with further instructions.');
     res.redirect('/employee/' + req.params.employeeID);
   });
@@ -1156,9 +1018,12 @@ app.post('/timesheetTemp/:employeeID', function (req, res, next) {
     percentage: req.body.percentage,
     project: req.body.project,
     allocation: req.body.allocation,
+    //allocable_percentage: 0,
+    //non_allocable_percentage: 0,
+    //personal_time_percentage: 0,    
     allocable_percentage: req.body.allocable_percentage,
     non_allocable_percentage: req.body.non_allocable_percentage,
-    personal_time_percentage: req.body.personal_time_percentage,
+    personal_time_percentage: req.body.personal_time_percentage,    
 
     level: req.body.level,
     status: "Pending",
@@ -1276,21 +1141,10 @@ app.get('/dashboard/:employeeID', function (req, res) {
 
     if (user.level == 0) {
       User.find({}, function (err, allUser) {
-        Project.find({}, function (err, allProject) {
-          Timesheet.find({}, function (err, allTimesheets) {
-            Timesheet.find({status: 'Pending'}, function (err, pendingTimesheets) {
-            res.render('dashboard', {
-              user: req.user,
-              allUser,
-              allProject,
-              allTimesheets,
-              pendingTimesheets
-            });
-          });
-          });
+        res.render('dashboard', {
+          user: req.user,
+          allUser
         });
-
-       
       });
     } else {
       var allmyproject = [];
@@ -1318,20 +1172,12 @@ app.get('/dashboard/:employeeID', function (req, res) {
           }
 
           User.find({}, function (err, allUser) {
-            Timesheet.find({ employeeID: req.params.employeeID}, function (err, allTimesheets) {
-              Timesheet.find({ employeeID: req.params.employeeID, status: 'Pending'}, function (err, pendingTimesheets) {
-                res.render('dashboard', {
-                user: req.user,
-                allUser,
-                allmyproject,
-                allmyprojectID,
-                allTimesheets,
-                pendingTimesheets
-               });
+            res.render('dashboard', {
+              user: req.user,
+              allUser,
+              allmyproject,
+              allmyprojectID
             });
-            });
-
-          
           });
         }
       });
@@ -1374,13 +1220,13 @@ app.post('/forgot', function (req, res, next) {
       var smtpTransport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: '5bitsoftwareteam@gmail.com',
+          user: 'nekitdie@gmail.com',
           pass: 'cppcispn1!!'
         }
       });
       var mailOptions = {
         to: user.username,
-        from: '5bitsoftwareteam@gmail.com',
+        from: 'nekitdie@gmail.com',
         subject: 'Password Reset',
         text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
           'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
@@ -1423,34 +1269,29 @@ app.post('/reset/:token', function (req, res) {
           return res.redirect('back');
         }
 
-        if (req.body.password != req.body.rePassword) {
-          req.flash('error', 'Passwords do Not match.');
-          return res.redirect('/reset/' + req.params.token);
-        } else {
-          user.password = req.body.password;
-          user.resetPasswordToken = undefined;
-          user.resetPasswordExpires = undefined;
+        user.password = req.body.password;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
 
-          user.save(function (err) {
-            req.logIn(user, function (err) {
-              res.redirect('/dashboard/' + user.employeeID);
-              done(err, user);
-            });
+        user.save(function (err) {
+          req.logIn(user, function (err) {
+            res.redirect('/dashboard/' + user.employeeID);
+            done(err, user);
           });
-        }
+        });
       });
     },
     function (user, done) {
       var smtpTransport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: '5bitsoftwareteam@gmail.com',
+          user: 'nekitdie@gmail.com',
           pass: 'cppcispn1!!'
         }
       });
       var mailOptions = {
         to: user.email,
-        from: '5bitsoftwareteam@gmail.com',
+        from: 'nekitdie@gmail.com',
         subject: 'Your password has been changed',
         text: 'Hello,\n\n' +
           'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
@@ -1501,13 +1342,13 @@ app.post('/validate/:token', function (req, res) {
       var smtpTransport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: '5bitsoftwareteam@gmail.com',
+          user: 'nekitdie@gmail.com',
           pass: 'cppcispn1!!'
         }
       });
       var mailOptions = {
         to: user.username,
-        from: '5bitsoftwareteam@gmail.com',
+        from: 'nekitdie@gmail.com',
         subject: 'Your account has been verified',
         text: 'Hello,' + user.firstName + user.lastName + '\n\n' +
           'This is a confirmation that your account ' + user.username + ' has just been verifiied.\n'

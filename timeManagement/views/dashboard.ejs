@@ -18,6 +18,7 @@
   </div>
   <!-- End Page Header -->
   <!-- Small Stats Blocks -->
+  <% if(user.level != 0) { %>
   <div class="row">
     <div class="col-lg col-md-6 col-sm-6 mb-4">
       <div class="stats-small stats-small--1 card card-small">
@@ -25,26 +26,16 @@
           <div class="d-flex flex-column m-auto">
             <div class="stats-small__data text-center">
               <span class="stats-small__label text-uppercase">Total Timesheets</span>
-                  <h6 class="stats-small__value count my-3"><%= allTimesheets.length %></h6>
+              <h6 class="stats-small__value count my-3">2,390</h6>
+            </div>
+            <div class="stats-small__data">
+              <span class="stats-small__percentage stats-small__percentage--increase">4.7%</span>
             </div>
           </div>
           <canvas height="120" class="blog-overview-stats-small-1"></canvas>
         </div>
       </div>
     </div>
-    <div class="col-lg col-md-4 col-sm-12 mb-4">
-        <div class="stats-small stats-small--1 card card-small">
-          <div class="card-body p-0 d-flex">
-            <div class="d-flex flex-column m-auto">
-              <div class="stats-small__data text-center">
-                <span class="stats-small__label text-uppercase">Pending Timesheet(s)</span>
-                <h6 class="stats-small__value count my-3"><%= pendingTimesheets.length %></h6>
-              </div>
-            </div>
-            <canvas height="120" class="blog-overview-stats-small-5"></canvas>
-          </div>
-        </div>
-      </div>
     <div class="col-lg col-md-6 col-sm-6 mb-4">
       <div class="stats-small stats-small--1 card card-small">
         <div class="card-body p-0 d-flex">
@@ -53,17 +44,33 @@
                 <% if (user.level != 0) {  %>
               <span class="stats-small__label text-uppercase">Current Projects</span>
               <h6 class="stats-small__value count my-3"><%= allmyproject.length %></h6>
-              <% } else { %>
-                <span class="stats-small__label text-uppercase">Total Projects</span>
-              <h6 class="stats-small__value count my-3"><%= allProject.length %></h6>
-                <% } %>
+              <% }  %>
+            </div>
+            <div class="stats-small__data">
+              <span class="stats-small__percentage stats-small__percentage--increase">12.4%</span>
             </div>
           </div>
           <canvas height="120" class="blog-overview-stats-small-2"></canvas>
         </div>
       </div>
     </div>
-    <!--<div class="col-lg col-md-4 col-sm-6 mb-4">
+    <div class="col-lg col-md-4 col-sm-6 mb-4">
+      <div class="stats-small stats-small--1 card card-small">
+        <div class="card-body p-0 d-flex">
+          <div class="d-flex flex-column m-auto">
+            <div class="stats-small__data text-center">
+              <span class="stats-small__label text-uppercase">Employees</span>
+              <h6 class="stats-small__value count my-3"><%= allUser.length %></h6>
+            </div>
+            <div class="stats-small__data">
+              <span class="stats-small__percentage stats-small__percentage--decrease">3.8%</span>
+            </div>
+          </div>
+          <canvas height="120" class="blog-overview-stats-small-3"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg col-md-4 col-sm-6 mb-4">
       <div class="stats-small stats-small--1 card card-small">
         <div class="card-body p-0 d-flex">
           <div class="d-flex flex-column m-auto">
@@ -71,34 +78,224 @@
               <span class="stats-small__label text-uppercase">Progress</span>
               <h6 class="stats-small__value count my-3">2,413</h6>
             </div>
+            <div class="stats-small__data">
+              <span class="stats-small__percentage stats-small__percentage--increase">12.4%</span>
+            </div>
           </div>
           <canvas height="120" class="blog-overview-stats-small-4"></canvas>
         </div>
       </div>
-    </div>-->
-    <div class="col-lg col-md-4 col-sm-6 mb-4">
-        <div class="stats-small stats-small--1 card card-small">
-          <div class="card-body p-0 d-flex">
-            <div class="d-flex flex-column m-auto">
-              <div class="stats-small__data text-center">
-                <span class="stats-small__label text-uppercase">Total Employees</span>
-                <h6 class="stats-small__value count my-3"><%= allUser.length %></h6>
-              </div>
-              <!--<div class="stats-small__data">
-                <span class="stats-small__percentage stats-small__percentage--decrease">3.8%</span>
-              </div>-->
+    </div>
+    <div class="col-lg col-md-4 col-sm-12 mb-4">
+      <div class="stats-small stats-small--1 card card-small">
+        <div class="card-body p-0 d-flex">
+          <div class="d-flex flex-column m-auto">
+            <div class="stats-small__data text-center">
+              <span class="stats-small__label text-uppercase">Time Spent</span>
+              <h6 class="stats-small__value count my-3">17,281</h6>
             </div>
-            <canvas height="120" class="blog-overview-stats-small-3"></canvas>
+            <div class="stats-small__data">
+              <span class="stats-small__percentage stats-small__percentage--decrease">2.4%</span>
+            </div>
           </div>
+          <canvas height="120" class="blog-overview-stats-small-5"></canvas>
         </div>
       </div>
+    </div>
   </div>
+  <% } else { %>
 
+
+  
+  <div class="row">
+      <div class="col-lg col-md-6 col-sm-9 mb-6">
+        <div class="stats-small stats-small--1 card card-small">
+
+            <div class="card-body p-0 d-flex mt-4">
+                <div class="d-flex flex-column m-auto">
+                  <div class="stats-small__data text-center">
+                    <h4 class="stats-large__label text-uppercase"> Timesheet Overview</h4>
+                  
+                  </div>
+                
+                </div>
+                
+              </div>
+
+          <div class="card-body p-0 d-flex mt-4">
+            <div class="d-flex flex-column m-auto">
+              <div class="stats-small__data text-center">
+                <span class="stats-small__label text-uppercase">Total Timesheets</span>
+                <h6 class="stats-small__value count my-3">2,390</h6>
+              </div>
+            
+            </div>
+            <canvas height="20" class="blog-overview-stats-small-1"></canvas>
+          </div>
+          
+          <div class="card-body p-0 d-flex mt-4">
+              <div class="d-flex flex-column m-auto">
+                <div class="stats-small__data text-center">
+                  <span class="stats-small__label text-uppercase">Pending Timesheets</span>
+                  <h6 class="stats-small__value count my-3">2,390</h6>
+                </div>
+               
+              </div>
+              <canvas height="120" class="blog-overview-stats-small-1"></canvas>
+            </div>
+
+            <div class="card-body p-0 d-flex mt-4 mb-4">
+                <div class="d-flex flex-column m-auto">
+                  <div class="stats-small__data text-center">
+                    <span class="stats-small__label text-uppercase">Approved Timesheets</span>
+                    <h6 class="stats-small__value count my-3">2,390</h6>
+                  </div>
+                 
+                </div>
+                <canvas height="120" class="blog-overview-stats-small-1"></canvas>
+              </div>
+
+              <div class="card-body p-0 d-flex mt-4 mb-4">
+                  <div class="d-flex flex-column m-auto">
+                    
+                      <a class="btn btn-sm text-uppercase" href="www.google.com">View Projects</a>
+                    
+                  </div>
+                
+                </div>
+          
+        </div>
+
+        
+      </div>
+      <div class="col-lg col-md-6 col-sm-6 mb-4">
+        <div class="stats-small stats-small--1 card card-small">
+
+            <div class="card-body p-0 d-flex mt-4">
+                <div class="d-flex flex-column m-auto">
+                  <div class="stats-small__data text-center">
+                    <h4 class="stats-large__label text-uppercase"> Project Overview</h4>
+                  
+                  </div>
+                
+                </div>
+                
+              </div>
+
+
+            <div class="card-body p-0 d-flex mt-4">
+                <div class="d-flex flex-column m-auto">
+                  <div class="stats-small__data text-center">
+                    <span class="stats-small__label text-uppercase">Total Projects</span>
+                    <h6 class="stats-small__value count my-3">2,390</h6>
+                  </div>
+                
+                </div>
+                <canvas height="20" class="blog-overview-stats-small-1"></canvas>
+              </div>
+              
+              <div class="card-body p-0 d-flex mt-4">
+                  <div class="d-flex flex-column m-auto">
+                    <div class="stats-small__data text-center">
+                      <span class="stats-small__label text-uppercase">Opened Projects</span>
+                      <h6 class="stats-small__value count my-3">2,390</h6>
+                    </div>
+                   
+                  </div>
+                  <canvas height="120" class="blog-overview-stats-small-1"></canvas>
+                </div>
+    
+                <div class="card-body p-0 d-flex mt-4 mb-4">
+                    <div class="d-flex flex-column m-auto">
+                      <div class="stats-small__data text-center">
+                        <span class="stats-small__label text-uppercase">Closed Projects</span>
+                        <h6 class="stats-small__value count my-3">2,390</h6>
+                      </div>
+                     
+                    </div>
+                    <canvas height="120" class="blog-overview-stats-small-1"></canvas>
+                  </div>
+
+                  <div class="card-body p-0 d-flex mt-4 mb-4">
+                      <div class="d-flex flex-column m-auto">
+                        
+                          <a class="btn btn-sm text-uppercase" href="www.google.com">View Projects</a>
+                        
+                      </div>
+                    
+                    </div>
+
+
+
+        </div>
+      </div>
+      <div class="col-lg col-md-4 col-sm-6 mb-4">
+        <div class="stats-small stats-small--1 card card-small">
+
+            <div class="card-body p-0 d-flex mt-4">
+                <div class="d-flex flex-column m-auto">
+                  <div class="stats-small__data text-center">
+                    <h4 class="stats-large__label text-uppercase"> Employees Overview</h4>
+                  
+                  </div>
+                
+                </div>
+                
+              </div>
+
+            <div class="card-body p-0 d-flex mt-4">
+                <div class="d-flex flex-column m-auto">
+                  <div class="stats-small__data text-center">
+                    <span class="stats-small__label text-uppercase">Total Employees</span>
+                    <h6 class="stats-small__value count my-3">2,390</h6>
+                  </div>
+                
+                </div>
+                <canvas height="20" class="blog-overview-stats-small-1"></canvas>
+              </div>
+              
+              <div class="card-body p-0 d-flex mt-4">
+                  <div class="d-flex flex-column m-auto">
+                    <div class="stats-small__data text-center">
+                      <span class="stats-small__label text-uppercase">Total Departments</span>
+                      <h6 class="stats-small__value count my-3">2,390</h6>
+                    </div>
+                   
+                  </div>
+                  <canvas height="120" class="blog-overview-stats-small-1"></canvas>
+                </div>
+    
+                <div class="card-body p-0 d-flex mt-4 mb-4">
+                    <div class="d-flex flex-column m-auto">
+                      <div class="stats-small__data text-center">
+                        <span class="stats-small__label text-uppercase">New Employee(s)</span>
+                        <h6 class="stats-small__value count my-3">2,390</h6>
+                      </div>
+                     
+                    </div>
+                    <canvas height="120" class="blog-overview-stats-small-1"></canvas>
+                  </div>
+
+                  <div class="card-body p-0 d-flex mt-4 mb-4">
+                      <div class="d-flex flex-column m-auto">
+                        
+                          <a class="btn btn-sm text-uppercase" href="www.google.com">View Projects</a>
+                        
+                      </div>
+                    
+                    </div>
+
+        </div>
+      </div>
+
+     
+    </div>
+    <% } %>
 
   <!-- End Small Stats Blocks -->
   <div class="row">
     <!-- Users Stats -->
-
+    <% if (user.level != 0) {  %>
     <div class="col-lg-8 col-md-12 col-sm-12 mb-4">
       <div class="card card-small">
         <div class="card-header border-bottom">
@@ -194,7 +391,7 @@
             <!-- End Default Table -->
       </div>
     </div>
- 
+    <% }  %>
     <!-- End Users By Device Stats -->
   </div>
 </div>

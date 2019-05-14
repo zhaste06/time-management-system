@@ -24,6 +24,15 @@ In web browser:
   + Create new user using "Add User" button
   + Create password through email verification
 
+## Use AWS Simple email service
+- To use AWS SES you need create shared credensials file by path ``sh /home/$USER/.aws/credentials``
+- Template shared credentials file:
+```sh
+[ses]
+aws_access_key_id =
+aws_secret_access_key =
+```
+
 ### Front End
 
 |Built Using|Links|License|
