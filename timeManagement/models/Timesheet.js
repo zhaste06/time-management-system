@@ -15,6 +15,16 @@ var timesheetSchema = new Schema({
     type: String,
     required: true
   },
+
+  begDate: {
+    type: Date,
+    required: true
+  },
+  endDate: {
+    type: Date,
+    required: true
+  },
+  
   percentage: {
     type: String,
     required: true
@@ -48,8 +58,7 @@ var timesheetSchema = new Schema({
     required: true
   },
   teamLead: {
-    type: String,
-    required: true
+    type: String
   },
   firstName: {
     type: String,

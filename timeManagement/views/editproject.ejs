@@ -70,6 +70,27 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <% if (user.level == 0) { %>
+                                    <div class="form-row">
+                                            <div class="form-group col-md-6">
+    
+                                                <label for="feEmpolyeeID">Team Lead</label>
+                                                <select class="form-control" name="teamLead">
+                                                    <% for (var i = 0; allTeamLead.length > i; i++) { %>
+                                                    <% if (allTeamLead[i].employeeID == project.teamLead) { %>
+                                                    <option value="<%= allTeamLead[i].employeeID %>:<%= allTeamLead[i].firstName %>:<%=allTeamLead[i].lastName %>" selected><%= allTeamLead[i].firstName %> <%= allTeamLead[i].lastName %></option>
+                                                   
+    
+                                                    <%} else {%>
+                                                        <option value="<%= allTeamLead[i].employeeID %>:<%= allTeamLead[i].firstName %>:<%=allTeamLead[i].lastName %>"><%= allTeamLead[i].firstName %> <%=allTeamLead[i].lastName %></option>
+                                                    <% }%>
+                                                    <% }%>
+                                                </select>
+                                            </div>
+    
+                                            
+                                        </div>
+                                        <% } %>
 
 
                                     <input type="submit" value="Submit" class="btn btn-success">

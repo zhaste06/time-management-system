@@ -7,7 +7,7 @@
   <div class="page-header row no-gutters py-4">
     <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
       <span class="text-uppercase page-subtitle">Overview</span>
-      <h3 class="page-title">Timesheet Summary</h3>
+      <h3 class="page-title">Timesheet Approval</h3>
     </div>
 
   </div>
@@ -36,9 +36,12 @@
                                 <%} %>-->
                 <th scope="col" class="border-0">Employee Name</th>
                 <th scope="col" class="border-0">Date</th>
+                <th scope="col" class="border-0">Allocable %</th>
+                <th scope="col" class="border-0">Non-Allocable %</th>
+                <th scope="col" class="border-0">Personal Time %</th>
                 <th scope="col" class="border-0">Project Name (Project ID)</th>
                 <th scope="col" class="border-0">Allocation</th>
-                <th scope="col" class="border-0">Percentage (%)</th>
+                <th scope="col" class="border-0">Percentage</th>
                 <th scope="col" class="border-1"> </th>
               </tr>
             </thead>
@@ -47,6 +50,11 @@
               <tr>
                 <td><%= allTimesheets[i].firstName %> <%= allTimesheets[i].lastName %></td>
                 <td><%= allTimesheets[i].date %></td>
+                <td><%= allTimesheets[i].allocable_percentage %></td>
+
+                <td><%= allTimesheets[i].non_allocable_percentage %></td>
+
+                <td><%= allTimesheets[i].personal_time_percentage %></td>
                 <% var project = allTimesheets[i].project;
                 var projectArray = project.split(","); 
                 %>

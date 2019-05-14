@@ -14,18 +14,43 @@
     <div class="col">
       <div class="card card-small mb-4">
         <div class="card-header border-bottom">
-          <% if (user.level == 0) { %>
-          <h6 class="m-0">Total Timesheets: <%= allUser.length %></h6>
-          <%} else {%>
-          <h6 class="m-0">Total Timesheets: <%= filter_row.length %></h6>
-          <%} %>
+
+          <form method="POST">
+            <div class="card">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-2">
+                    <p>Dates:</p>
+                    <input type="text" name="fecha" id="demo-2" class="form-control form-control-sm" />
+                    <br />
+                    <p id="result-2">&nbsp;</p>
+                  </div>
+                  <div class="col-md-7 fer" id="gist-2">
+                    <button class="btnbtn-primary" type="submit">Search</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </form>
         </div>
         <div class="card-body p-0 pb-3 text-center">
+          <br />
+          <div class="text-left">
+            <% if (user.level == 0) { %>
+            <h5 class="m-0">&nbsp&nbsp&nbspTotal Timesheets: <%= allUser.length %></h5>
+            <%} else {%>
+            <h5 class="m-0">&nbsp&nbsp&nbspTotal Timesheets: <%= filter_row.length %></h5>
+            <%} %>
+          </div>
+
           <table class="table mb-0" id="myTable">
             <thead class="bg-light">
               <tr>
                 </br><a href="#" id="test" style="font-size: 20px;" onClick="javascript:fnExcelReport();">Export to
                   Excel</a></br>
+
+
               </tr>
 
               <tr>
@@ -136,6 +161,28 @@
 <script src="scripts/shards-dashboards.1.1.0.min.js"></script>
 <script src="scripts/app/app-blog-overview.1.1.0.js"></script>
 <script src="../scripts/excelexportjs.js"></script>
+<link rel="stylesheet" href="../styles/css/fer.css">
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script type="text/javascript" src="https://unpkg.com/lightpick@latest/lightpick.js"></script>
+<script>
+  var picker = new Lightpick({
+    field: document.getElementById('demo-2'),
+    singleDate: false,
+    firstDay: 7,
+    format: "MM/DD/YYYY",
+    onSelect: function (start, end) {
+      var str = '';
+      str += start ? start.format('MMMM Do YYYY') + ' to ' : '';
+      str += end ? end.format('MMMM Do YYYY') : '...';
+      document.getElementById('result-2').innerHTML = str;
+
+    }
+  });
+  //picker.setDateRange(picker.getStartDate().startOf('week'), picker.getEndDate().endOf('week'));
+
+</script>
 
 <script>
   function fnExcelReportTimeSheet(data) {
@@ -144,18 +191,13 @@
     percentage = info.percentage.split(',');
     allocation = info.allocation.split(',');
 
-    console.log('odlir', info);
-
     arr = [];
-
-
     //projects.forEach((p, index) => {
     //  row = { '': '', 'FName': info.firstName, 'LName': info.lastName, 'Date': info.date, 'Project': p.split('(')[0], 'Percentage': percentage[index], 'Allocation': allocation[index] };
     //  arr.push(row);
     //});
     // arr.push({ '': '', 'FName': '', 'LName': '', 'Date': '', 'Project': '', 'Percentage': '', 'Allocation': '' });
     //arr.push({ '': '', 'FName': info.firstName, 'LName': info.lastName, 'Date': '', 'Project': '', 'Percentage': '', 'Allocation': '' });
-
 
     projects.forEach((p, index) => {
       row = { 'DATE': '', '': '', 'First Name': '', 'Last Name': '', '': '', '': '', 'Project': p.split('(')[0], 'Percentage': percentage[index], 'Allocation': allocation[index], '': '', 'Allocable %': '', 'Non-Allocable %': '', 'Personal Time %': '' };
@@ -164,7 +206,6 @@
 
     arr.push({ 'DATE': '', '': '', 'First Name': '', 'Last Name': '', '': '', '': '', 'Project': '', 'Percentage': '', 'Allocation': '', '': '', 'Allocable %': '', 'Non-Allocable %': '', 'Personal Time %': '' });
     arr.push({ 'DATE': info.date, '': '', 'First Name': info.firstName, 'Last Name': info.lastName, '': '', '': '', 'Project': '', 'Percentage': '', 'Allocation': '', '': '', 'Allocable %': info.allocable_percentage, 'Non-Allocable %': info.non_allocable_percentage, 'Personal Time %': info.personal_time_percentage });
-
 
     $("#dvjson").excelexportjs({
       containerid: "dvjson",
@@ -176,14 +217,38 @@
 
   function fnExcelReport() {
     var data = JSON.parse($('#variableJSON').text());
-    console.log('fer', data);
 
-    $("#dvjson").excelexportjs({
-      containerid: "dvjson",
-      datatype: 'json',
-      dataset: data,
-      columns: getColumns(data)
-    });
+    for (const c of data) {
+      //console.log('newArray', c)
+      projects = c.project.split(',');
+      // console.log('P: ', projects)
+      percentage = c.percentage.split(',');
+      // console.log('DATOS2', percentage);
+      allocation = c.allocation.split(',');
+      //console.log('DATOS3', allocation);
+      arr = [];
+      final = [];
+
+      projects.forEach((p, index) => {
+        row = { 'DATE': '', '': '', 'First Name': '', 'Last Name': '', '': '', '': '', 'Project': p.split('(')[0], 'Percentage': percentage[index], 'Allocation': allocation[index], '': '', 'Allocable %': '', 'Non-Allocable %': '', 'Personal Time %': '' };
+       arr.push(row);
+      });
+      //console.log('Allocation: ', allocation[index]);
+      //console.log('Name_1: ', c.allocable_percentage);
+
+      arr.push({ 'DATE': '', '': '', 'First Name': '', 'Last Name': '', '': '', '': '', 'Project': '', 'Percentage': '', 'Allocation': '', '': '', 'Allocable %': '', 'Non-Allocable %': '', 'Personal Time %': '' });
+      arr.push({ 'DATE': c.date, '': '', 'First Name': c.firstName, 'Last Name': c.lastName, '': '', '': '', 'Project': '', 'Percentage': '', 'Allocation': '', '': '', 'Allocable %': c.allocable_percentage, 'Non-Allocable %': c.non_allocable_percentage, 'Personal Time %': c.personal_time_percentage });
+
+      //final.push(arr);
+      final = final.concat(arr);
+      console.log('Array Interior:  ', final);
+ }
+      $("#dvjson").excelexportjs({
+        containerid: "dvjson",
+        datatype: 'json',
+        dataset: final,
+        columns: getColumns(final)
+      });   
   }
 </script>
 </body>

@@ -28,12 +28,12 @@
               <tr>
 
                 <th scope="col" class="border-0">Team Lead</th>
-                <th scope="col" class="border-0">First Name</th>
-                <th scope="col" class="border-0">Last Name</th>
-                <th scope="col" class="border-0">Employee ID</th>
-                <th scope="col" class="border-0">Department</th>
-                <th scope="col" class="border-0">Team</th>
-                <th scope="col" class="border-0">Job Title</th>
+                <th scope="col" class="border-0"><a class="sort" href="/viewemployee/<%= user.employeeID %>?firstName=asc"  name="firstName">First Name</a></th>
+                <th scope="col" class="border-0"><a class="sort" href="/viewemployee/<%= user.employeeID %>?lastName=asc"  name="lastName">Last Name</a></th>
+                <th scope="col" class="border-0"><a class="sort" href="/viewemployee/<%= user.employeeID %>?employeeID=asc"  name="employeeID">Employee ID</a></th>
+                <th scope="col" class="border-0"><a class="sort" href="/viewemployee/<%= user.employeeID %>?department=asc"  name="department">Department</a></th>
+                <th scope="col" class="border-0"><a class="sort" href="/viewemployee/<%= user.employeeID %>?team=asc"  name="team">Team</a></th>
+                <th scope="col" class="border-0"><a class="sort" href="/viewemployee/<%= user.employeeID %>?jobTitle=asc"  name="jobTitle">Job Title</a></th>
                 <th scope="col" class="border-0">Email</th>
               </tr>
             </thead>
@@ -82,6 +82,25 @@
 <script src="scripts/extras.1.1.0.min.js"></script>
 <script src="scripts/shards-dashboards.1.1.0.min.js"></script>
 <script src="scripts/app/app-blog-overview.1.1.0.js"></script>
+<script>
+    $( document ).ready(function() {
+      $(document).on('click', 'a.sort', function(){
+        var urlParams = new URLSearchParams(window.location.search);
+        
+        if(urlParams == '') {
+          $(this).attr("href", "/viewemployee/<%= user.employeeID %>?"+ $(this).attr('name') + "=asc");
+        } else {
+          var param = urlParams.get($(this).attr('name'));
+          if(param == 'asc') {
+            $(this).attr("href", "/viewemployee/<%= user.employeeID %>?"+ $(this).attr('name') + "=des");
+          } else if(param == 'des') {
+            $(this).attr("href", "/viewemployee/<%= user.employeeID %>?"+ $(this).attr('name') + "=asc");
+          }
+          
+        }
+      });
+    });
+  </script>
 </body>
 
 </html>

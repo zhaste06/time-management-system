@@ -72,11 +72,15 @@
                                 </div>
                             </div>
                         </li>
+                       
+
+                        
                         <li class="list-group-item p-3">
                             <div class="row">
                                 <div class="col-sm-12">
                                     <strong class="text-muted d-block mb-2">Projects</strong>
                                     <table class="table mb-0">
+                                           
                                         <thead class="bg-light">
                                             <tr>
                                                 <input type="hidden" class="form-control" name="employeeID"
@@ -95,7 +99,9 @@
                                             </tr>
                                         </thead>
                                         <tbody id="addformProject">
+                                               
                                             <tr>
+                                                    <% if(user.level != 1) { %>
                                                 <td>
                                                     <div class="form-group">
                                                         <select id="inputAllocable" class="form-control"
@@ -122,12 +128,16 @@
                                                             name="percentage" value=0 required>
                                                     </div>
                                                 </td>
+                                                <% } %>
                                             </tr>
+                                           
                                         </tbody>
+                                       
                                     </table>
                                 </div>
                             </div>
                         </li>
+                       
                         <li class="list-group-item d-flex px-3">
                             <button class="btn btn-sm btn-outline-accent" id="add_project">
                                 <i class="material-icons">add</i> Add Project
@@ -221,6 +231,16 @@
 
 
 <script>
+    function makeProjectID(length) {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (var i = 0; i < length; i++)
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+  }
+
     $(document).ready(function () {
         $('#add_project').click(function () {
             $('#addformProject').append('<tr> <td> <div class="form-group"> <select id="inputAllocable" name="allocation" class="form-control"> <option selected>Allocable</option> <option>Non-Allocable</option></select> </div> </td>' +
@@ -230,7 +250,7 @@
 
         $('#add_custom_project').click(function () {
             $('#addformProject').append('<tr> <td> <div class="form-group"> <select id="inputAllocable" name="allocation" class="form-control"> <option selected>Allocable</option> <option>Non-Allocable</option></select> </div> </td>' +
-                '<td> <div class="form-group"> <input type="text" class="form-control" id="inputProject" placeholder="Enter Project" name="project" required> </div> </td> <td>' +
+                '<td> <div class="form-group"> <input type="text" class="form-control custom_project" id="inputProject" placeholder="Enter Project" name="project" required> </div> </td> <td>' +
                 '<div class="form-group"><input type="number" min="0" class="form-control" id="inputPerc" name="percentage"> </div> </td> <td><button type="button" onclick="delete_pro(this)" class="mb-2 btn btn-danger mr-1" id="delete_project"><i class="material-icons">delete</i></button> </td> </tr>');
         });
 
@@ -240,6 +260,7 @@
          });*/
 
         $('.submit-btn').click(function (e) {
+           
             var total = 100;
             var total = parseInt(total);
             var non_allocable_percentage = parseInt($('#non_allocable_percentage').val());
@@ -268,6 +289,7 @@
                 swal("Allocable Percentage, Non-Allocable Percentage, and Personal Time Percentage must add up to 100%");
                 e.preventDefault();
             } else {
+                
                 $('#inputAllocable option').each(function () {
                     if ($(this).prop("selected") == true) {
                         if ($(this).val() == 'Allocable') {
@@ -289,6 +311,7 @@
                     swal('Your Non-Allocable Percentage does not add up to 100%');
                     e.preventDefault();
                 }
+                
 
                 if (allocable_percentage == zero && allocable_total != zero) {
                     swal('Cannot create an Allocable Project. Your Allocable Percentage is 0%');
@@ -301,6 +324,22 @@
                     swal('WEEK');
                     e.preventDefault();
                 }
+
+                if($('.custom_project')[0]) {
+                $('.custom_project').each(function(){
+                    var projectID = makeProjectID(10);
+                    var projectNameID = $(this).val() + ' (' + projectID + ')';
+                    $(this).val(projectNameID);
+                });    
+                }
+         
+
+               
+
+      
+
+                
+
             }
         });
     });

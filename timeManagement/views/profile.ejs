@@ -60,6 +60,9 @@
             <strong class="text-muted d-block mb-2">Department</strong>
             <span><%= user.department %></span>
             <br><br>
+            <strong class="text-muted d-block mb-2">Team</strong>
+            <span><%= user.team %></span>
+            <br><br>
             <strong class="text-muted d-block mb-2">Employment Duration</strong>
             <span class="duration"></span>
             <br><br>
@@ -119,8 +122,6 @@
                                         placeholder="<%= user.address %>" name="address" value="<%= user.address %>">
                                 </div>
                             </div> <br />
-                          
-
 
                             <div class="card-header border-bottom">
                                 <h6 class="m-0">
@@ -144,41 +145,7 @@
                                         value="<%= user.contactPhone %>">
                                 </div>
                             </div>
-
-
-
-
-
-
-
-
-
                             <button type="submit" class="btn btn-accent">Update Account</button>
-                        </form>
-                    </div>
-                </div>
-            </li>
-        </ul>
-    </div>
-    <div class="card card-small mb-4">
-        <div class="card-header border-bottom">
-            <h6 class="m-0">Documents</h6>
-        </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item p-3">
-                <div class="row">
-                    <div class="col">
-                        <form action="/upload/w4" method="POST" enctype="multipart/form-data">
-                            <div class="custom-file mb-3">
-                                <input type="file" name="file" id="filew4" class="custom-file-input">
-                                <label for="file" class="custom-file-label">W4</label>
-                            </div>
-                        </form>
-                        <form action="/upload/w9" method="POST" enctype="multipart/form-data">
-                            <div class="custom-file mb-3">
-                                <input type="file" name="file" id="filew9" class="custom-file-input">
-                                <label for="file" class="custom-file-label">W9</label>
-                            </div>
                         </form>
                     </div>
                 </div>
