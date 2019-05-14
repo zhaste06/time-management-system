@@ -1015,8 +1015,8 @@ app.post('/user/:employeeID', function (req, res, next) {
         var mailOptions = {
           to: user.username,
           from: '5bitsoftwareteam@gmail.com',
-          subject: 'Login Instrusction for your Time Managment Account',
-          text: 'You are receiving this because your account has been created.\n\n' +
+          subject: 'Login Instructions for your Time Managment Account',
+          text: 'You are receiving this email because your account has been created for ObEN\'s Time Management System.\n\n' +
             'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
             'http://' + req.headers.host + '/validate/' + token + '\n\n' +
             'If you did not request this, please ignore this email.\n'
