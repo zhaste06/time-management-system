@@ -190,9 +190,6 @@ app.get('/logout', function (req, res) {
 
 // EDIT PROJECTS
 app.get('/editproject/:employeeID', function (req, res) {
-
-
-
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
 
@@ -211,8 +208,6 @@ app.get('/editproject/:employeeID', function (req, res) {
                 project,
                 allUser
               });
-
-
             }
           });
         }
@@ -230,18 +225,12 @@ app.get('/editproject/:employeeID', function (req, res) {
                   allUser,
                   allTeamLead
                 });
-
-
               }
             });
           });
         }
       });
-
     }
-
-
-
   });
 
 });
@@ -289,23 +278,10 @@ app.post('/editproject/:employeeID', function (req, res) {
         });
       });
     }
-
   });
-
-
-
-
-
-
-
-
-
 });
 
 // *******************************************************************
-
-
-
 // *******************************************************************
 app.get('/error', function (req, res) {
   res.render('error');
@@ -363,14 +339,12 @@ app.get('/approval/:employeeID', function (req, res) {
     } else {
       return res.redirect('/error');
     }
-
   });
 });
 
 app.post('/approval/:employeeID', function (req, res) {
 
   Timesheet.findOne({ timesheetID: req.body.timesheetID }, function (err, timesheet) {
-
     timesheet.status = "Approved";
 
     timesheet.save(function (err) {
@@ -381,8 +355,6 @@ app.post('/approval/:employeeID', function (req, res) {
 });
 
 // *******************************************************************
-
-
 // *******************************************************************
 // ASSIGN PROJECTS TO TEAM MEMBERS
 app.get('/closedproject/:employeeID', function (req, res) {
@@ -448,10 +420,7 @@ app.get('/project/:employeeID', function (req, res) {
                     allUser,
                     projects
                 });
-               
-                  
-                });
-          
+                });          
                 */
         }
       });
@@ -540,7 +509,6 @@ app.post('/genMembers', function (req, res) {
 });
 
 // *******************************************************************
-
 // *******************************************************************
 // PASSWORD CHANGE
 app.get('/passwordchange/:employeeID', function (req, res) {
@@ -742,10 +710,6 @@ app.get('/contractor/:employeeID', function (req, res) {
 });
 
 // *******************************************************************
-
-
-
-
 // *******************************************************************
 app.get('/viewemployee/:employeeID', function (req, res) {
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
@@ -767,8 +731,6 @@ app.get('/viewemployee/:employeeID', function (req, res) {
               allUser
             });
           });
-
-
         }
         else if (req.query[key] == 'des') {
 
@@ -797,9 +759,6 @@ app.get('/viewemployee/:employeeID', function (req, res) {
 });
 
 // *******************************************************************
-
-
-
 // *******************************************************************
 app.get('/team/:employeeID', function (req, res) {
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
@@ -857,7 +816,6 @@ app.post('/profile/:employeeID', function (req, res) {
 });
 
 
-
 // *******************************************************************
 // DELETE THE USER
 app.get('/deleteuser/:employeeID', function (req, res) {
@@ -879,7 +837,6 @@ app.get('/deleteuser/:employeeID', function (req, res) {
       req.flash('success_msg', 'A user has been deleted');
       // req.flash('success_msg', 'User: ' + user.firstName + ' ' + user.lastName + '  has been deleted');
       return res.redirect('/employee/' + req.params.employeeID);
-
     });
   });
 });
@@ -910,9 +867,6 @@ app.get('/deleteproject/:employeeID', function (req, res) {
 
 
 // *******************************************************************
-
-
-
 // *******************************************************************
 // EDIT THE USER
 app.get('/edituser/:employeeID', function (req, res) {
@@ -1158,7 +1112,6 @@ app.post('/timesheetTemp/:employeeID', function (req, res, next) {
     begDate: new Date(fechas[0]),
     endDate: new Date(fechas[1]),
 
-
     percentage: req.body.percentage,
     project: req.body.project,
     allocation: req.body.allocation,
@@ -1249,7 +1202,7 @@ app.post('/timesheetsummary/:employeeID', function (req, res) {
 
   e = new Date(endDate);
   var eDay = e.getDay();
-  sum = e.getDate() + (7 - eDay - 1);
+  sum = e.getDate() + (7 - eDay);
 
   var initDate = new Date(d.setDate(diff));
   var lastDate = new Date(e.setDate(sum));
@@ -1282,7 +1235,6 @@ app.post('/timesheetsummary/:employeeID', function (req, res) {
     }
   });
 });
-
 
 /*
 app.get('/timesheetsummary/:employeeID', async function(req, res){  
@@ -1386,8 +1338,6 @@ app.get('/dashboard/:employeeID', function (req, res) {
                 });
               });
             });
-
-
           });
         }
       });
@@ -1634,6 +1584,5 @@ app.get('/image/:filename', (req, res) => {
     }
   });
 });
-
 
 module.exports = app;
