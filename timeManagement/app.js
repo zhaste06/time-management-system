@@ -1,3 +1,4 @@
+var AWS = require('aws-sdk')
 var express = require('express');
 var path = require('path');
 var favicon = require('static-favicon');
@@ -21,6 +22,7 @@ var crypto = require('crypto');
 var expressValidator = require('express-validator');
 var flash = require('connect-flash');
 var app = express();
+var credentials = new AWS.SharedIniFileCredentials({profile: 'ses'});
 
 // Load Timesheet and User Model into variables
 require('./models/Timesheet');
@@ -28,6 +30,8 @@ var Timesheet = mongoose.model('Timesheet');
 require('./models/Project');
 var Project = mongoose.model('Project');
 var User = require('./models/User');
+AWS.config.update({region: 'us-west-2'});
+AWS.config.credentials = credentials;
 
 passport.use(new LocalStrategy(function (username, password, done) {
   // Check for the user and match username with name that is passed in
@@ -959,31 +963,37 @@ app.post('/user/:employeeID', function (req, res, next) {
         });
       },
       function (token, user, done) {
-        var smtpTransport = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: '5bitsoftwareteam@gmail.com',
-            pass: 'cppcispn1!!2'
-          }
-        });
-        var mailOptions = {
-          to: user.username,
-          from: '5bitsoftwareteam@gmail.com',
-          subject: 'Login Instructions for your Time Managment Account',
-          text: 'You are receiving this email because your account has been created for ObEN\'s Time Management System.\n\n' +
-            'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-            'http://' + req.headers.host + '/validate/' + token + '\n\n' +
-            'If you did not request this, please ignore this email.\n'
+        var params = {
+        Destination: {
+          ToAddresses: [
+            user.username
+          ]
+        },
+        Message: {
+            Body: {
+              Text: {
+              Charset: "UTF-8",
+              Data: 'You are receiving this because your account has been created.\n\n' +
+             'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+             'http://' + req.headers.host + '/validate/' + token + '\n' +
+             'If you did not request this, please ignore this email.\n\n'
+             }
+            },
+            Subject: {
+              Charset: 'UTF-8',
+              Data: 'Test email from time management local system'
+            }
+            },
+        Source: 'timetracking@oben.com'
         };
-        smtpTransport.sendMail(mailOptions, function (err) {
-          req.flash('info', 'An e-mail has been sent to ' + user.username + ' with further instructions.');
-          done(err, 'done');
-        });
-      }
-    ], function (err) {
+        console.log(user.username);
+        var sendPromise = new AWS.SES({apiVersion: '2010-12-01'}).sendEmail(params).promise();
+  //	}
+       },
+     function (err) {
       if (err) return next(err);
       res.redirect('/employee/' + req.params.employeeID);
-    });
+    }]);
     req.flash('success_msg', 'An e-mail has been sent to ' + user.username + ' with further instructions.');
     res.redirect('/employee/' + req.params.employeeID);
   });
@@ -1377,37 +1387,59 @@ app.post('/forgot', function (req, res, next) {
       });
     },
     function (token, user, done) {
-      var smtpTransport = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: '5bitsoftwareteam@gmail.com',
-          pass: 'cppcispn1!!2'
-        }
-      });
-      var mailOptions = {
-        to: user.username,
-        from: '5bitsoftwareteam@gmail.com',
-        subject: 'Password Reset',
-        text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+      var params = {
+	  Destination: {
+	    ToAddresses: [
+	      user.username
+	    ]
+	  },
+	  Message: {
+		  Body: {
+		    Text: {
+		    Charset: "UTF-8",
+		    Data: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
           'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
           'http://' + req.headers.host + '/reset/' + token + '\n\n' +
           'If you did not request this, please ignore this email and your password will remain unchanged.\n'
-      };
-      smtpTransport.sendMail(mailOptions, function (err) {
-        req.flash('info', 'An e-mail has been sent to ' + user.username + ' with further instructions.');
-        done(err, 'done');
-      });
+           }
+		  },
+		  Subject: {
+		    Charset: 'UTF-8',
+		    Data: 'Password Reset'
+		  }
+		  },
+	  Source: 'timetracking@oben.com'
+	  };
+	  console.log(user.username);
+	  var sendPromise = new AWS.SES({apiVersion: '2010-12-01'}).sendEmail(params).promise();
+//	}
+      sendPromise.then(
+  function(data) {
+    console.log('Test done', done);
+    //console.log('Test error', err);
+    req.flash('success_msg', 'An e-mail has been sent to ' + user.username + ' with further instructions.');
 
-      res.redirect('/');
-    }
-  ], function (err) {
-    if (err) return next(err);
-    res.redirect('/forgot');
+    //console.log('Test user', user.username);
+    res.redirect('/');
+       // done(err, 'done');
+  }).catch(
+    function(err) {
+     if (err) return next(err);
+     res.redirect('/forgot');
+     done(err, 'done');
+
   });
+
+     },
+
+      // function (err) {
+      //   if (err) return next(err);
+      //   res.redirect('/forgot');
+
+  ]);
 });
 
-// *******************************************************************
-// *******************************************************************
+// *******************************************************************// *******************************************************************
 app.get('/reset/:token', function (req, res) {
   User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function (err, user) {
     if (!user) {
@@ -1447,26 +1479,36 @@ app.post('/reset/:token', function (req, res) {
       });
     },
     function (user, done) {
-      var smtpTransport = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: '5bitsoftwareteam@gmail.com',
-          pass: 'cppcispn1!!2'
-        }
-      });
-      var mailOptions = {
-        to: user.email,
-        from: '5bitsoftwareteam@gmail.com',
-        subject: 'Your password has been changed',
-        text: 'Hello,\n\n' +
-          'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
-      };
-      smtpTransport.sendMail(mailOptions, function (err) {
+      var params = {
+	  Destination: {
+	    ToAddresses: [
+	      user.username
+	    ]
+	  },
+	  Message: {
+		  Body: {
+		    Text: {
+		    Charset: "UTF-8",
+		    Data: 'Hello,\n\n' +
+            'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
+           }
+		  },
+		  Subject: {
+		    Charset: 'UTF-8',
+		    Data: 'Your password has been changed'
+		  }
+		  },
+	  Source: 'timetracking@oben.com'
+	  };
+	  console.log(user.username);
+	  var sendPromise = new AWS.SES({apiVersion: '2010-12-01'}).sendEmail(params).promise();
+//	}
+     }, function (err) {
         req.flash('success', 'Success! Your password has been changed.');
         done(err);
-      });
-    }
-  ]);
+      }]);
+
+ // ]);
 });
 
 // *******************************************************************
@@ -1509,26 +1551,37 @@ app.post('/validate/:token', function (req, res) {
       });
     },
     function (user, done) {
-      var smtpTransport = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: '5bitsoftwareteam@gmail.com',
-          pass: 'cppcispn1!!2'
-        }
-      });
-      var mailOptions = {
-        to: user.username,
-        from: '5bitsoftwareteam@gmail.com',
-        subject: 'Your account has been verified',
-        text: 'Hello,' + user.firstName + user.lastName + '\n\n' +
-          'This is a confirmation that your account ' + user.username + ' has just been verified.\n'
-      };
-      smtpTransport.sendMail(mailOptions, function (err) {
+      var params = {
+	  Destination: {
+	    ToAddresses: [
+	      user.username
+	    ]
+	  },
+	  Message: {
+		  Body: {
+		    Text: {
+		    Charset: "UTF-8",
+		    Data: 'Hello,' + user.firstName + user.lastName + '\n\n' +
+            'This is a confirmation that your account ' + user.username + ' has just been verified.\n'
+           }
+		  },
+		  Subject: {
+		    Charset: 'UTF-8',
+		    Data: 'Your account has been verified'
+		  }
+		  },
+	  Source: 'timetracking@oben.com'
+	  };
+	  console.log(user.username);
+	  var sendPromise = new AWS.SES({apiVersion: '2010-12-01'}).sendEmail(params).promise();
+//	}
+     },
+          function (err) {
         req.flash('success', 'Success! Your password has been changed.');
         done(err);
-      });
-    }
-  ]);
+      }]);
+
+//  ]);
 });
 // *******************************************************************
 
