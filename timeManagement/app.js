@@ -17,7 +17,6 @@ var LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcrypt-nodejs');
 var async = require('async');
 var crypto = require('crypto');
-//var flash = require('express-flash');
 var expressValidator = require('express-validator');
 var flash = require('connect-flash');
 var app = express();
@@ -57,9 +56,7 @@ passport.deserializeUser(function (id, done) {
 });
 
 // Connect to mongoose. Pass the database (local, MLAB, etc)
-// mongoose.connect('mongodb://localhost:27017/db');
 mongoose.connect('mongodb://localhost/ObenDB', {
-  //useMongoClient: true  // if not, error msg
   useNewUrlParser: true
 })
   .then(() => console.log('\n\nMongoDB Connected!!!...'))  // catch
@@ -104,8 +101,6 @@ app.use(function (req, res, next) {
 app.use(session({
   secret: 'stuff',  // Can be anything we want
   resave: false,
-  // resave: true,
-  // store: new MongoStore({url:"mongodb://localhost:27017/db"}),
   store: new MongoStore({ url: "mongodb://localhost/ObenDB" }),
   saveUninitialized: true,
   cookie: {
@@ -164,11 +159,9 @@ app.post('/', function (req, res, next) {
     if (err) return next(err)
     if (!user) {
       req.flash('error_msg', 'Please enter a valid user');
-      //return res.redirect('/error')
       return res.redirect('/')
     } else if (user.verifyUserToken !== undefined) {
       return res.redirect('/')
-      // return res.redirect('/error')
     }
     req.logIn(user, function (err) {
       if (err) return next(err);
@@ -179,7 +172,7 @@ app.post('/', function (req, res, next) {
 });
 // *******************************************************************
 
-//app.use('/logout', loginOutRT); // if it goes to /jobs, call jobs from LOAD ROUTES
+// if it goes to /jobs, call jobs from LOAD ROUTES
 app.get('/logout', function (req, res) {
   req.logout();
   req.flash('success_msg', 'You are logged out');
@@ -192,12 +185,10 @@ app.get('/logout', function (req, res) {
 app.get('/editproject/:employeeID', function (req, res) {
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
-
       return res.redirect('/error');
     } else if (user.level != 2 && user.level != 0) {
       return res.redirect('/error');
     }
-
     if (user.level == 2) {
       Project.findOne({ projectID: req.query.projectID }, function (err, project) {
         if (project != null) {
@@ -212,7 +203,6 @@ app.get('/editproject/:employeeID', function (req, res) {
           });
         }
       });
-
     } else if (user.level == 0) {
       Project.findOne({ projectID: req.query.projectID }, function (err, project) {
         if (project != null) {
@@ -236,7 +226,6 @@ app.get('/editproject/:employeeID', function (req, res) {
 });
 
 app.post('/editproject/:employeeID', function (req, res) {
-
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
       return res.redirect('/error');
@@ -247,20 +236,16 @@ app.post('/editproject/:employeeID', function (req, res) {
         if (!project) {
           return res.redirect('/error');
         }
-
         project.projectName = req.body.projectName,
           project.status = req.body.status,
           project.employeeID = req.body.teamLead + ',' + req.body.team_members
         project.teamLead = teamLeadArray[0]
-
-
         project.save(function (err) {
           req.flash('success_msg', 'The project has been updated');
           return res.redirect('/project/' + req.params.employeeID);
         });
       });
     } else if (user.level == 2) {
-
 
       Project.findOne({ projectID: req.query.projectID }, function (err, project) {
         if (!project) {
@@ -270,7 +255,6 @@ app.post('/editproject/:employeeID', function (req, res) {
         project.projectName = req.body.projectName,
           project.status = req.body.status,
           project.employeeID = user.employeeID + ':' + user.firstName + ':' + user.lastName + ',' + req.body.team_members
-
 
         project.save(function (err) {
           req.flash('success_msg', 'The project has been updated');
@@ -402,26 +386,6 @@ app.get('/project/:employeeID', function (req, res) {
               projects
             });
           });
-          /*
-                 Project.aggregate([
-                  { $lookup:
-                    {
-                      from: 'users',
-                      localField: 'employeeID',
-                      foreignField: 'employeeID',
-                      as: 'orderdetails'
-                    }
-                  }
-                 ], function(err, projects) {
-          
-                 console.log(JSON.stringify(projects) + "WHATTT");
-                  res.render('project', {
-                    user: req.user,
-                    allUser,
-                    projects
-                });
-                });          
-                */
         }
       });
     };
@@ -1163,13 +1127,6 @@ app.post('/timesheet/:employeeID', function (req, res, next) {
 // *******************************************************************
 // TIMESHEET SUMARY
 app.get('/timesheetsummary/:employeeID', function (req, res) {
-  /*
-  Timesheet.findOne({ employeeID: req.params.employeeID }, function (err, user) {
-    if (!user) {
-      // req.flash('error_msg', 'No Timesheet found');
-      return res.redirect('/dashboard/' + req.params.employeeID);
-    }
-    */
   Timesheet.find({}, function (err, allUser) {
     if (allUser != null) {
       User.find({ employeeID: req.params.employeeID }, function (err, userInfo) {
@@ -1192,7 +1149,6 @@ app.get('/timesheetsummary/:employeeID', function (req, res) {
 
 
 app.post('/timesheetsummary/:employeeID', function (req, res) {
-  //console.log("ferfecha", req.body.fecha)
   var date = req.body.fecha.split(" - ");
   var begDate = date[0];
   var endDate = date[1];
@@ -1235,44 +1191,6 @@ app.post('/timesheetsummary/:employeeID', function (req, res) {
     }
   });
 });
-
-/*
-app.get('/timesheetsummary/:employeeID', async function(req, res){  
-  Promise.all()    
-  .then(result =>{
-    if (result == 1){
-      res.render('timesheetsummary', {
-        user: req.user,
-        allUser: allUser        
-      });
-    }
-  })
-  .catch((err) => {
-    console.log(err.message)
-  });
-
-  return new Promise(function(resolve, reject){
-    var allUser = [];
-    User.findOne({ employeeID: req.params.employeeID}, function(err, user) {
-      if (!user) {        
-        return res.redirect('/error');
-      } else if (user.level == 0 || user.level == 1){
-        User.find({}, function(err, Users) {         
-          for(var i = 0; i < Users.length; i++){
-            Timesheet.find({employeeID: Users[i].employeeID}, function(err, allUserTimesheet) {        
-              allUser.push(allUserTimesheet);
-              console.log(allUserTimesheet +'dsfffff'+ i);             
-            });            
-          }  
-         resolve(1);        
-        });  
-      } else if (user.level == 2) {        
-      } else {  
-      }
-    });
-  })
-});
-*/
 
 app.get('/dashboard/:employeeID', function (req, res) {
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
@@ -1536,7 +1454,6 @@ app.post('/validate/:token', function (req, res) {
 // @route POST /upload
 // @desc Uploads file to DB
 app.post('/upload/:employeeID', upload.single('file'), (req, res) => {
-  //res.json({ file: req.file });
   User.findOne({ employeeID: req.params.employeeID }, function (err, user) {
     if (!user) {
       return res.redirect('/error')
