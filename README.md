@@ -24,11 +24,17 @@ In web browser:
   + Create new user using "Add User" button
   + Create password through email verification
 
-### Front End
+
+### UI Design and Style
 
 |Built Using|Links|License|
 |-------------|:-------------:|:-----:|
 |![alt text](https://designrevision.com/favicons/favicon-32x32.png "Shards Dashboard Lite") Shards Dashboard Lite|[Website](https://designrevision.com/docs/shards-dashboard-lite/)|MIT|
+
+### Front End
+
+|Built Using|Links|License|
+|-------------|:-------------:|:-----:|
 |![alt text](https://getbootstrap.com/docs/4.3/assets/img/favicons/favicon-32x32.png "Bootstrap") Bootstrap|[Website](https://getbootstrap.com/)|MIT|
 |![alt text](https://www.iconfinder.com/icons/252091/download/png/32 "jQuery") jQuery|[Website](https://jquery.com/)|MIT|
 |![alt text](https://popper.js.org/favicon-32x32.png "Popper") Popper|[Website](https://popper.js.org/)|MIT|
