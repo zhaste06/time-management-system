@@ -23,6 +23,19 @@ In web browser:
   + Navigate to "All Users"
   + Create new user using "Add User" button
   + Create password through email verification
+  
+## Use AWS SES service:
+To have access to AWS Simple Email Service (AWS SES) service from js code use AWS shared credentials.  
+To use AWS shared credentials complete next steps:
+  - Create `.aws` directory in user home folder, for example `/home/ubuntu/.aws`
+  - Create file `credentials` in folder from above step, for example `/home/ubuntu/.aws/credentials`
+  - Structure for credentials file:
+    ```
+    [ses]
+    aws_access_key_id = ***
+    aws_secret_access_key = ***    
+    ```
+  Instead `***` need specify AWS security key pair with access to AWS Simple Email Service.  
 
 
 ### UI Design and Style
